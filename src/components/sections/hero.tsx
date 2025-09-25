@@ -46,12 +46,13 @@ export function Hero() {
     visible: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.2,
+        staggerChildren: 0.1,
+        delayChildren: 0.5,
       },
     },
   };
 
-  const itemVariants = {
+  const letterVariants = {
     hidden: { y: 20, opacity: 0 },
     visible: {
       y: 0,
@@ -61,6 +62,20 @@ export function Hero() {
       },
     },
   };
+  
+  const itemVariants = {
+    hidden: { y: 20, opacity: 0 },
+    visible: {
+      y: 0,
+      opacity: 1,
+      transition: {
+        duration: 0.5,
+        delay: 1.5, // Delay after text animation
+      },
+    },
+  };
+
+  const nameLetters = Array.from(userDetails.name);
 
   return (
     <section id="home" className="relative w-full overflow-hidden">
@@ -68,13 +83,12 @@ export function Hero() {
       <div className="container relative z-10 grid min-h-[calc(100vh-3.5rem-1rem)] items-center gap-8 text-center">
         <motion.div
           className="flex flex-col items-center gap-4"
-          variants={containerVariants}
           initial="hidden"
           animate="visible"
         >
           <motion.div 
             className="relative flex flex-col items-center justify-center"
-            variants={itemVariants}
+            variants={itemVariants} // Applies to image and role
           >
              <div className="relative h-40 w-40 overflow-hidden rounded-full shadow-2xl md:h-48 md:w-48">
                <Image
@@ -84,12 +98,29 @@ export function Hero() {
                 className="object-cover"
                 />
              </div>
-             <h1 className="mt-6 text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl font-headline"
-             >
-                {userDetails.name}
-             </h1>
-             <p className="text-muted-foreground text-lg">{userDetails.role}</p>
           </motion.div>
+          
+          <motion.h1 
+            className="mt-6 text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl font-headline"
+            variants={containerVariants}
+          >
+            {nameLetters.map((letter, index) => (
+              <motion.span
+                key={index}
+                variants={letterVariants}
+                className="inline-block"
+              >
+                {letter === " " ? "\u00A0" : letter}
+              </motion.span>
+            ))}
+          </motion.h1>
+
+          <motion.p 
+            className="text-muted-foreground text-lg"
+            variants={itemVariants}
+          >
+            {userDetails.role}
+          </motion.p>
           
           <motion.p
             className="max-w-[600px] text-muted-foreground md:text-lg"
