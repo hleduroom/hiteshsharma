@@ -45,8 +45,8 @@ export default function Home() {
             <Hero />
             <div className="space-y-4">
               <About />
-              <Projects />
-              <TerminalSection />
+              {/* <Projects /> */}
+              {/* <TerminalSection /> */}
               <Contact />
             </div>
           </main>
