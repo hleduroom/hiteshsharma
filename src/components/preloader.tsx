@@ -18,7 +18,7 @@ const Preloader = ({ userImage, userName }: { userImage: string, userName: strin
     animate: { 
       scale: 1, 
       opacity: 1, 
-      transition: { duration: 0.6, ease: [0.6, 0.01, -0.05, 0.95], delay: 0.5 } 
+      transition: { duration: 0.6, ease: [0.6, 0.01, 0.05, 0.95], delay: 0.5 } 
     },
   };
 
