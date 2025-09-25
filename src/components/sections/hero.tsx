@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { Button } from "../ui/button";
 import Link from "next/link";
 import Image from "next/image";
-import { Facebook, Linkedin, Mail } from "lucide-react";
+import { Facebook, Linkedin, Mail, TriangleAlert } from "lucide-react";
 import { BackgroundAnimation } from "../background-animation";
 
 // A component for the Whatsapp icon
@@ -99,11 +99,12 @@ export function Hero() {
           </motion.p>
 
           <motion.div
-            className="mt-4 p-4 bg-secondary/50 rounded-lg"
+            className="mt-4 w-full max-w-md p-4 bg-destructive/10 border border-destructive/50 rounded-lg flex flex-col items-center text-center"
             variants={itemVariants}
           >
-            <h2 className="text-2xl font-bold font-headline text-primary">Site Under Construction</h2>
-            <p className="text-muted-foreground mt-2">My new portfolio will be live in a few days. Stay tuned!</p>
+            <TriangleAlert className="h-8 w-8 text-destructive mb-2" />
+            <h2 className="text-2xl font-bold font-headline text-destructive">Site Under Construction</h2>
+            <p className="text-destructive/80 mt-2">My new portfolio will be live in a few days. Stay tuned!</p>
           </motion.div>
 
           <motion.div 
