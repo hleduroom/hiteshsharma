@@ -3,7 +3,20 @@
 import { motion } from "framer-motion";
 import { Button } from "../ui/button";
 import Link from "next/link";
-import ThreeDModel from "../threed-model";
+import Image from "next/image";
+import { Facebook, Linkedin, Mail } from "lucide-react";
+
+const userDetails = {
+  name: "Hitesh Sharma",
+  role: "Founder & Educator",
+  image: "https://res.cloudinary.com/dgxoe15jd/image/upload/v1756232910/retouch_2025080121291186_hcbobr.jpg",
+  bio: "Founder of H.L.-Eduroom and The Hitesh Sir Platform lead educator for +2 Exams. Passionate about guiding students toward their dream careers in medicine.",
+  socials: {
+    facebook: "https://www.facebook.com/thehiteshsir",
+    linkedin: "https://www.linkedin.com/in/hitesh-sharma-8a3366329",
+    email: "mailto:hleduroom@gmail.com",
+  },
+};
 
 export function Hero() {
   const containerVariants = {
@@ -61,9 +74,41 @@ export function Hero() {
             </Button>
           </motion.div>
         </motion.div>
-        <div className="relative h-full min-h-[300px] w-full md:min-h-[500px]">
-           <ThreeDModel />
-        </div>
+        <motion.div 
+          className="relative flex h-full min-h-[300px] w-full flex-col items-center justify-center md:min-h-[500px]"
+          variants={itemVariants}
+          initial="hidden"
+          animate="visible"
+        >
+           <div className="relative h-48 w-48 overflow-hidden rounded-full shadow-2xl md:h-64 md:w-64">
+             <Image
+              src={userDetails.image}
+              alt={userDetails.name}
+              fill
+              className="object-cover"
+              />
+           </div>
+           <h3 className="mt-6 text-2xl font-bold font-headline">{userDetails.name}</h3>
+           <p className="text-muted-foreground">{userDetails.role}</p>
+            <p className="mt-2 max-w-sm text-center text-sm text-muted-foreground">{userDetails.bio}</p>
+           <div className="mt-4 flex items-center gap-4">
+              <Button variant="ghost" size="icon" asChild>
+                <Link href={userDetails.socials.facebook} target="_blank" aria-label="Facebook">
+                  <Facebook className="h-5 w-5" />
+                </Link>
+              </Button>
+              <Button variant="ghost" size="icon" asChild>
+                <Link href={userDetails.socials.linkedin} target="_blank" aria-label="LinkedIn">
+                  <Linkedin className="h-5 w-5" />
+                </Link>
+              </Button>
+              <Button variant="ghost" size="icon" asChild>
+                <Link href={userDetails.socials.email} aria-label="Email">
+                  <Mail className="h-5 w-5" />
+                </Link>
+              </Button>
+            </div>
+        </motion.div>
       </div>
     </section>
   );
