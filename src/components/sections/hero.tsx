@@ -47,7 +47,6 @@ export function Hero() {
       opacity: 1,
       transition: {
         staggerChildren: 0.1,
-        delayChildren: 0.5,
       },
     },
   };
@@ -58,21 +57,30 @@ export function Hero() {
       y: 0,
       opacity: 1,
       transition: {
-        duration: 0.5,
+        type: "spring",
+        stiffness: 100,
+        damping: 10,
       },
     },
   };
   
-  const itemVariants = {
+  const contentVariants = {
     hidden: { y: 20, opacity: 0 },
     visible: {
       y: 0,
       opacity: 1,
       transition: {
-        duration: 0.5,
-        delay: 1.5, // Delay after text animation
+        duration: 0.8,
+        ease: "easeOut",
+        staggerChildren: 0.2,
+        delayChildren: 0.5,
       },
     },
+  };
+
+  const itemVariants = {
+    hidden: { y: 20, opacity: 0 },
+    visible: { y: 0, opacity: 1 },
   };
 
   const nameLetters = Array.from(userDetails.name);
@@ -80,29 +88,35 @@ export function Hero() {
   return (
     <section id="home" className="relative w-full overflow-hidden">
       <BackgroundAnimation />
-      <div className="container relative z-10 grid min-h-[calc(100vh-3.5rem-1rem)] items-center gap-8 text-center">
-        <motion.div
-          className="flex flex-col items-center gap-4"
-          initial="hidden"
-          animate="visible"
-        >
+      <div className="container relative z-10 grid min-h-[calc(100vh-3.5rem)] items-center justify-center text-center">
+        <div className="flex flex-col items-center gap-6">
+          
           <motion.div 
-            className="relative flex flex-col items-center justify-center"
-            variants={itemVariants} // Applies to image and role
+            className="relative"
+            initial="hidden"
+            animate="visible"
+            variants={contentVariants}
           >
-             <div className="relative h-40 w-40 overflow-hidden rounded-full shadow-2xl md:h-48 md:w-48">
+             <motion.div 
+                className="relative h-40 w-40 overflow-hidden rounded-full shadow-2xl md:h-48 md:w-48"
+                variants={itemVariants}
+              >
                <Image
                 src={userDetails.image}
                 alt={userDetails.name}
                 fill
                 className="object-cover"
-                />
-             </div>
+                priority
+               />
+             </motion.div>
           </motion.div>
           
           <motion.h1 
-            className="mt-6 text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl font-headline"
+            className="text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl font-headline"
+            initial="hidden"
+            animate="visible"
             variants={containerVariants}
+            aria-label={userDetails.name}
           >
             {nameLetters.map((letter, index) => (
               <motion.span
@@ -115,55 +129,64 @@ export function Hero() {
             ))}
           </motion.h1>
 
-          <motion.p 
-            className="text-muted-foreground text-lg"
-            variants={itemVariants}
-          >
-            {userDetails.role}
-          </motion.p>
-          
-          <motion.p
-            className="max-w-[600px] text-muted-foreground md:text-lg"
-            variants={itemVariants}
-          >
-            {userDetails.bio}
-          </motion.p>
-
           <motion.div
-            className="mt-4 w-full max-w-md p-4 bg-destructive/10 border border-destructive/50 rounded-lg flex flex-col items-center text-center"
-            variants={itemVariants}
+            className="flex flex-col items-center gap-6"
+            initial="hidden"
+            animate="visible"
+            variants={contentVariants}
           >
-            <TriangleAlert className="h-8 w-8 text-destructive mb-2" />
-            <h2 className="text-2xl font-bold font-headline text-destructive">Site Under Construction</h2>
-            <p className="text-destructive/80 mt-2">My new portfolio will be live in a few days. Stay tuned!</p>
-          </motion.div>
+            <motion.p 
+              className="text-lg text-primary"
+              variants={itemVariants}
+            >
+              {userDetails.role}
+            </motion.p>
+            
+            <motion.p
+              className="max-w-2xl text-muted-foreground md:text-xl"
+              variants={itemVariants}
+            >
+              {userDetails.bio}
+            </motion.p>
 
-          <motion.div 
-            className="mt-4 flex items-center gap-4"
-            variants={itemVariants}
-          >
-            <Button variant="ghost" size="icon" asChild>
-              <Link href={userDetails.socials.facebook} target="_blank" aria-label="Facebook">
-                <Facebook className="h-5 w-5" />
-              </Link>
-            </Button>
-            <Button variant="ghost" size="icon" asChild>
-              <Link href={userDetails.socials.linkedin} target="_blank" aria-label="LinkedIn">
-                <Linkedin className="h-5 w-5" />
-              </Link>
-            </Button>
-            <Button variant="ghost" size="icon" asChild>
-              <Link href={userDetails.socials.email} aria-label="Email">
-                <Mail className="h-5 w-5" />
-              </Link>
-            </Button>
-            <Button variant="ghost" size="icon" asChild>
-              <Link href={userDetails.socials.whatsapp} target="_blank" aria-label="WhatsApp">
-                <WhatsappIcon className="h-5 w-5" />
-              </Link>
-            </Button>
+            <motion.div
+              className="mt-4 w-full max-w-lg p-4 bg-destructive/10 border border-destructive/50 rounded-lg flex items-center justify-center gap-4"
+              variants={itemVariants}
+            >
+              <TriangleAlert className="h-8 w-8 text-destructive flex-shrink-0" />
+              <div>
+                <h2 className="text-xl font-bold font-headline text-destructive text-left">Site Under Construction</h2>
+                <p className="text-destructive/80 mt-1 text-left">My new portfolio will be live soon. Stay tuned!</p>
+              </div>
+            </motion.div>
+
+            <motion.div 
+              className="flex items-center gap-2"
+              variants={itemVariants}
+            >
+              <Button variant="ghost" size="icon" asChild>
+                <Link href={userDetails.socials.facebook} target="_blank" aria-label="Facebook">
+                  <Facebook className="h-5 w-5" />
+                </Link>
+              </Button>
+              <Button variant="ghost" size="icon" asChild>
+                <Link href={userDetails.socials.linkedin} target="_blank" aria-label="LinkedIn">
+                  <Linkedin className="h-5 w-5" />
+                </Link>
+              </Button>
+              <Button variant="ghost" size="icon" asChild>
+                <Link href={userDetails.socials.email} aria-label="Email">
+                  <Mail className="h-5 w-5" />
+                </Link>
+              </Button>
+              <Button variant="ghost" size="icon" asChild>
+                <Link href={userDetails.socials.whatsapp} target="_blank" aria-label="WhatsApp">
+                  <WhatsappIcon className="h-5 w-5" />
+                </Link>
+              </Button>
+            </motion.div>
           </motion.div>
-        </motion.div>
+        </div>
       </div>
     </section>
   );
