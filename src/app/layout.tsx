@@ -8,8 +8,8 @@ import { Toaster } from "@/components/ui/toaster";
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 
 export const metadata: Metadata = {
-  title: "Hitesh Sharma | Founder & Educator",
-  description: "The personal portfolio of Hitesh Sharma, showcasing projects, skills, and expertise in technology and education.",
+  title: "Hitesh Sharma | Coming Soon",
+  description: "The personal portfolio of Hitesh Sharma, showcasing projects, skills, and expertise in technology and education. Coming soon!",
 };
 
 export default function RootLayout({
