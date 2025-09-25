@@ -22,12 +22,21 @@ const Preloader = ({ userImage, userName }: { userImage: string, userName: strin
     },
   };
 
-  const textVariants = {
+  const nameContainerVariants = {
+    animate: {
+      transition: {
+        delayChildren: 0.8,
+        staggerChildren: 0.1,
+      },
+    },
+  };
+
+  const letterVariants = {
     initial: { y: 20, opacity: 0 },
     animate: { 
       y: 0, 
       opacity: 1, 
-      transition: { duration: 0.6, ease: "circOut", delay: 0.8 } 
+      transition: { duration: 0.6, ease: "circOut" } 
     },
   };
 
@@ -53,12 +62,17 @@ const Preloader = ({ userImage, userName }: { userImage: string, userName: strin
         />
       </motion.div>
       <motion.div 
-        className="mt-4 text-lg font-medium text-foreground"
-        variants={textVariants}
+        className="mt-6 flex overflow-hidden text-2xl font-bold font-headline text-foreground"
+        variants={nameContainerVariants}
         initial="initial"
         animate="animate"
+        aria-label={userName}
       >
-        Loading Portfolio...
+        {userName.split("").map((letter, index) => (
+           <motion.span key={index} variants={letterVariants} className="inline-block">
+             {letter === " " ? "\u00A0" : letter}
+           </motion.span>
+        ))}
       </motion.div>
     </motion.div>
   );
