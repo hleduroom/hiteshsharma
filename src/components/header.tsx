@@ -17,55 +17,34 @@ export function Header() {
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-14 items-center">
-        <Link href="/" className="mr-6 flex items-center space-x-2">
-          <Code2 className="h-6 w-6 text-primary" />
-          <span className="hidden font-bold sm:inline-block font-headline">
-            Hitesh Sharma
-          </span>
-        </Link>
-        <div className="flex items-center gap-4">
-            <a href="https://hleduroom.com" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-primary">
-              <Image src="https://hleduroom.com/favicon.ico" alt="HLEduroom Logo" width={16} height={16} />
-              <span className="hidden md:inline">HLEduroom</span>
-            </a>
-            <a href="https://www.thehiteshsir.com" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-primary">
-              <Image src="https://www.thehiteshsir.com/favicon.ico" alt="The Hitesh Sir Logo" width={16} height={16} />
-              <span className="hidden md:inline">The Hitesh Sir</span>
-            </a>
+        <div className="mr-auto flex items-center gap-4">
+          <Link href="/" className="flex items-center space-x-2">
+            <Code2 className="h-6 w-6 text-primary" />
+            <span className="hidden font-bold sm:inline-block font-headline">
+              Hitesh Sharma
+            </span>
+          </Link>
+          <div className="hidden items-center gap-4 md:flex">
+              <a href="https://hleduroom.com" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-primary">
+                <Image src="https://hleduroom.com/favicon.ico" alt="HLEduroom Logo" width={16} height={16} />
+                <span className="hidden md:inline">HLEduroom</span>
+              </a>
+              <a href="https://www.thehiteshsir.com" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-primary">
+                <Image src="https://www.thehiteshsir.com/favicon.ico" alt="The Hitesh Sir Logo" width={16} height={16} />
+                <span className="hidden md:inline">The Hitesh Sir</span>
+              </a>
+          </div>
         </div>
-        <nav className="hidden flex-1 items-center justify-center space-x-4 md:flex">
-          {navLinks.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
-            >
-              {link.label}
-            </Link>
-          ))}
-        </nav>
-        <div className="flex flex-1 items-center justify-end space-x-4">
-          <Sheet>
-            <SheetTrigger asChild>
-              <Button variant="ghost" size="icon" className="md:hidden">
-                <Menu />
-                <span className="sr-only">Toggle navigation menu</span>
-              </Button>
-            </SheetTrigger>
-            <SheetContent side="left">
-              <div className="flex flex-col gap-4 p-4">
-                {navLinks.map((link) => (
-                  <Link
-                    key={link.href}
-                    href={link.href}
-                    className="text-lg font-medium text-muted-foreground transition-colors hover:text-primary"
-                  >
-                    {link.label}
-                  </Link>
-                ))}
-              </div>
-            </SheetContent>
-          </Sheet>
+        
+        <div className="flex items-center justify-end space-x-2">
+           <div className="flex items-center gap-2 md:hidden">
+              <a href="https://hleduroom.com" target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-sm font-medium text-muted-foreground hover:text-primary">
+                <Image src="https://hleduroom.com/favicon.ico" alt="HLEduroom Logo" width={16} height={16} />
+              </a>
+              <a href="https://www.thehiteshsir.com" target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-sm font-medium text-muted-foreground hover:text-primary">
+                <Image src="https://www.thehiteshsir.com/favicon.ico" alt="The Hitesh Sir Logo" width={16} height={16} />
+              </a>
+          </div>
           <ThemeToggle />
         </div>
       </div>
