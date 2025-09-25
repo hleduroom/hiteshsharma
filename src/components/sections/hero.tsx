@@ -6,6 +6,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { Facebook, Linkedin, Mail } from "lucide-react";
 import { BackgroundAnimation } from "../background-animation";
+import { Badge } from "../ui/badge";
 
 // A component for the Whatsapp icon
 function WhatsappIcon(props: React.SVGProps<SVGSVGElement>) {
@@ -42,140 +43,121 @@ const userDetails = {
 
 export function Hero() {
   const containerVariants = {
-    hidden: { opacity: 0 },
+    hidden: { opacity: 0, scale: 0.95 },
     visible: {
       opacity: 1,
+      scale: 1,
       transition: {
-        staggerChildren: 0.1,
-      },
-    },
-  };
-
-  const letterVariants = {
-    hidden: { y: 20, opacity: 0 },
-    visible: {
-      y: 0,
-      opacity: 1,
-      transition: {
-        type: "spring",
-        stiffness: 100,
-        damping: 10,
-      },
-    },
-  };
-  
-  const contentVariants = {
-    hidden: { y: 20, opacity: 0 },
-    visible: {
-      y: 0,
-      opacity: 1,
-      transition: {
-        duration: 0.8,
-        ease: "easeOut",
         staggerChildren: 0.2,
-        delayChildren: 0.5,
+        delayChildren: 0.3,
       },
     },
   };
 
   const itemVariants = {
     hidden: { y: 20, opacity: 0 },
-    visible: { y: 0, opacity: 1 },
+    visible: { 
+      y: 0, 
+      opacity: 1,
+      transition: {
+        type: "spring",
+        stiffness: 100
+      } 
+    },
   };
 
-  const nameLetters = Array.from(userDetails.name);
+  const imageVariants = {
+    hidden: { scale: 0.5, opacity: 0, rotateY: 90 },
+    visible: {
+      scale: 1,
+      opacity: 1,
+      rotateY: 0,
+      transition: {
+        type: "spring",
+        stiffness: 80,
+        damping: 10,
+        delay: 0.3,
+      },
+    },
+  };
+
 
   return (
     <section id="home" className="relative w-full overflow-hidden">
       <BackgroundAnimation />
       <div className="container relative z-10 grid min-h-[calc(100vh-3.5rem)] items-center justify-center text-center">
-        <div className="flex flex-col items-center gap-6">
-          
-          <motion.div 
-            className="relative"
-            initial="hidden"
-            animate="visible"
-            variants={contentVariants}
-          >
-             <motion.div 
-                className="relative h-40 w-40 overflow-hidden rounded-full shadow-2xl md:h-48 md:w-48"
-                variants={itemVariants}
-              >
-               <Image
+        <motion.div 
+          className="flex flex-col items-center gap-6"
+          initial="hidden"
+          animate="visible"
+          variants={containerVariants}
+        >
+          <motion.div
+              className="relative h-40 w-40 overflow-hidden rounded-full shadow-2xl md:h-48 md:w-48"
+              variants={imageVariants}
+              style={{ perspective: 1000 }}
+            >
+              <Image
                 src={userDetails.image}
                 alt={userDetails.name}
                 fill
                 className="object-cover"
                 priority
-               />
-             </motion.div>
+              />
           </motion.div>
           
           <motion.h1 
             className="text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl font-headline"
-            initial="hidden"
-            animate="visible"
-            variants={containerVariants}
-            aria-label={userDetails.name}
+            variants={itemVariants}
           >
-            {nameLetters.map((letter, index) => (
-              <motion.span
-                key={index}
-                variants={letterVariants}
-                className="inline-block"
-              >
-                {letter === " " ? "\u00A0" : letter}
-              </motion.span>
-            ))}
+            {userDetails.name}
           </motion.h1>
 
-          <motion.div
-            className="flex flex-col items-center gap-6"
-            initial="hidden"
-            animate="visible"
-            variants={contentVariants}
+          <motion.p 
+            className="text-lg text-primary"
+            variants={itemVariants}
           >
-            <motion.p 
-              className="text-lg text-primary"
-              variants={itemVariants}
-            >
-              {userDetails.role}
-            </motion.p>
-            
-            <motion.p
-              className="max-w-2xl text-muted-foreground md:text-xl"
-              variants={itemVariants}
-            >
-              {userDetails.bio}
-            </motion.p>
+            {userDetails.role}
+          </motion.p>
 
-            <motion.div 
-              className="flex items-center gap-2"
-              variants={itemVariants}
-            >
-              <Button variant="ghost" size="icon" asChild>
-                <Link href={userDetails.socials.facebook} target="_blank" aria-label="Facebook">
-                  <Facebook className="h-5 w-5" />
-                </Link>
-              </Button>
-              <Button variant="ghost" size="icon" asChild>
-                <Link href={userDetails.socials.linkedin} target="_blank" aria-label="LinkedIn">
-                  <Linkedin className="h-5 w-5" />
-                </Link>
-              </Button>
-              <Button variant="ghost" size="icon" asChild>
-                <Link href={userDetails.socials.email} aria-label="Email">
-                  <Mail className="h-5 w-5" />
-                </Link>
-              </Button>
-              <Button variant="ghost" size="icon" asChild>
-                <Link href={userDetails.socials.whatsapp} target="_blank" aria-label="WhatsApp">
-                  <WhatsappIcon className="h-5 w-5" />
-                </Link>
-              </Button>
-            </motion.div>
+          <motion.div variants={itemVariants}>
+            <Badge variant="destructive" className="animate-pulse">Under Construction</Badge>
+            <p className="text-muted-foreground mt-2">My new portfolio is coming soon!</p>
           </motion.div>
-        </div>
+          
+          <motion.p
+            className="max-w-2xl text-muted-foreground md:text-xl"
+            variants={itemVariants}
+          >
+            {userDetails.bio}
+          </motion.p>
+
+          <motion.div 
+            className="flex items-center gap-2"
+            variants={itemVariants}
+          >
+            <Button variant="ghost" size="icon" asChild>
+              <Link href={userDetails.socials.facebook} target="_blank" aria-label="Facebook">
+                <Facebook className="h-5 w-5" />
+              </Link>
+            </Button>
+            <Button variant="ghost" size="icon" asChild>
+              <Link href={userDetails.socials.linkedin} target="_blank" aria-label="LinkedIn">
+                <Linkedin className="h-5 w-5" />
+              </Link>
+            </Button>
+            <Button variant="ghost" size="icon" asChild>
+              <Link href={userDetails.socials.email} aria-label="Email">
+                <Mail className="h-5 w-5" />
+              </Link>
+            </Button>
+            <Button variant="ghost" size="icon" asChild>
+              <Link href={userDetails.socials.whatsapp} target="_blank" aria-label="WhatsApp">
+                <WhatsappIcon className="h-5 w-5" />
+              </Link>
+            </Button>
+          </motion.div>
+        </motion.div>
       </div>
     </section>
   );
