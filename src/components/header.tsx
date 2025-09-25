@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { Code2, Menu } from "lucide-react";
 import { ThemeToggle } from "./theme-toggle";
 import { Button } from "./ui/button";
@@ -22,7 +23,17 @@ export function Header() {
             Hitesh Sharma
           </span>
         </Link>
-        <nav className="hidden flex-1 items-center space-x-4 md:flex">
+        <div className="flex items-center gap-4">
+            <a href="https://hleduroom.com" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-primary">
+              <Image src="https://hleduroom.com/favicon.ico" alt="HLEduroom Logo" width={16} height={16} />
+              <span className="hidden md:inline">HLEduroom</span>
+            </a>
+            <a href="https://www.thehiteshsir.com" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-primary">
+              <Image src="https://www.thehiteshsir.com/favicon.ico" alt="The Hitesh Sir Logo" width={16} height={16} />
+              <span className="hidden md:inline">The Hitesh Sir</span>
+            </a>
+        </div>
+        <nav className="hidden flex-1 items-center justify-center space-x-4 md:flex">
           {navLinks.map((link) => (
             <Link
               key={link.href}
