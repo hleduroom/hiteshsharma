@@ -5,7 +5,6 @@ import { Button } from "../ui/button";
 import Link from "next/link";
 import Image from "next/image";
 import { Facebook, Linkedin, Mail } from "lucide-react";
-import { BackgroundAnimation } from "../background-animation";
 import { Badge } from "../ui/badge";
 
 // A component for the Whatsapp icon
@@ -84,7 +83,14 @@ export function Hero() {
 
   return (
     <section id="home" className="relative w-full overflow-hidden">
-      <BackgroundAnimation />
+       <Image
+          src="https://res.cloudinary.com/dgxoe15jd/image/upload/v1756232910/retouch_2025080121291186_hcbobr.jpg"
+          alt="Background"
+          layout="fill"
+          objectFit="cover"
+          className="absolute inset-0 z-0 opacity-20 blur-sm"
+        />
+       <div className="absolute inset-0 z-[1] bg-background/50 backdrop-blur-md"></div>
       <div className="container relative z-10 grid min-h-[calc(100vh-3.5rem)] items-center justify-center text-center">
         <motion.div 
           className="flex flex-col items-center gap-6"
