@@ -43,10 +43,12 @@ export default function Home() {
           <Header />
           <main className="flex-1">
             <Hero />
-            <About />
-            <Projects />
-            <TerminalSection />
-            <Contact />
+            <div className="space-y-4">
+              <About />
+              <Projects />
+              <TerminalSection />
+              <Contact />
+            </div>
           </main>
           <Footer />
         </div>

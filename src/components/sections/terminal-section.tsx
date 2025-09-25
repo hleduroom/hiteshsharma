@@ -1,8 +1,9 @@
 import { Terminal } from "../terminal";
+import { Section } from "./section";
 
 export function TerminalSection() {
   return (
-    <section id="terminal" className="w-full bg-secondary py-16 md:py-24 lg:py-32">
+    <Section id="terminal" className="bg-secondary">
       <div className="container px-4 md:px-6">
         <div className="flex flex-col items-center justify-center space-y-4 text-center">
           <div className="space-y-2">
@@ -18,6 +19,6 @@ export function TerminalSection() {
           <Terminal />
         </div>
       </div>
-    </section>
+    </Section>
   );
 }

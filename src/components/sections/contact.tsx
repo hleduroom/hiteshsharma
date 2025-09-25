@@ -12,6 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useEffect, useRef } from "react";
 import { useToast } from "@/hooks/use-toast";
+import { Section } from "./section";
 
 const contactSchema = z.object({
   name: z.string().min(2, { message: "Name must be at least 2 characters." }),
@@ -52,7 +53,7 @@ export function Contact() {
 
 
   return (
-    <section id="contact" className="w-full py-16 md:py-24 lg:py-32">
+    <Section id="contact">
       <div className="container grid items-center justify-center gap-4 px-4 text-center md:px-6">
         <div className="space-y-3">
           <h2 className="text-3xl font-bold tracking-tighter md:text-4xl/tight font-headline">
@@ -117,6 +118,6 @@ export function Contact() {
            </Card>
         </div>
       </div>
-    </section>
+    </Section>
   );
 }
