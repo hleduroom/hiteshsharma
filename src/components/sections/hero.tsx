@@ -67,77 +67,72 @@ export function Hero() {
   return (
     <section id="home" className="relative w-full overflow-hidden">
       <BackgroundAnimation />
-      <div className="container relative z-10 grid min-h-[calc(100vh-3.5rem)] grid-cols-1 items-center gap-8 md:grid-cols-2">
+      <div className="container relative z-10 grid min-h-[calc(100vh-3.5rem-1rem)] items-center gap-8 text-center">
         <motion.div
-          className="flex flex-col items-start gap-4"
+          className="flex flex-col items-center gap-4"
           variants={containerVariants}
           initial="hidden"
           animate="visible"
         >
-          <motion.h1
-            className="text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl font-headline"
+          <motion.div 
+            className="relative flex flex-col items-center justify-center"
             variants={itemVariants}
           >
-            Hitesh Sharma
-          </motion.h1>
+             <div className="relative h-40 w-40 overflow-hidden rounded-full shadow-2xl md:h-48 md:w-48">
+               <Image
+                src={userDetails.image}
+                alt={userDetails.name}
+                fill
+                className="object-cover"
+                />
+             </div>
+             <h1 className="mt-6 text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl font-headline"
+             >
+                {userDetails.name}
+             </h1>
+             <p className="text-muted-foreground text-lg">{userDetails.role}</p>
+          </motion.div>
+          
           <motion.p
-            className="max-w-[600px] text-muted-foreground md:text-xl"
+            className="max-w-[600px] text-muted-foreground md:text-lg"
             variants={itemVariants}
           >
-            Empowering the next generation of developers and creators through
-            technology and education. Welcome to my digital space.
+            {userDetails.bio}
           </motion.p>
+
           <motion.div
-            className="flex flex-col gap-2 min-[400px]:flex-row"
+            className="mt-4 p-4 bg-secondary/50 rounded-lg"
             variants={itemVariants}
           >
-            <Button size="lg" asChild>
-              <Link href="#projects">View My Work</Link>
+            <h2 className="text-2xl font-bold font-headline text-primary">Site Under Construction</h2>
+            <p className="text-muted-foreground mt-2">My new portfolio will be live in a few days. Stay tuned!</p>
+          </motion.div>
+
+          <motion.div 
+            className="mt-4 flex items-center gap-4"
+            variants={itemVariants}
+          >
+            <Button variant="ghost" size="icon" asChild>
+              <Link href={userDetails.socials.facebook} target="_blank" aria-label="Facebook">
+                <Facebook className="h-5 w-5" />
+              </Link>
             </Button>
-            <Button size="lg" variant="outline" asChild>
-              <Link href="#contact">Get In Touch</Link>
+            <Button variant="ghost" size="icon" asChild>
+              <Link href={userDetails.socials.linkedin} target="_blank" aria-label="LinkedIn">
+                <Linkedin className="h-5 w-5" />
+              </Link>
+            </Button>
+            <Button variant="ghost" size="icon" asChild>
+              <Link href={userDetails.socials.email} aria-label="Email">
+                <Mail className="h-5 w-5" />
+              </Link>
+            </Button>
+            <Button variant="ghost" size="icon" asChild>
+              <Link href={userDetails.socials.whatsapp} target="_blank" aria-label="WhatsApp">
+                <WhatsappIcon className="h-5 w-5" />
+              </Link>
             </Button>
           </motion.div>
-        </motion.div>
-        <motion.div 
-          className="relative flex h-full min-h-[300px] w-full flex-col items-center justify-center md:min-h-[500px]"
-          variants={itemVariants}
-          initial="hidden"
-          animate="visible"
-        >
-           <div className="relative h-48 w-48 overflow-hidden rounded-full shadow-2xl md:h-64 md:w-64">
-             <Image
-              src={userDetails.image}
-              alt={userDetails.name}
-              fill
-              className="object-cover"
-              />
-           </div>
-           <h3 className="mt-6 text-2xl font-bold font-headline">{userDetails.name}</h3>
-           <p className="text-muted-foreground">{userDetails.role}</p>
-            <p className="mt-2 max-w-sm text-center text-sm text-muted-foreground">{userDetails.bio}</p>
-           <div className="mt-4 flex items-center gap-4">
-              <Button variant="ghost" size="icon" asChild>
-                <Link href={userDetails.socials.facebook} target="_blank" aria-label="Facebook">
-                  <Facebook className="h-5 w-5" />
-                </Link>
-              </Button>
-              <Button variant="ghost" size="icon" asChild>
-                <Link href={userDetails.socials.linkedin} target="_blank" aria-label="LinkedIn">
-                  <Linkedin className="h-5 w-5" />
-                </Link>
-              </Button>
-              <Button variant="ghost" size="icon" asChild>
-                <Link href={userDetails.socials.email} aria-label="Email">
-                  <Mail className="h-5 w-5" />
-                </Link>
-              </Button>
-              <Button variant="ghost" size="icon" asChild>
-                <Link href={userDetails.socials.whatsapp} target="_blank" aria-label="WhatsApp">
-                  <WhatsappIcon className="h-5 w-5" />
-                </Link>
-              </Button>
-            </div>
         </motion.div>
       </div>
     </section>
