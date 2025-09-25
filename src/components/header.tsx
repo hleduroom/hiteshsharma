@@ -19,7 +19,7 @@ export function Header() {
         <Link href="/" className="mr-6 flex items-center space-x-2">
           <Code2 className="h-6 w-6 text-primary" />
           <span className="hidden font-bold sm:inline-block font-headline">
-            HLEduRoom
+            Hitesh Sharma
           </span>
         </Link>
         <nav className="hidden flex-1 items-center space-x-4 md:flex">

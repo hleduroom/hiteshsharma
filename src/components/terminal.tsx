@@ -22,7 +22,7 @@ const commands: { [key: string]: string | React.ReactNode } = {
       </ul>
     </div>
   ),
-  about: "I'm a passionate developer and educator dedicated to creating amazing digital experiences and sharing knowledge. I run HLEduRoom to help students learn and grow.",
+  about: "I'm Hitesh Sharma, a passionate developer and educator dedicated to creating amazing digital experiences and sharing knowledge. I run H.L.-Eduroom to help students learn and grow.",
   projects: "I've worked on a variety of projects, from educational web apps to e-commerce platforms. Check out the projects section above for more details!",
   skills: (
     <div>
@@ -78,7 +78,7 @@ export const Terminal = () => {
     }
   };
 
-  const prompt = <span className="text-accent">user@hlesir:~$</span>;
+  const prompt = <span className="text-accent">user@hiteshsharma:~$</span>;
 
   return (
     <motion.div 

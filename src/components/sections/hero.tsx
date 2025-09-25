@@ -5,6 +5,7 @@ import { Button } from "../ui/button";
 import Link from "next/link";
 import Image from "next/image";
 import { Facebook, Linkedin, Mail } from "lucide-react";
+import { BackgroundAnimation } from "../background-animation";
 
 // A component for the Whatsapp icon
 function WhatsappIcon(props: React.SVGProps<SVGSVGElement>) {
@@ -65,7 +66,8 @@ export function Hero() {
 
   return (
     <section id="home" className="relative w-full overflow-hidden">
-      <div className="container grid min-h-[calc(100vh-3.5rem)] grid-cols-1 items-center gap-8 md:grid-cols-2">
+      <BackgroundAnimation />
+      <div className="container relative z-10 grid min-h-[calc(100vh-3.5rem)] grid-cols-1 items-center gap-8 md:grid-cols-2">
         <motion.div
           className="flex flex-col items-start gap-4"
           variants={containerVariants}
@@ -76,7 +78,7 @@ export function Hero() {
             className="text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl font-headline"
             variants={itemVariants}
           >
-            HLEduRoom
+            Hitesh Sharma
           </motion.h1>
           <motion.p
             className="max-w-[600px] text-muted-foreground md:text-xl"
