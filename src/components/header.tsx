@@ -20,7 +20,7 @@ export function Header() {
       <div className="container flex h-14 items-center justify-between">
         {/* --- Left: Name in Signature Font --- */}
         <div className="flex items-center gap-3">
-          <Link href="/" className="text-3xl font-bold font-signature-style text-foreground tracking-wider">
+          <Link href="/" className="text-3xl font-bold font-signature text-foreground tracking-wide">
             Hitesh Sharma
           </Link>
         </div>
