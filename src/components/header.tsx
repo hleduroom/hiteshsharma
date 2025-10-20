@@ -13,6 +13,7 @@ import {
   Facebook,
   Instagram,
   Globe,
+  ArrowRight,
   Monitor, // Using Monitor for "Website"
 } from "lucide-react";
 import { ThemeToggle } from "./theme-toggle";
