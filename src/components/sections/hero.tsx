@@ -7,6 +7,8 @@ import Image from "next/image";
 import { Facebook, Linkedin, Mail } from "lucide-react";
 import { Badge } from "../ui/badge";
 import { useState, useEffect, useCallback, useMemo } from "react";
+// Import your custom font utility here if using Next.js 
+// import { greatVibes } from '@/app/fonts'; // Example for next/font
 
 // --- Utility Components ---
 
@@ -25,7 +27,6 @@ function WhatsappIcon(props: React.SVGProps<SVGSVGElement>) {
       strokeLinecap="round"
       strokeLinejoin="round"
     >
-      {/* Path for a standard WhatsApp icon */}
       <path d="M22 14v4a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4" />
       <path d="M12 2C6.5 2 2 6.5 2 12c0 1.5.3 3 .8 4.3l-1.6 5.9 6-1.5c1.4.5 3 .8 4.8.8 5.5 0 9.9-4.5 9.9-10S17.5 2 12 2zM12 20c-1.5 0-3-.4-4.3-1l-3 3 1-3c-1-1.3-1.6-3-1.6-4.9 0-4.4 3.6-8 8-8s8 3.6 8 8-3.6 8-8 8zM17 14.5c-.3-.2-.5-.3-1.1-.6-.6-.3-.9-.4-1.2-.4-.3 0-.6-.1-.8.2s-.7.8-.8.9c-.1.2-.3.2-.5.1-.9-.4-1.7-.9-2.5-1.6-.6-.6-1-1.3-1.4-2s-.5-1.2-.2-1.6c.1-.2.3-.5.4-.6.1-.2.2-.4.3-.5.1-.2.1-.3.1-.6s0-.4-.3-.7c-.2-.2-.5-.6-.7-.8-.2-.3-.5-.2-.7-.2h-.4c-.2 0-.6.1-1 .5-.4.4-.7.9-.7 1.2s.7 1.6 1 1.9c.2.3.4.6.6.7.2.1.4.3.5.4.1.1.2.3.2.5s-.2.5-.2.7c-.1.2-.2.3-.4.5-.2.2-.4.3-.6.4-.3.2-.5.3-1 .6z" />
     </svg>
@@ -35,16 +36,17 @@ function WhatsappIcon(props: React.SVGProps<SVGSVGElement>) {
 // --- Book Constants ---
 const LAUNCH_HOUR = 3; // 3 AM
 const LAUNCH_MINUTE = 0; // 0 minutes
+// Note: You must place these PDFs in your public directory
 const PDF_PREVIEW_PATH = "/3AM-Confessions-Preview.pdf#page=1";
-const PDF_FULL_PATH = "/3AM-Confessions-Full.pdf"; // Assuming you have the full PDF name
+const PDF_FULL_PATH = "/3AM-Confessions-Full.pdf"; 
 
-// --- Core Component ---
+// --- Core Component Data ---
 
 const userDetails = {
   name: "Hitesh Sharma",
-  role: "Author & Educator", // Updated role to reflect book focus
+  role: "Author & Educator", 
   image: "https://res.cloudinary.com/dgxoe15jd/image/upload/v1756232910/retouch_2025080121291186_hcbobr.jpg",
-  bio: "Author of the deeply personal '3 AM Confessions: My Life as OverThinker'. Dedicated to sharing insights on education and life's complexities.", // Updated bio
+  bio: "Author of the deeply personal '3 AM Confessions: My Life as OverThinker'. Dedicated to sharing insights on education and life's complexities.", 
   socials: {
     facebook: "https://www.facebook.com/thehiteshsir",
     linkedin: "https://www.linkedin.com/in/hitesh-sharma-8a3366329",
@@ -53,7 +55,8 @@ const userDetails = {
   },
 };
 
-// Custom Hook for Countdown Timer
+// --- Custom Hook for Countdown Timer ---
+
 const useLaunchCountdown = () => {
   const calculateTimeLeft = useCallback(() => {
     const now = new Date();
@@ -83,6 +86,8 @@ const useLaunchCountdown = () => {
   const [timeLeft, setTimeLeft] = useState(calculateTimeLeft());
 
   useEffect(() => {
+    // Only run the timer if the difference is greater than zero, 
+    // though the calculateTimeLeft handles the return value correctly.
     const timer = setInterval(() => {
       setTimeLeft(calculateTimeLeft());
     }, 1000);
@@ -93,12 +98,14 @@ const useLaunchCountdown = () => {
   return timeLeft;
 };
 
-// Placeholder for the Book Viewer (requires a PDF viewer library, e.g., react-pdf)
+// --- Book Viewer Placeholder (for professional presentation) ---
+
 const BookViewer = ({ isLaunched }: { isLaunched: boolean }) => {
   const pdfPath = isLaunched ? PDF_FULL_PATH : PDF_PREVIEW_PATH;
   
-  // NOTE: Implementing a PDF viewer and a Book Turning Animation (like page-flip-react) 
-  // is complex and requires external libraries. This component serves as a professional placeholder.
+  // NOTE: This component is a professional placeholder. 
+  // To get the actual PDF preview and book turning effect, you need to 
+  // install and use external libraries (e.g., react-pdf, react-page-flip).
   return (
     <motion.div
       className="w-full max-w-lg mx-auto h-[400px] bg-card border-4 border-primary/50 rounded-lg shadow-2xl flex items-center justify-center overflow-hidden"
@@ -107,28 +114,33 @@ const BookViewer = ({ isLaunched }: { isLaunched: boolean }) => {
       transition={{ delay: 1.5, duration: 1 }}
     >
       <div className="text-center p-4">
-        <p className="text-xl font-bold text-primary mb-2">
+        <h3 className="text-xl font-bold text-primary mb-2">
           {isLaunched ? "Full Book is LIVE!" : "Preview (1st Page)"}
-        </p>
-        <p className="text-muted-foreground">
-          {/* In a real implementation, you would use an iframe or a react-pdf viewer here */}
+        </h3>
+        <p className="text-muted-foreground mb-4">
           **Book Turning Animation Preview (Placeholder)**
         </p>
         <a 
           href={pdfPath} 
           target="_blank" 
           rel="noopener noreferrer" 
-          className="text-sm text-blue-500 hover:underline mt-2 block"
+          className="text-sm text-blue-500 hover:underline mt-2 block font-medium"
         >
-          {isLaunched ? "Read Full Book" : "View 1st Page Preview"}
+          {isLaunched ? "Read Full Book PDF" : "View 1st Page Preview PDF"}
         </a>
       </div>
     </motion.div>
   );
 };
 
-// Countdown Display Component
-const CountdownDisplay = ({ time, isLaunched }: ReturnType<typeof useLaunchCountdown>) => {
+// --- Countdown Display Component (FIXED TYPE ERROR) ---
+
+const CountdownDisplay = ({ 
+  hours, 
+  minutes, 
+  seconds, 
+  isLaunched 
+}: ReturnType<typeof useLaunchCountdown>) => { // FIXED: Destructure all properties directly
   if (isLaunched) {
     return (
       <Badge variant="success" className="text-lg px-4 py-2 bg-green-500 hover:bg-green-500 animate-none">
@@ -142,13 +154,13 @@ const CountdownDisplay = ({ time, isLaunched }: ReturnType<typeof useLaunchCount
   return (
     <div className="flex flex-col items-center">
       <Badge variant="outline" className="text-xs mb-2 border-primary text-primary">
-        Next Launch at 3:00 AM Today
+        Next Launch at 3:00 AM 
       </Badge>
       <div className="flex space-x-4">
         {[
-          { label: "HOURS", value: formatTime(time.hours) },
-          { label: "MINUTES", value: formatTime(time.minutes) },
-          { label: "SECONDS", value: formatTime(time.seconds) },
+          { label: "HOURS", value: formatTime(hours) },
+          { label: "MINUTES", value: formatTime(minutes) },
+          { label: "SECONDS", value: formatTime(seconds) },
         ].map((unit) => (
           <div key={unit.label} className="text-center p-2 rounded-lg bg-card/60 backdrop-blur-sm shadow-inner min-w-[70px]">
             <span className="text-3xl font-extrabold text-foreground tabular-nums">
@@ -241,7 +253,7 @@ export function Hero() {
 
           {/* 2. Book Publication Announcement & Countdown */}
           <motion.div className="text-center max-w-3xl" variants={itemVariants}>
-            <h2 className="text-3xl sm:text-4xl font-extrabold mb-4 font-headline text-foreground">
+            <h2 className="text-3xl sm:text-4xl font-extrabold mb-4 font-signature text-foreground">
               "3 AM Confessions: My Life as OverThinker" Book is Published!
             </h2>
             <p className="text-muted-foreground mb-6 md:text-lg">
@@ -250,7 +262,14 @@ export function Hero() {
                 : "The book will be fully published today at **3:00 AM**. Until then, enjoy the first page preview!"}
             </p>
             
-            <CountdownDisplay {...timeLeft} />
+            {/* Countdown Display Call (passing individual props) */}
+            <CountdownDisplay 
+                hours={timeLeft.hours}
+                minutes={timeLeft.minutes}
+                seconds={timeLeft.seconds}
+                isLaunched={isLaunched}
+            />
+            
           </motion.div>
           
           {/* 3. Book Viewer/Preview Section */}
