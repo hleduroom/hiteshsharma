@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import Image from "next/image";
 
 const Preloader = ({ userImage, userName }: { userImage: string, userName: string }) => {
-  // Convert the incoming userName to lowercase
+  // 1. Convert the incoming userName to lowercase (as requested)
   const lowerCaseUserName = userName.toLowerCase();
   
   // --- Animation Variants ---
@@ -26,30 +26,28 @@ const Preloader = ({ userImage, userName }: { userImage: string, userName: strin
     },
   };
 
-  // 1. Container for staggered animation
+  // 2. Container for staggered "writing" animation
   const nameContainerVariants = {
     animate: {
       transition: {
-        // Start the name animation after the image finishes
         delayChildren: 0.8, 
-        // This short stagger is key for the "writing" feeling
+        // Very short stagger for a smooth, connected writing feel
         staggerChildren: 0.04, 
       },
     },
   };
 
-  // 2. Individual letter animation
+  // 3. Individual letter animation (slide-in for "writing" effect)
   const letterVariants = {
     initial: { 
-      // Start slightly transparent and moved to the side
       opacity: 0,
-      x: -10,
+      x: -10, // Start slightly off-position
     },
     animate: { 
       opacity: 1, 
-      x: 0, // Slide into place
+      x: 0, // Slide into final position
       transition: { 
-        duration: 0.3, // Quick reveal for each letter
+        duration: 0.3, 
         ease: "easeInOut"
       } 
     },
@@ -80,18 +78,23 @@ const Preloader = ({ userImage, userName }: { userImage: string, userName: strin
         />
       </motion.div>
       
-      {/* 2. User Name with "Writing" Animation */}
+      {/* 2. User Name with "Great Vibe" Font and Writing Animation */}
       <motion.div 
-        // Changed font to a custom 'font-cursive' (you must define this in tailwind.config.js)
-        // Kept text-3xl for prominence
-        className="mt-6 flex overflow-hidden text-3xl font-bold font-cursive text-foreground" 
+        // *************************************************************************
+        // *** FONT CHANGE: Replaced font-cursive with a placeholder `font-vibe` ***
+        // *************************************************************************
+        className="mt-6 flex overflow-hidden text-4xl font-normal font-vibe text-foreground md:text-5xl" 
         variants={nameContainerVariants}
         initial="initial"
         animate="animate"
         aria-label={lowerCaseUserName}
       >
         {lowerCaseUserName.split("").map((letter, index) => (
-           <motion.span key={index} variants={letterVariants} className="inline-block">
+           <motion.span 
+             key={index} 
+             variants={letterVariants} 
+             className="inline-block leading-none" // `leading-none` helps with cursive font spacing
+           >
              {letter === " " ? "\u00A0" : letter}
            </motion.span>
         ))}
@@ -101,19 +104,3 @@ const Preloader = ({ userImage, userName }: { userImage: string, userName: strin
 };
 
 export { Preloader };
-
-// Note on Font Changes:
-// To make this look like a signature, you *must* use a cursive or handwriting font. 
-// I have used a placeholder class `font-cursive`.
-// You will need to configure your `tailwind.config.js` to include a custom font (e.g., 'Permanent Marker', 'Dancing Script', etc.)
-// and map it to `font-cursive` for the best effect.
-
-/* Example Tailwind Config Addition:
-  theme: {
-    extend: {
-      fontFamily: {
-        'cursive': ['"Permanent Marker"', 'cursive'], // Or any other handwriting font
-      },
-    },
-  },
-*/
