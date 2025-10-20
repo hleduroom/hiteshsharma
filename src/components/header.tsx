@@ -28,8 +28,8 @@ export function Header() {
 
   const navLinks = [
     { href: "/", label: "Home", icon: Home, external: false },
-    { href: "/about", label: "About", icon: User, external: false },
-    { href: "https://www.hleduroom.com/instructor/hitesh", label: "Book", icon: BookOpen, external: true },
+    { href: "#about", label: "About", icon: User, external: false },
+    { href: "https://www.hleduroom.com/instructor/hitesh", label: "My Lectures & Notes ", icon: BookOpen, external: true },
     { href: "https://thehiteshsir.com", label: "Website", icon: Globe, external: true },
     { href: "/cart", label: "Cart", icon: ShoppingCart, external: false },
     { href: "https://hleduroom.com/contact", label: "Contact", icon: Mail, external: true },
