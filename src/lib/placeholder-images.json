@@ -2,21 +2,39 @@
   "placeholderImages": [
     {
       "id": "project-1",
-      "description": "A web application for online learning.",
-      "imageUrl": "https://images.unsplash.com/photo-1559028006-448665bd7c7f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHx3ZWIlMjBhcHBsaWNhdGlvbnxlbnwwfHx8fDE3NTg2OTA2OTF8MA&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "web application"
+      "name": "H.L.-Eduroom Web Platform",
+      "description": "Full Website Redesign and Rebuild of H.L.-Eduroom, focused on delivering a streamlined and high-performance educational experience.",
+      "imageUrl": "https://hleduroom.com/favicon.ico",
+      "imageHint": "web application",
+      "url": "https://hleduroom.com",
+      "tags": ["Next.js", "Full Redesign", "Education", "E-Learning", "Web Development"]
     },
     {
       "id": "project-2",
-      "description": "A mobile app for tracking personal finance.",
-      "imageUrl": "https://images.unsplash.com/photo-1660673868711-981d95202f1d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxtb2JpbGUlMjBmaW5hbmNlfGVufDB8fHx8MTc1ODY5NjA2NHww&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "mobile finance"
+      "name": "H.L.-Meet: Online Meeting Platform",
+      "description": "A robust mobile app for online meetings, live classes, and secure peer-to-peer communication, ensuring seamless collaboration.",
+      "imageUrl": "https://meet.hleduroom.com/icons/logo.png",
+      "imageHint": "mobile meeting",
+      "url": "https://meet.hleduroom.com",
+      "tags": ["Mobile App", "Live Classes", "WebRTC", "Communication", "Cross-Platform"]
     },
     {
       "id": "project-3",
-      "description": "An e-commerce platform for local artisans.",
-      "imageUrl": "https://images.unsplash.com/photo-1758626038030-96f813504d15?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxlY29tbWVyY2UlMjBwbGF0Zm9ybXxlbnwwfHx8fDE3NTg3NzY3ODd8MA&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "ecommerce platform"
+      "name": "The Hitesh Sir (NEB/CEE Test System)",
+      "description": "An online test conducting platform for NEB and CEE exams featuring AI analysis, instant results publishing, and detailed student performance reports.",
+      "imageUrl": "https://thehiteshsir.com/favicon.ico",
+      "imageHint": "ecommerce platform",
+      "url": "https://thehiteshsir.com",
+      "tags": ["AI Analysis", "E-Testing", "Education", "Instant Results", "Backend API"]
+    },
+    {
+      "id": "project-4",
+      "name": "LokSewa/TSC Preparation Platform",
+      "description": "A specialized online platform for PSC & TSC preparation, offering objective and subjective content, live teacher talks, and comprehensive analysis tools.",
+      "imageUrl": "https://hiteshsharma.com.np/loksewa.png",
+      "imageHint": "Test Conducting platform",
+      "url": "https://India.hleduroom.com/",
+      "tags": ["Govt Exam Prep", "Live Talks", "Objective/Subjective", "Analysis", "SaaS"]
     }
   ]
 }
