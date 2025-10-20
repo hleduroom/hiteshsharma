@@ -3,6 +3,8 @@
 import Link from "next/link";
 import Image from "next/image"; // Import Image for favicon
 import { useState } from "react"; // Import useState for Sheet state
+// Removed unused Analytics import to keep file cleaner (it belongs in layout.tsx)
+// import { Analytics } from "@vercel/analytics/next" 
 import {
   Menu,
   Sparkles,
@@ -14,17 +16,15 @@ import {
   Facebook,
   Instagram,
   Globe,
-  ArrowRight, // For external link indicator
+  ArrowRight, // Used for external link indicator
 } from "lucide-react";
 import { ThemeToggle } from "./theme-toggle";
 import { Button } from "./ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "./ui/sheet";
 import { motion } from "framer-motion";
 
-// Vercel Analytics import is still excluded from this component, as it belongs in app/layout.tsx
-
 export function Header() {
-  const [isSheetOpen, setIsSheetOpen] = useState(false);
+  const [isSheetOpen, setIsSheetOpen] = useState(false); // Sheet state management
 
   const navLinks = [
     { href: "/", label: "Home", icon: Home, external: false },
@@ -41,8 +41,8 @@ export function Header() {
     { href: "https://thehiteshsir.com", icon: Globe },
     { href: "mailto:thehiteshsir@gmail.com", icon: Mail },
   ];
-
-  // Function to close the sheet on link click (for mobile navigation)
+  
+  // Closes the mobile sheet when a link is clicked
   const handleLinkClick = () => {
     setIsSheetOpen(false);
   };
@@ -64,133 +64,161 @@ export function Header() {
   };
   // -----------------------------------------
 
-  // Professional desktop navigation link renderer
-  const renderDesktopNavLink = (link: typeof navLinks[0]) => {
-    const Icon = link.icon;
-    const commonClasses = "group flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium text-foreground/70 hover:text-primary transition-colors duration-200 hover:bg-primary/5";
-
-    return (
-      <Link
-        key={link.href}
-        href={link.href}
-        className={commonClasses}
-        target={link.external ? "_blank" : "_self"}
-        rel={link.external ? "noopener noreferrer" : ""}
-      >
-        <Icon className="h-3.5 w-3.5 transition-transform group-hover:scale-105" />
-        <span className="tracking-wide">{link.label}</span>
-      </Link>
-    );
-  };
-
 
   return (
-    // GLASS EFFECT: backdrop-blur-xl and reduced background opacity
-    <header className="sticky top-0 z-50 w-full backdrop-blur-xl bg-background/70 border-b border-border/50 shadow-lg">
-      <div className="container h-16 md:h-18 flex items-center justify-between px-4 sm:px-6 lg:px-8">
+    // GLASS EFFECT on Header: backdrop-blur-2xl and reduced background opacity
+    <header className="sticky top-0 z-50 w-full border-b border-white/20 bg-white/10 backdrop-blur-2xl supports-[backdrop-filter]:bg-white/10 shadow-xl">
+      <div className="container flex h-16 md:h-20 items-center justify-between px-4 sm:px-6 lg:px-10">
 
-        {/* Left - Desktop Navigation (Home, About) */}
-        <nav className="hidden xl:flex items-center gap-1">
-          {navLinks.slice(0, 2).map(renderDesktopNavLink)}
+        {/* Left - Desktop Navigation */}
+        <nav className="hidden xl:flex items-center gap-2">
+          {navLinks.slice(0, 2).map((link) => {
+            const Icon = link.icon;
+            // Determine if link is external based on URL check
+            const isExternal = link.href.startsWith("http"); 
+
+            return (
+              <Link
+                key={link.href}
+                href={link.href}
+                className="group flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium text-foreground/80 hover:text-primary transition-all duration-300 hover:scale-105 hover:bg-white/10 border border-transparent hover:border-white/20"
+                target={isExternal ? "_blank" : "_self"} 
+                rel={isExternal ? "noopener noreferrer" : ""}
+              >
+                <Icon className="h-4 w-4 transition-transform group-hover:rotate-6" />
+                <span className="tracking-wide">{link.label}</span>
+              </Link>
+            );
+          })}
         </nav>
 
-        {/* Center - Professional Logo/Branding with Favicon */}
+        {/* Center - Animated Signature with Favicon Logo */}
         <div className="flex items-center justify-center flex-1 lg:flex-none">
-          <Link href="/" className="group relative flex items-center gap-2">
-             {/* Favicon Logo */}
+          <Link href="/" className="group relative flex items-center gap-2"> {/* Added gap-2 */}
+            
+            {/* Favicon Logo */}
             <motion.div
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.5 }}
-              className="relative h-6 w-6 rounded-full overflow-hidden shadow-md"
+              className="relative h-6 w-6 rounded-full overflow-hidden shadow-md -mt-1"
             >
-              {/* Using Image component for the favicon */}
               <Image src="/favicon.ico" alt="Hitesh Sharma Logo" width={24} height={24} priority />
             </motion.div>
 
-            {/* Signature Text - Clean, bold, and professional */}
+            {/* Signature Text */}
             <motion.span
-              className="text-2xl sm:text-3xl font-bold tracking-tight bg-gradient-to-r from-foreground to-primary bg-clip-text text-transparent drop-shadow-sm"
-              initial={{ opacity: 0, y: 10 }}
+              className="text-3xl sm:text-4xl md:text-5xl lg:text-5xl font-[Great_Vibes] bg-gradient-to-r from-foreground to-primary bg-clip-text text-transparent drop-shadow-md"
+              style={{ fontFamily: "'Great Vibes', cursive" }}
+              initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1, ease: "easeOut" }}
             >
-              Hitesh Sharma
+              hitesh sharma
             </motion.span>
+
+            {/* Underline Animation */}
+            <motion.div
+              className="mt-1 h-[2px] w-0 bg-gradient-to-r from-transparent via-primary to-transparent rounded-full"
+              animate={{ width: ["0%", "100%", "0%"] }}
+              transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+            />
           </Link>
         </div>
 
         {/* Right - Desktop Nav + Controls */}
-        <div className="hidden xl:flex items-center gap-1">
-          {navLinks.slice(2).map(renderDesktopNavLink)}
+        <div className="hidden xl:flex items-center gap-2">
+          {navLinks.slice(2).map((link) => {
+            const Icon = link.icon;
+            // Determine if link is external based on URL check
+            const isExternal = link.href.startsWith("http"); 
+
+            return (
+              <Link
+                key={link.href}
+                href={link.href}
+                className="group flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium text-foreground/80 hover:text-primary transition-all duration-300 hover:scale-105 hover:bg-white/10 border border-transparent hover:border-white/20"
+                target={isExternal ? "_blank" : "_self"} 
+                rel={isExternal ? "noopener noreferrer" : ""}
+              >
+                <Icon className="h-4 w-4 group-hover:-rotate-6 transition-transform" />
+                <span className="tracking-wide">{link.label}</span>
+              </Link>
+            );
+          })}
 
           {/* Divider */}
-          <div className="w-px h-6 bg-border mx-3 opacity-60" />
+          <div className="w-px h-6 bg-gradient-to-b from-transparent via-white/20 to-transparent mx-3" />
 
-          <div className="p-1 rounded-lg border border-border">
+          <div className="p-1 rounded-xl bg-white/5 border border-white/10 shadow-inner">
             <ThemeToggle />
           </div>
         </div>
 
         {/* Mobile Menu */}
         <div className="flex items-center gap-2 xl:hidden">
-          <div className="p-1.5 rounded-lg border border-border">
+          <div className="p-1.5 rounded-lg bg-white/5 border border-white/10">
             <ThemeToggle />
           </div>
-          
+
           <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}> {/* BIND STATE */}
             <SheetTrigger asChild>
-              <Button 
-                variant="outline" 
-                size="icon" 
-                className="h-10 w-10 border-border hover:bg-primary/5 transition-all duration-300 rounded-lg" 
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-10 w-10 hover:bg-white/20 transition-all duration-300 border border-white/10 rounded-xl"
               >
-                {/* Menu Icon remains h-5 w-5 for touch target */}
                 <Menu className="h-5 w-5" />
               </Button>
             </SheetTrigger>
 
-            {/* SHEET GLASS EFFECT & PROFESSIONAL STYLING */}
             <SheetContent
-              side="left" // Changed to left side for modern feel
-              className="w-[85vw] max-w-sm bg-background/80 backdrop-blur-2xl border-r border-primary/20 shadow-2xl flex flex-col pt-10"
+              side="left"
+              // GLASS EFFECT on Sheet: backdrop-blur-3xl and reduced background opacity
+              className="w-[85vw] max-w-md bg-white/10 backdrop-blur-3xl border-white/20 shadow-2xl flex flex-col"
             >
               {/* Header Section (Branded) */}
-              <div className="flex flex-col items-center p-4 mb-6 border-b border-border/50">
-                <div className="relative h-12 w-12 mb-2 rounded-full overflow-hidden shadow-lg border border-primary/20">
-                  <Image src="/favicon.ico" alt="Hitesh Sharma Logo" width={48} height={48} />
+              <div className="flex items-center gap-3 p-4 mb-4 rounded-xl bg-white/5 border border-white/10">
+                {/* Favicon Logo in Sheet Header */}
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary/30 to-primary/10 flex items-center justify-center relative overflow-hidden">
+                    <Image src="/favicon.ico" alt="Hitesh Sharma Logo" fill className="object-cover"/>
                 </div>
-                <span className="text-3xl font-bold tracking-tight text-foreground" >
-                  Hitesh Sharma
-                </span>
-                <p className="text-sm text-muted-foreground flex items-center gap-1 mt-1">
-                  <Sparkles className="h-3 w-3 text-primary" /> Author & Developer
-                </p>
+                <div>
+                  <p
+                    className="text-lg font-bold text-foreground"
+                  >
+                    Hitesh Sharma
+                  </p>
+                  <p className="text-xs text-foreground/60 flex items-center gap-1">
+                    <Sparkles className="h-3 w-3 text-primary" />
+                    Professional Portfolio
+                  </p>
+                </div>
               </div>
 
-              {/* Navigation with professional staggered animation */}
+              {/* Navigation with staggered animation */}
               <motion.nav 
-                className="flex flex-col gap-1 mb-6"
+                className="flex flex-col gap-2 mb-6"
                 variants={containerVariants}
                 initial="hidden"
                 animate="show"
               >
                 {navLinks.map((link) => {
                   const Icon = link.icon;
+                  const isExternal = link.href.startsWith("http");
+
                   return (
                     <motion.div key={link.href} variants={itemVariants}>
                       <Link
                         href={link.href}
-                        className="group flex items-center gap-3 px-3 py-3 text-sm font-medium text-foreground hover:text-primary transition-all duration-300 hover:bg-primary/5 rounded-lg"
-                        target={link.external ? "_blank" : "_self"}
-                        rel={link.external ? "noopener noreferrer" : ""}
-                        onClick={handleLinkClick} // CLOSE SHEET ON CLICK
+                        className="group flex items-center gap-3 px-3 py-3 text-sm font-medium text-foreground/90 hover:text-primary transition-all duration-300 hover:bg-white/10 rounded-lg border border-transparent hover:border-white/20"
+                        target={isExternal ? "_blank" : "_self"} 
+                        rel={isExternal ? "noopener noreferrer" : ""}
+                        onClick={handleLinkClick} // CLOSES MENU ON CLICK
                       >
-                        {/* H-4 W-4 for better touch target and visibility */}
                         <Icon className="h-4 w-4 text-foreground/70 group-hover:text-primary" />
                         <span>{link.label}</span>
-                        {/* External link indicator */}
-                        {link.external && <ArrowRight className="h-3 w-3 ml-auto opacity-50 group-hover:opacity-100 transition-opacity" />}
+                        {isExternal && <ArrowRight className="h-3 w-3 ml-auto opacity-50 group-hover:opacity-100 transition-opacity" />}
                       </Link>
                     </motion.div>
                   );
@@ -198,8 +226,8 @@ export function Header() {
               </motion.nav>
 
               {/* Footer Social Links */}
-              <div className="mt-auto pt-4 border-t border-border/50">
-                <div className="flex items-center justify-center gap-4 mb-4">
+              <div className="mt-auto pt-3 border-t border-white/10">
+                <div className="flex items-center justify-center gap-3 mb-3">
                   {socialLinks.map((social, idx) => {
                     const Icon = social.icon;
                     return (
@@ -208,15 +236,16 @@ export function Header() {
                         href={social.href}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="p-2 rounded-full border border-border hover:border-primary transition-all duration-300 hover:bg-primary/5 hover:scale-110 shadow-sm"
+                        className="p-2 rounded-md bg-white/5 border border-white/10 hover:border-primary/30 hover:bg-white/10 transition-all duration-300 hover:scale-110"
                       >
-                        <Icon className="h-3.5 w-3.5 text-foreground/70 hover:text-primary transition-colors" />
+                        <Icon className="h-4 w-4 text-foreground/70 hover:text-primary transition-colors" />
                       </a>
                     );
                   })}
                 </div>
-                <p className="text-xs text-muted-foreground text-center flex items-center justify-center gap-1">
-                  <Sparkles className="h-3 w-3 text-primary" /> Crafted by Hitesh Sharma
+                <p className="text-xs text-foreground/50 text-center flex items-center justify-center gap-1">
+                  <Sparkles className="h-3 w-3 text-primary" />
+                  @hiteshsharma
                 </p>
               </div>
             </SheetContent>
