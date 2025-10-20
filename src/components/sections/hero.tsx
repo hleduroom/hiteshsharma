@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Button } from "../ui/button";
 import Link from "next/link";
@@ -7,7 +8,6 @@ import Image from "next/image";
 import { Facebook, Linkedin, Mail } from "lucide-react";
 import { Badge } from "../ui/badge";
 
-// A component for the Whatsapp icon
 function WhatsappIcon(props: React.SVGProps<SVGSVGElement>) {
   return (
     <svg
@@ -30,17 +30,45 @@ function WhatsappIcon(props: React.SVGProps<SVGSVGElement>) {
 const userDetails = {
   name: "Hitesh Sharma",
   role: "Founder & Educator",
-  image: "https://res.cloudinary.com/dgxoe15jd/image/upload/v1756232910/retouch_2025080121291186_hcbobr.jpg",
+  image:
+    "https://res.cloudinary.com/dgxoe15jd/image/upload/v1756232910/retouch_2025080121291186_hcbobr.jpg",
   bio: "Founder of H.L.-Eduroom and The Hitesh Sir Platform lead educator for +2 Exams. Passionate about guiding students toward their dream careers in medicine.",
   socials: {
     facebook: "https://www.facebook.com/thehiteshsir",
     linkedin: "https://www.linkedin.com/in/hitesh-sharma-8a3366329",
     email: "mailto:hleduroom@gmail.com",
-    whatsapp: "https://wa.me/9779827728726?text=Hello%20Hitesh%20Sir,%20I'd%20like%20to%20know%20more%20about%20your%20courses.",
+    whatsapp:
+      "https://wa.me/9779827728726?text=Hello%20Hitesh%20Sir,%20I'd%20like%20to%20know%20more%20about%20your%20courses.",
   },
 };
 
 export function Hero() {
+  const [timeLeft, setTimeLeft] = useState<string>("");
+  const [isReleased, setIsReleased] = useState(false);
+
+  useEffect(() => {
+    const updateCountdown = () => {
+      const now = new Date();
+      const target = new Date();
+      target.setHours(3, 0, 0, 0); // 3 AM today
+
+      if (now > target) {
+        setIsReleased(true);
+        return;
+      }
+
+      const diff = target.getTime() - now.getTime();
+      const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+      const minutes = Math.floor((diff / (1000 * 60)) % 60);
+      const seconds = Math.floor((diff / 1000) % 60);
+      setTimeLeft(`${hours}h ${minutes}m ${seconds}s`);
+    };
+
+    updateCountdown();
+    const interval = setInterval(updateCountdown, 1000);
+    return () => clearInterval(interval);
+  }, []);
+
   const containerVariants = {
     hidden: { opacity: 0, scale: 0.95 },
     visible: {
@@ -55,13 +83,13 @@ export function Hero() {
 
   const itemVariants = {
     hidden: { y: 20, opacity: 0 },
-    visible: { 
-      y: 0, 
+    visible: {
+      y: 0,
       opacity: 1,
       transition: {
         type: "spring",
-        stiffness: 100
-      } 
+        stiffness: 100,
+      },
     },
   };
 
@@ -80,85 +108,110 @@ export function Hero() {
     },
   };
 
-
   return (
     <section id="home" className="relative w-full overflow-hidden">
-       <Image
-          src="https://res.cloudinary.com/dgxoe15jd/image/upload/v1756232910/retouch_2025080121291186_hcbobr.jpg"
-          alt="Background"
-          layout="fill"
-          objectFit="cover"
-          className="absolute inset-0 z-0 opacity-20 blur-sm"
-        />
-       <div className="absolute inset-0 z-[1] bg-background/50 backdrop-blur-md"></div>
+      <Image
+        src="https://res.cloudinary.com/dgxoe15jd/image/upload/v1756232910/retouch_2025080121291186_hcbobr.jpg"
+        alt="Background"
+        fill
+        className="absolute inset-0 z-0 opacity-20 blur-sm object-cover"
+      />
+      <div className="absolute inset-0 z-[1] bg-background/50 backdrop-blur-md"></div>
+
       <div className="container relative z-10 grid min-h-[calc(100vh-3.5rem)] items-center justify-center text-center">
-        <motion.div 
+        <motion.div
           className="flex flex-col items-center gap-6"
           initial="hidden"
           animate="visible"
           variants={containerVariants}
         >
           <motion.div
-              className="relative h-40 w-40 overflow-hidden rounded-full shadow-2xl md:h-48 md:w-48"
-              variants={imageVariants}
-              style={{ perspective: 1000 }}
-            >
-              <Image
-                src={userDetails.image}
-                alt={userDetails.name}
-                fill
-                className="object-cover"
-                priority
-              />
+            className="relative h-40 w-40 overflow-hidden rounded-full shadow-2xl md:h-48 md:w-48"
+            variants={imageVariants}
+            style={{ perspective: 1000 }}
+          >
+            <Image
+              src={userDetails.image}
+              alt={userDetails.name}
+              fill
+              className="object-cover"
+              priority
+            />
           </motion.div>
-          
-          <motion.h1 
+
+          <motion.h1
             className="text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl font-headline"
             variants={itemVariants}
           >
             {userDetails.name}
           </motion.h1>
 
-          <motion.p 
-            className="text-lg text-primary"
-            variants={itemVariants}
-          >
+          <motion.p className="text-lg text-primary" variants={itemVariants}>
             {userDetails.role}
           </motion.p>
 
-          <motion.div variants={itemVariants}>
-            <Badge variant="destructive" className="animate-pulse">Under Construction</Badge>
-            <p className="text-muted-foreground mt-2">My new portfolio is coming soon!</p>
-          </motion.div>
-          
+          {isReleased ? (
+            <motion.div
+              className="mt-4 text-center space-y-3"
+              variants={itemVariants}
+            >
+              <Badge variant="secondary" className="text-lg px-4 py-1">
+                3 AM Confessions: My Life as an Overthinker is Published!
+              </Badge>
+              <div className="relative w-full max-w-lg mx-auto border border-border rounded-2xl overflow-hidden shadow-lg bg-background/70 backdrop-blur-md">
+                <iframe
+                  src="/3AM-Confessions-Preview.pdf#page=1&view=Fit"
+                  className="w-full h-[400px] animate-[flipIn_1.2s_ease-in-out]"
+                  title="3AM Confessions Preview"
+                />
+              </div>
+              <p className="text-muted-foreground italic mt-2">
+                Full book available now at 3 AM — enjoy the first page preview!
+              </p>
+            </motion.div>
+          ) : (
+            <motion.div
+              className="mt-4 text-center space-y-3"
+              variants={itemVariants}
+            >
+              <Badge variant="outline" className="text-lg px-4 py-1">
+                3 AM Confessions: My Life as an Overthinker
+              </Badge>
+              <p className="text-muted-foreground text-sm">
+                Publishing at <strong>3 AM</strong> — counting down:
+              </p>
+              <p className="text-2xl font-semibold text-primary">{timeLeft}</p>
+            </motion.div>
+          )}
+
           <motion.p
-            className="max-w-2xl text-muted-foreground md:text-xl"
+            className="max-w-2xl text-muted-foreground md:text-xl mt-4"
             variants={itemVariants}
           >
             {userDetails.bio}
           </motion.p>
 
-          <motion.div 
-            className="flex items-center gap-2"
+          <motion.div
+            className="flex items-center gap-2 mt-2"
             variants={itemVariants}
           >
             <Button variant="ghost" size="icon" asChild>
-              <Link href={userDetails.socials.facebook} target="_blank" aria-label="Facebook">
+              <Link href={userDetails.socials.facebook} target="_blank">
                 <Facebook className="h-5 w-5" />
               </Link>
             </Button>
             <Button variant="ghost" size="icon" asChild>
-              <Link href={userDetails.socials.linkedin} target="_blank" aria-label="LinkedIn">
+              <Link href={userDetails.socials.linkedin} target="_blank">
                 <Linkedin className="h-5 w-5" />
               </Link>
             </Button>
             <Button variant="ghost" size="icon" asChild>
-              <Link href={userDetails.socials.email} aria-label="Email">
+              <Link href={userDetails.socials.email}>
                 <Mail className="h-5 w-5" />
               </Link>
             </Button>
             <Button variant="ghost" size="icon" asChild>
-              <Link href={userDetails.socials.whatsapp} target="_blank" aria-label="WhatsApp">
+              <Link href={userDetails.socials.whatsapp} target="_blank">
                 <WhatsappIcon className="h-5 w-5" />
               </Link>
             </Button>
