@@ -3,17 +3,14 @@
 import { motion } from "framer-motion";
 import Image from "next/image";
 
-const Preloader = ({ userImage, userName }: { userImage: string, userName: string }) => {
-  // Convert the name to lowercase for the display
+const Preloader = ({ userImage, userName }: { userImage: string; userName: string }) => {
   const lowerCaseName = userName.toLowerCase();
-
-  // --- Framer Motion Variants ---
 
   const containerVariants = {
     initial: { opacity: 1 },
     exit: { 
       opacity: 0, 
-      transition: { duration: 0.8, ease: "easeInOut" } 
+      transition: { duration: 0.5, ease: "easeInOut" } 
     },
   };
 
@@ -22,30 +19,25 @@ const Preloader = ({ userImage, userName }: { userImage: string, userName: strin
     animate: { 
       scale: 1, 
       opacity: 1, 
-      transition: { duration: 0.6, ease: [0.6, 0.01, 0.05, 0.95], delay: 0.5 } 
+      transition: { duration: 0.3, ease: [0.6, 0.01, 0.05, 0.95], delay: 0.1 } 
     },
   };
 
   const signatureVariants = {
-    // Hidden state for the writing animation (pathLength: 0 hides the stroke)
     initial: { pathLength: 0, opacity: 0 },
-    // Animated state (pathLength: 1 reveals the full stroke)
     animate: {
       pathLength: 1,
       opacity: 1,
       transition: {
-        delay: 1.2, // Start after image appears
-        duration: 3, // Duration of the "writing"
-        ease: "easeInOut",
+        delay: 0.4, // Very short delay
+        duration: 0.5, // Ultra-fast 0.5 second writing
+        ease: "linear",
       },
     },
   };
-  
-  // !!! IMPORTANT: THIS IS A PLACEHOLDER.
-  // You MUST replace this value with the actual SVG path data for "hitesh sharma" 
-  // in the 'Great Vibes' font for the pen-writing effect to work correctly.
-  const signaturePathData = "M 10 90 c 25 -30 75 -30 100 0 s 50 30 75 0 s 50 -30 75 0"; 
-  // Placeholder: a simple wavy line
+
+  // SVG path data for "hitesh sharma" in a cursive style
+  const signaturePathData = "M 50,70 C 60,50 80,45 90,55 C 100,65 95,75 85,80 C 75,85 65,82 60,75 M 110,50 C 120,40 135,42 140,52 C 145,62 142,72 135,78 C 128,84 118,83 112,76 M 160,45 C 170,35 185,38 190,48 C 195,58 192,68 185,74 C 178,80 168,79 162,72 M 200,70 C 210,50 225,48 235,58 C 245,68 242,78 232,83 C 222,88 212,85 205,78 M 260,50 C 275,30 295,32 305,50 C 315,68 310,83 295,88 C 280,93 265,85 260,70 M 320,45 C 335,25 355,28 365,45 C 375,62 370,77 355,82 C 340,87 325,80 320,65 M 380,70 C 395,50 415,52 425,70 C 435,88 430,98 415,103 C 400,108 385,100 380,85";
 
   return (
     <motion.div
@@ -69,42 +61,30 @@ const Preloader = ({ userImage, userName }: { userImage: string, userName: strin
           priority
         />
       </motion.div>
-      
+
       {/* Animated Signature (SVG) */}
       <div 
         className="mt-6 text-5xl font-signature text-foreground tracking-wide w-64 md:w-80 h-16"
         aria-label={lowerCaseName}
       >
         <svg
-          // Adjust the viewBox width/height to properly contain your signature path
-          viewBox="0 0 500 100" 
+          viewBox="0 0 450 120" 
           className="w-full h-full"
+          preserveAspectRatio="xMidYMid meet"
         >
           <motion.path
             d={signaturePathData}
             fill="transparent"
-            stroke="currentColor" // Uses the text-foreground color
-            strokeWidth="3"      // Adjust stroke thickness as needed
+            stroke="currentColor"
+            strokeWidth="2"
             strokeLinecap="round"
+            strokeLinejoin="round"
             variants={signatureVariants}
             initial="initial"
             animate="animate"
           />
         </svg>
       </div>
-      
-      {/* Fallback Text (Hidden if SVG works, or if you prefer simpler text) */}
-      {/* If the SVG method is too complex, you can comment out the SVG and uncomment this section 
-      <motion.p
-         className="mt-6 text-5xl font-signature text-foreground tracking-wide"
-         initial={{ opacity: 0, y: 10 }}
-         animate={{ opacity: 1, y: 0 }}
-         transition={{ delay: 1.2, duration: 0.8 }}
-      >
-        {lowerCaseName}
-      </motion.p>
-      */}
-      
     </motion.div>
   );
 };
