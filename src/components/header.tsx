@@ -18,9 +18,9 @@ export function Header() {
   return (
     <header className="sticky top-0 z-50 w-full border-b border-white/10 bg-white/10 backdrop-blur-lg supports-[backdrop-filter]:bg-white/5 shadow-md">
       <div className="container flex h-14 items-center justify-between">
-        {/* --- Left: Name in Holiday Font --- */}
+        {/* --- Left: Name in Signature Font --- */}
         <div className="flex items-center gap-3">
-          <Link href="/" className="text-2xl font-bold font-holiday text-foreground tracking-wide">
+          <Link href="/" className="text-3xl font-bold font-signature-style text-foreground tracking-wider">
             Hitesh Sharma
           </Link>
         </div>
