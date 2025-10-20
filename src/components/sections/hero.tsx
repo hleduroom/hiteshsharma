@@ -4,11 +4,9 @@ import { motion } from "framer-motion";
 import { Button } from "../ui/button";
 import Link from "next/link";
 import Image from "next/image";
-import { Facebook, Linkedin, Mail } from "lucide-react";
+import { Facebook, Linkedin, Mail, Clock, BookOpen, Download, Eye } from "lucide-react";
 import { Badge } from "../ui/badge";
-import { useState, useEffect, useCallback } from "react";
-
-// --- Utility Components ---
+import { useState, useEffect } from "react";
 
 // A component for the Whatsapp icon
 function WhatsappIcon(props: React.SVGProps<SVGSVGElement>) {
@@ -25,162 +23,67 @@ function WhatsappIcon(props: React.SVGProps<SVGSVGElement>) {
       strokeLinecap="round"
       strokeLinejoin="round"
     >
-      {/* Path for a standard WhatsApp icon */}
-      <path d="M22 14v4a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4" />
-      <path d="M12 2C6.5 2 2 6.5 2 12c0 1.5.3 3 .8 4.3l-1.6 5.9 6-1.5c1.4.5 3 .8 4.8.8 5.5 0 9.9-4.5 9.9-10S17.5 2 12 2zM12 20c-1.5 0-3-.4-4.3-1l-3 3 1-3c-1-1.3-1.6-3-1.6-4.9 0-4.4 3.6-8 8-8s8 3.6 8 8-3.6 8-8 8zM17 14.5c-.3-.2-.5-.3-1.1-.6-.6-.3-.9-.4-1.2-.4-.3 0-.6-.1-.8.2s-.7.8-.8.9c-.1.2-.3.2-.5.1-.9-.4-1.7-.9-2.5-1.6-.6-.6-1-1.3-1.4-2s-.5-1.2-.2-1.6c.1-.2.3-.5.4-.6.1-.2.2-.4.3-.5.1-.2.1-.3.1-.6s0-.4-.3-.7c-.2-.2-.5-.6-.7-.8-.2-.3-.5-.2-.7-.2h-.4c-.2 0-.6.1-1 .5-.4.4-.7.9-.7 1.2s.7 1.6 1 1.9c.2.3.4.6.6.7.2.1.4.3.5.4.1.1.2.3.2.5s-.2.5-.2.7c-.1.2-.2.3-.4.5-.2.2-.4.3-.6.4-.3.2-.5.3-1 .6z" />
+      <path d="M3 21l1.65-3.8a9 9 0 1 1 3.4 2.9L3 21" />
+      <path d="M9 10a.5.5 0 0 0 1 0V9a.5.5 0 0 0-1 0v1Z" />
+      <path d="M14 10a.5.5 0 0 0 1 0V9a.5.5 0 0 0-1 0v1Z" />
+      <path d="M9.5 13c.5.5 1 .5 1.5.5s1 0 1.5-.5" />
     </svg>
   );
 }
 
-// --- Book Constants ---
-const LAUNCH_HOUR = 3; // 3 AM
-const LAUNCH_MINUTE = 0; // 0 minutes
-// NOTE: Ensure these files are in your public directory
-const PDF_PREVIEW_PATH = "/3AM-Confessions-Preview.pdf#page=1";
-const PDF_FULL_PATH = "/3AM-Confessions-Full.pdf"; 
-
-// --- Core Component Data ---
-
 const userDetails = {
   name: "Hitesh Sharma",
-  role: "Author & Educator", 
+  role: "Founder & Educator",
   image: "https://res.cloudinary.com/dgxoe15jd/image/upload/v1756232910/retouch_2025080121291186_hcbobr.jpg",
-  bio: "Author of the deeply personal '3 AM Confessions: My Life as OverThinker'. Dedicated to sharing insights on education and life's complexities.", 
+  bio: "Founder of H.L.-Eduroom and The Hitesh Sir Platform lead educator for +2 Exams. Passionate about guiding students toward their dream careers in medicine.",
   socials: {
     facebook: "https://www.facebook.com/thehiteshsir",
     linkedin: "https://www.linkedin.com/in/hitesh-sharma-8a3366329",
     email: "mailto:hleduroom@gmail.com",
-    whatsapp: "https://wa.me/9779827728726?text=Hello%20Hitesh%20Sir,%20I'd%20like%20to%20know%20more%20about%20your%20work.",
+    whatsapp: "https://wa.me/9779827728726?text=Hello%20Hitesh%20Sir,%20I'd%20like%20to%20know%20more%20about%20your%20courses.",
   },
 };
 
-// --- Custom Hook for Countdown Timer ---
+export function Hero() {
+  const [timeLeft, setTimeLeft] = useState({
+    hours: 0,
+    minutes: 0,
+    seconds: 0,
+    is3AM: false
+  });
 
-const useLaunchCountdown = () => {
-  const calculateTimeLeft = useCallback(() => {
-    const now = new Date();
-    const launchDate = new Date();
-    
-    // Set launch time to 3:00 AM today
-    launchDate.setHours(LAUNCH_HOUR, LAUNCH_MINUTE, 0, 0);
-
-    // If it's already past 3 AM today, set the launch time to 3 AM tomorrow
-    // This is useful only if you want the timer to always count down to 3 AM, 
-    // but for a one-time launch today, the logic assumes the current date.
-    if (now.getTime() > launchDate.getTime()) {
-       // Check if it's past 3 AM today, but within the next 24 hours of today's 3 AM
-       // For a fixed "Today at 3 AM" launch, we'll keep the logic simple:
-       // If it's past 3 AM, the book is launched (isLaunched: true)
-    }
-    
-    const difference = launchDate.getTime() - now.getTime();
-    
-    if (difference <= 0) {
-      return { hours: 0, minutes: 0, seconds: 0, isLaunched: true };
-    }
-
-    const hours = Math.floor((difference / (1000 * 60 * 60)) % 24);
-    const minutes = Math.floor((difference / 1000 / 60) % 60);
-    const seconds = Math.floor((difference / 1000) % 60);
-
-    return { hours, minutes, seconds, isLaunched: false };
-  }, []);
-
-  const [timeLeft, setTimeLeft] = useState(calculateTimeLeft());
+  const [isBookOpen, setIsBookOpen] = useState(false);
 
   useEffect(() => {
-    const timer = setInterval(() => {
-      setTimeLeft(calculateTimeLeft());
-    }, 1000);
+    const calculateTimeTo3AM = () => {
+      const now = new Date();
+      const target = new Date();
+      
+      // Set target to next 3 AM
+      target.setHours(3, 0, 0, 0);
+      if (now.getHours() >= 3) {
+        target.setDate(target.getDate() + 1);
+      }
+
+      const difference = target.getTime() - now.getTime();
+      
+      if (difference <= 0) {
+        setTimeLeft({ hours: 0, minutes: 0, seconds: 0, is3AM: true });
+        return;
+      }
+
+      const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((difference % (1000 * 60)) / 1000);
+
+      setTimeLeft({ hours, minutes, seconds, is3AM: false });
+    };
+
+    calculateTimeTo3AM();
+    const timer = setInterval(calculateTimeTo3AM, 1000);
 
     return () => clearInterval(timer);
-  }, [calculateTimeLeft]);
-
-  return timeLeft;
-};
-
-// --- Book Viewer Placeholder ---
-
-const BookViewer = ({ isLaunched }: { isLaunched: boolean }) => {
-  const pdfPath = isLaunched ? PDF_FULL_PATH : PDF_PREVIEW_PATH;
-  
-  return (
-    <motion.div
-      className="w-full max-w-lg mx-auto h-[400px] bg-card border-4 border-primary/50 rounded-lg shadow-2xl flex items-center justify-center overflow-hidden"
-      initial={{ y: 50, opacity: 0 }}
-      animate={{ y: 0, opacity: 1 }}
-      transition={{ delay: 1.5, duration: 1 }}
-    >
-      <div className="text-center p-4">
-        <h3 className="text-xl font-bold text-primary mb-2">
-          {isLaunched ? "Full Book is LIVE!" : "Preview (1st Page)"}
-        </h3>
-        <p className="text-muted-foreground mb-4">
-          **Book Turning Animation Preview (Placeholder)**
-        </p>
-        <a 
-          href={pdfPath} 
-          target="_blank" 
-          rel="noopener noreferrer" 
-          className="text-sm text-blue-500 hover:underline mt-2 block font-medium"
-        >
-          {isLaunched ? "Read Full Book PDF" : "View 1st Page Preview PDF"}
-        </a>
-      </div>
-    </motion.div>
-  );
-};
-
-// --- Countdown Display Component (TypeScript & Variant Errors Fixed) ---
-
-const CountdownDisplay = ({ 
-  hours, 
-  minutes, 
-  seconds, 
-  isLaunched 
-}: ReturnType<typeof useLaunchCountdown>) => {
-  if (isLaunched) {
-    return (
-      // FIX: Changed variant="success" to variant="default" (Valid variant)
-      <Badge 
-        variant="default" 
-        className="text-lg px-4 py-2 bg-green-500 hover:bg-green-500 animate-none text-white" 
-      >
-        🎉 Book Published at 3 AM!
-      </Badge>
-    );
-  }
-
-  const formatTime = (value: number) => String(value).padStart(2, '0');
-
-  return (
-    <div className="flex flex-col items-center">
-      <Badge variant="outline" className="text-xs mb-2 border-primary text-primary">
-        Next Launch at 3:00 AM Today
-      </Badge>
-      <div className="flex space-x-4">
-        {[
-          { label: "HOURS", value: formatTime(hours) },
-          { label: "MINUTES", value: formatTime(minutes) },
-          { label: "SECONDS", value: formatTime(seconds) },
-        ].map((unit) => (
-          <div key={unit.label} className="text-center p-2 rounded-lg bg-card/60 backdrop-blur-sm shadow-inner min-w-[70px]">
-            <span className="text-3xl font-extrabold text-foreground tabular-nums">
-              {unit.value}
-            </span>
-            <p className="text-xs text-muted-foreground font-medium">{unit.label}</p>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-};
-
-// --- Hero Component ---
-
-export function Hero() {
-  const timeLeft = useLaunchCountdown();
-  const isLaunched = timeLeft.isLaunched;
+  }, []);
 
   const containerVariants = {
     hidden: { opacity: 0, scale: 0.95 },
@@ -201,8 +104,8 @@ export function Hero() {
       opacity: 1,
       transition: {
         type: "spring",
-        stiffness: 100,
-      },
+        stiffness: 100
+      }
     },
   };
 
@@ -221,68 +124,162 @@ export function Hero() {
     },
   };
 
+  const bookVariants = {
+    closed: { 
+      rotateY: 0,
+      transition: { type: "spring", stiffness: 300, damping: 30 }
+    },
+    open: { 
+      rotateY: -180,
+      transition: { type: "spring", stiffness: 300, damping: 30 }
+    }
+  };
+
   return (
-    <section className="py-12 md:py-24 lg:py-32 w-full">
+    <section className="w-full py-12 md:py-24 lg:py-32">
       <div className="container px-4 md:px-6">
         <motion.div
-          className="flex flex-col items-center gap-10"
+          className="flex flex-col items-center gap-6"
           initial="hidden"
           animate="visible"
           variants={containerVariants}
         >
-          {/* 1. Profile Image and Name */}
-          <div className="flex flex-col items-center gap-6">
-            <motion.div
-              className="relative h-40 w-40 overflow-hidden rounded-full shadow-2xl md:h-48 md:w-48"
-              variants={imageVariants}
-              style={{ perspective: 1000 }}
-            >
-              <Image
-                src={userDetails.image}
-                alt={userDetails.name}
-                fill
-                className="object-cover"
-                priority
-              />
-            </motion.div>
-            <motion.h1 className="text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl font-headline" variants={itemVariants}>
-              {userDetails.name}
-            </motion.h1>
-            <motion.p className="text-lg text-primary" variants={itemVariants}>
-              {userDetails.role}
-            </motion.p>
-          </div>
-
-          {/* 2. Book Publication Announcement & Countdown */}
-          <motion.div className="text-center max-w-3xl" variants={itemVariants}>
-            {/* Using font-signature for the Great Vibes cursive look */}
-            <h2 className="text-3xl sm:text-4xl font-extrabold mb-4 font-signature text-foreground">
-              "3 AM Confessions: My Life as OverThinker" Book is Published!
-            </h2>
-            <p className="text-muted-foreground mb-6 md:text-lg">
-              {isLaunched 
-                ? "The highly anticipated, deeply personal book is now available in its entirety. Dive into the confessions."
-                : "The book will be fully published today at **3:00 AM**. Until then, enjoy the first page preview!"}
-            </p>
-            
-            {/* Countdown Display Call (Passing corrected individual props) */}
-            <CountdownDisplay 
-                hours={timeLeft.hours}
-                minutes={timeLeft.minutes}
-                seconds={timeLeft.seconds}
-                isLaunched={isLaunched}
+          {/* Profile Image */}
+          <motion.div
+            className="relative h-40 w-40 overflow-hidden rounded-full shadow-2xl md:h-48 md:w-48"
+            variants={imageVariants}
+            style={{ perspective: 1000 }}
+          >
+            <Image
+              src={userDetails.image}
+              alt={userDetails.name}
+              fill
+              className="object-cover"
+              priority
             />
-            
           </motion.div>
-          
-          {/* 3. Book Viewer/Preview Section */}
-          <BookViewer isLaunched={isLaunched} />
 
-          {/* 4. Bio and Socials */}
-          <motion.p className="max-w-2xl text-muted-foreground md:text-xl text-center mt-4" variants={itemVariants}>
+          {/* Name and Role */}
+          <motion.h1 
+            className="text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl font-headline text-center" 
+            variants={itemVariants}
+          >
+            {userDetails.name}
+          </motion.h1>
+          
+          <motion.p className="text-lg text-primary font-semibold" variants={itemVariants}>
+            {userDetails.role}
+          </motion.p>
+
+          {/* Book Announcement */}
+          <motion.div 
+            className="text-center max-w-4xl space-y-4"
+            variants={itemVariants}
+          >
+            <Badge variant="default" className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 text-sm">
+              <BookOpen className="w-4 h-4 mr-2" />
+              New Book Published!
+            </Badge>
+            
+            <h2 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+              3 AM Confessions: My Life as OverThinker
+            </h2>
+            
+            <p className="text-muted-foreground text-lg">
+              Published at 3 AM - A journey through midnight thoughts and revelations
+            </p>
+
+            {/* Countdown Timer */}
+            <div className="bg-gradient-to-r from-blue-900/20 to-purple-900/20 rounded-2xl p-6 border border-blue-500/30">
+              <div className="flex items-center justify-center gap-2 mb-4">
+                <Clock className="w-5 h-5 text-blue-400" />
+                <span className="text-sm font-medium text-blue-300">
+                  {timeLeft.is3AM ? "Available Now!" : "Full Release In:"}
+                </span>
+              </div>
+              
+              {!timeLeft.is3AM && (
+                <div className="flex justify-center gap-4 text-center">
+                  <div className="flex flex-col">
+                    <span className="text-2xl font-bold text-white">{timeLeft.hours.toString().padStart(2, '0')}</span>
+                    <span className="text-xs text-blue-300">HOURS</span>
+                  </div>
+                  <span className="text-2xl font-bold text-white">:</span>
+                  <div className="flex flex-col">
+                    <span className="text-2xl font-bold text-white">{timeLeft.minutes.toString().padStart(2, '0')}</span>
+                    <span className="text-xs text-blue-300">MINUTES</span>
+                  </div>
+                  <span className="text-2xl font-bold text-white">:</span>
+                  <div className="flex flex-col">
+                    <span className="text-2xl font-bold text-white">{timeLeft.seconds.toString().padStart(2, '0')}</span>
+                    <span className="text-xs text-blue-300">SECONDS</span>
+                  </div>
+                </div>
+              )}
+            </div>
+          </motion.div>
+
+          {/* Book Preview */}
+          <motion.div 
+            className="w-full max-w-2xl space-y-4"
+            variants={itemVariants}
+          >
+            <div className="text-center">
+              <h3 className="text-xl font-semibold mb-2">Book Preview</h3>
+              <p className="text-muted-foreground text-sm">
+                Click the book to preview the first page
+              </p>
+            </div>
+
+            {/* Book Animation */}
+            <div className="flex justify-center">
+              <motion.div
+                className="relative w-64 h-80 cursor-pointer"
+                style={{ perspective: 1200 }}
+                onClick={() => setIsBookOpen(!isBookOpen)}
+                animate={isBookOpen ? "open" : "closed"}
+                variants={bookVariants}
+              >
+                {/* Book Cover */}
+                <div className="absolute inset-0 bg-gradient-to-r from-purple-900 to-blue-900 rounded-lg shadow-2xl border-2 border-purple-500/50 flex flex-col items-center justify-center p-6 text-white">
+                  <BookOpen className="w-12 h-12 mb-4" />
+                  <h4 className="text-lg font-bold text-center">3 AM Confessions</h4>
+                  <p className="text-sm text-center mt-2 text-purple-200">My Life as OverThinker</p>
+                  <div className="absolute bottom-4 text-xs text-purple-300">
+                    Click to preview
+                  </div>
+                </div>
+
+                {/* Book Pages */}
+                <div className="absolute inset-0 bg-gradient-to-r from-amber-50 to-amber-100 rounded-lg shadow-2xl border-2 border-amber-200 flex items-center justify-center p-6">
+                  <div className="text-center">
+                    <Eye className="w-8 h-8 mx-auto mb-3 text-amber-600" />
+                    <p className="text-sm text-amber-800 mb-4">
+                      Preview Available - Full PDF at 3 AM
+                    </p>
+                    <Button 
+                      size="sm" 
+                      className="bg-amber-600 hover:bg-amber-700"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        window.open('/3AM-Confessions-Preview.pdf', '_blank');
+                      }}
+                    >
+                      <Download className="w-4 h-4 mr-2" />
+                      View Preview
+                    </Button>
+                  </div>
+                </div>
+              </motion.div>
+            </div>
+          </motion.div>
+
+          {/* Bio */}
+          <motion.p className="max-w-2xl text-muted-foreground md:text-xl text-center" variants={itemVariants}>
             {userDetails.bio}
           </motion.p>
-          
+
+          {/* Social Links */}
           <motion.div className="flex items-center gap-2" variants={itemVariants}>
             <Button variant="ghost" size="icon" asChild>
               <Link href={userDetails.socials.facebook} target="_blank" aria-label="Facebook">
