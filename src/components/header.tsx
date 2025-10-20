@@ -121,11 +121,11 @@ export function Header() {
               {/* Header */}
               <div className="flex items-center gap-3 p-4 mb-4 rounded-xl bg-white/5 border border-white/10">
                 <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary/30 to-primary/10 flex items-center justify-center">
-                  <span className="text-lg font-[Great_Vibes]" style={{ fontFamily: "'Great Vibes', cursive" }}>hs</span>
+                  <span className="text-lg font-[Great_Vibes]" style={{ fontFamily: "'Great Vibes', cursive" }}>Hitu</span>
                 </div>
                 <div>
                   <p className="text-lg font-[Great_Vibes]" style={{ fontFamily: "'Great Vibes', cursive" }}>
-                    hitesh sharma
+                    Hitesh Sharma 
                   </p>
                   <p className="text-xs text-foreground/60 flex items-center gap-1">
                     <Sparkles className="h-3 w-3 text-primary" />
