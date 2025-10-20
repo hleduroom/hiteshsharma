@@ -1,4 +1,4 @@
-import type {Config} from 'tailwindcss';
+import type { Config } from 'tailwindcss';
 
 export default {
   darkMode: ['class'],
@@ -13,6 +13,11 @@ export default {
         body: ['Inter', 'sans-serif'],
         headline: ['Space Grotesk', 'sans-serif'],
         code: ['Space Grotesk', 'monospace'],
+        // ------------------------------------------------------------------
+        // NEW: Add the signature font definition
+        // 'Great Vibes' is a beautiful, flowing script font from Google Fonts.
+        // ------------------------------------------------------------------
+        signature: ['Great Vibes', 'cursive'], 
       },
       colors: {
         background: 'hsl(var(--background))',
