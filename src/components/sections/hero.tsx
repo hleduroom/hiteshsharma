@@ -34,7 +34,7 @@ function WhatsappIcon(props: React.SVGProps<SVGSVGElement>) {
 
 const userDetails = {
   name: "Hitesh Sharma",
-  role: "Founder & Educator",
+  role: " Normal Human try to Experiencing Moments of Life 🍃",
   image: "https://res.cloudinary.com/dgxoe15jd/image/upload/v1756232910/retouch_2025080121291186_hcbobr.jpg",
   bio: "Founder of H.L.-Eduroom and The Hitesh Sir Platform. Lead educator for +2 Exams, guiding students toward medical careers.",
   socials: {
@@ -64,22 +64,22 @@ const structuredData = {
     },
     {
       "@type": "Book",
-      "name": "3 AM Confessions: My Life as OverThinker",
+      "name": "3 AM Confessions: My Life as an Overthinker",
       "author": {
         "@id": "https://thehiteshsir.com/#person"
       },
       "bookFormat": "https://schema.org/EBook",
       "datePublished": new Date().toISOString().split('T')[0],
       "inLanguage": "en",
-      "isbn": "978-0000000000",
-      "numberOfPages": 150,
+      "isbn": "9789937-1-9247-7",
+      "numberOfPages": 196,
       "publisher": "H.L.-Eduroom Publications",
       "description": "A profound journey through midnight thoughts and revelations. Published daily at 3 AM, this book explores the life of an overthinker through intimate confessions.",
       "genre": ["Self-Help", "Psychology", "Personal Development"],
       "offers": {
         "@type": "Offer",
-        "price": "0",
-        "priceCurrency": "USD",
+        "price": "399",
+        "priceCurrency": "NPR",
         "availability": "https://schema.org/InStock",
         "url": "https://thehiteshsir.com/3AM-Confessions-Preview.pdf"
       }
@@ -87,8 +87,8 @@ const structuredData = {
     {
       "@type": "WebSite",
       "name": "Hitesh Sharma - Official Portfolio",
-      "url": "https://thehiteshsir.com",
-      "description": "Official portfolio of Hitesh Sharma - Founder, Educator, and Author of 3 AM Confessions",
+      "url": "https://hiteshsharma.com.np",
+      "description": "Official portfolio of Hitesh Sharma - The Normal Human try to Experiencing Moments of Life 🍃",
       "publisher": {
         "@id": "https://thehiteshsir.com/#person"
       }
@@ -146,51 +146,52 @@ export function Hero() {
     visible: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.15,
+        staggerChildren: 0.1,
       },
     },
   };
 
   const itemVariants = {
-    hidden: { y: 20, opacity: 0 },
+    hidden: { y: 15, opacity: 0 },
     visible: {
       y: 0,
       opacity: 1,
       transition: {
         type: "spring",
-        stiffness: 120
+        stiffness: 100,
+        damping: 10
       }
     },
   };
 
   const imageVariants = {
-    hidden: { scale: 0.8, opacity: 0 },
+    hidden: { scale: 0.9, opacity: 0 },
     visible: {
       scale: 1,
       opacity: 1,
       transition: {
         type: "spring",
-        stiffness: 100,
-        delay: 0.2,
+        stiffness: 90,
+        delay: 0.1,
       },
     },
   };
 
   const bookImageVariants = {
-    hidden: { scale: 0.9, opacity: 0, y: 20 },
+    hidden: { scale: 0.95, opacity: 0, y: 10 },
     visible: {
       scale: 1,
       opacity: 1,
       y: 0,
       transition: {
         type: "spring",
-        stiffness: 100,
-        delay: 0.4,
+        stiffness: 80,
+        delay: 0.3,
       }
     },
     hover: {
-      scale: 1.02,
-      y: -5,
+      scale: 1.03,
+      y: -3,
       transition: {
         type: "spring",
         stiffness: 400,
@@ -206,38 +207,30 @@ export function Hero() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
       />
 
-      {/* SEO Meta Tags */}
-      <meta name="description" content="Hitesh Sharma - Founder & Educator, Author of '3 AM Confessions: My Life as OverThinker'. Founder of H.L.-Eduroom educational platform." />
-      <meta name="keywords" content="Hitesh Sharma, 3 AM Confessions, OverThinker, H.L.-Eduroom, Educator, Author, Medical Career Guidance, +2 Exams, Book Release" />
-      <meta name="author" content="Hitesh Sharma" />
-      
-      {/* Open Graph Tags */}
-      <meta property="og:title" content="Hitesh Sharma - Founder, Educator & Author" />
-      <meta property="og:description" content="Author of '3 AM Confessions: My Life as OverThinker'. Founder of H.L.-Eduroom - Guiding students toward medical careers." />
-      <meta property="og:image" content="https://res.cloudinary.com/dgxoe15jd/image/upload/v1756232910/retouch_2025080121291186_hcbobr.jpg" />
-      <meta property="og:url" content="https://thehiteshsir.com" />
-      <meta property="og:type" content="website" />
-      <meta property="og:site_name" content="Hitesh Sharma Portfolio" />
-      
-      {/* Twitter Card Tags */}
-      <meta name="twitter:card" content="summary_large_image" />
-      <meta name="twitter:title" content="Hitesh Sharma - Founder, Educator & Author" />
-      <meta name="twitter:description" content="Author of '3 AM Confessions: My Life as OverThinker'. Founder of H.L.-Eduroom educational platform." />
-      <meta name="twitter:image" content="https://res.cloudinary.com/dgxoe15jd/image/upload/v1756232910/retouch_2025080121291186_hcbobr.jpg" />
-      <meta name="twitter:creator" content="@thehiteshsir" />
-
       <Analytics />
-      <section className="w-full py-12 md:py-20 lg:py-24 bg-gradient-to-b from-slate-50 to-white dark:from-slate-950 dark:to-slate-900">
-        <div className="container px-4 md:px-6">
+      <section className="w-full py-8 md:py-16 lg:py-20 relative overflow-hidden">
+        {/* Background Cover Image */}
+        <div className="absolute inset-0 z-0">
+          <Image
+            src="/book_cover.png"
+            alt="3 AM Confessions Book Cover Background"
+            fill
+            className="object-cover opacity-5"
+            priority
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-white/95 via-white/90 to-white/80 dark:from-slate-950/95 dark:via-slate-950/90 dark:to-slate-950/80" />
+        </div>
+
+        <div className="container px-4 md:px-6 relative z-10">
           <motion.div
-            className="flex flex-col items-center gap-10"
+            className="flex flex-col items-center gap-8"
             initial="hidden"
             animate="visible"
             variants={containerVariants}
           >
             {/* Profile Image */}
             <motion.div
-              className="relative h-32 w-32 overflow-hidden rounded-full shadow-2xl md:h-36 md:w-36 border-4 border-white/20 dark:border-slate-800/50"
+              className="relative h-28 w-28 overflow-hidden rounded-full shadow-xl md:h-32 md:w-32 border-4 border-white/30 dark:border-slate-800/60 bg-white/10 backdrop-blur-sm"
               variants={imageVariants}
               itemProp="image"
             >
@@ -251,37 +244,34 @@ export function Hero() {
             </motion.div>
 
             {/* Name and Role */}
-            <motion.div className="text-center space-y-3" variants={itemVariants}>
-              <h1 className="text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl font-headline bg-gradient-to-r from-slate-900 to-slate-700 dark:from-white dark:to-slate-300 bg-clip-text text-transparent" itemProp="name">
+            <motion.div className="text-center space-y-2" variants={itemVariants}>
+              <h1 className="text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl font-headline text-slate-900 dark:text-white" itemProp="name">
                 {userDetails.name}
               </h1>
-              <p className="text-lg text-primary font-semibold tracking-wide uppercase text-sm" itemProp="jobTitle">
+              <p className="text-sm text-primary font-medium tracking-wide uppercase" itemProp="jobTitle">
                 {userDetails.role}
               </p>
             </motion.div>
 
             {/* Book Announcement Section */}
             <motion.div 
-              className="text-center max-w-4xl space-y-8"
+              className="text-center max-w-3xl space-y-6"
               variants={itemVariants}
             >
               {/* Book Badge and Title */}
-              <div className="space-y-4">
-                <Badge variant="secondary" className="bg-gradient-to-r from-red-600 to-rose-700 text-white px-6 py-2 text-sm font-bold border-0 shadow-lg">
-                  <Star className="w-4 h-4 mr-2 fill-current" />
-                  NEW BOOK RELEASE
+              <div className="space-y-3">
+                <Badge variant="secondary" className="bg-gradient-to-r from-red-600 to-rose-700 text-white px-4 py-1 text-xs font-semibold border-0 shadow-md">
+                  <Star className="w-3 h-3 mr-1.5 fill-current" />
+                  NEW RELEASE
                 </Badge>
                 
-                <div className="space-y-3" itemScope itemType="https://schema.org/Book">
-                  <h2 className="text-2xl md:text-4xl font-bold bg-gradient-to-r from-slate-900 to-slate-700 dark:from-white dark:to-slate-300 bg-clip-text text-transparent tracking-tight leading-tight" itemProp="name">
-                    3 AM Confessions
+                <div className="space-y-2" itemScope itemType="https://schema.org/Book">
+                  <h2 className="text-xl md:text-3xl font-bold text-slate-900 dark:text-white tracking-tight leading-tight" itemProp="name">
+                    3 AM Confessions: My Life as an Overthinker
                   </h2>
-                  <p className="text-lg md:text-xl text-muted-foreground font-light italic" itemProp="alternativeHeadline">
-                    My Life as OverThinker
-                  </p>
-                  <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
-                    <Clock className="w-4 h-4" />
-                    <span>Published Daily at 3 AM</span>
+                  <div className="flex items-center justify-center gap-1.5 text-xs text-muted-foreground">
+                    <Clock className="w-3 h-3" />
+                    <span>Release Preview at 3 AM</span>
                   </div>
                   <meta itemProp="author" content="Hitesh Sharma" />
                   <meta itemProp="datePublished" content={new Date().toISOString().split('T')[0]} />
@@ -297,77 +287,77 @@ export function Hero() {
                 onClick={() => window.open('/3AM-Confessions-Preview.pdf', '_blank')}
                 itemProp="image"
               >
-                <div className="relative w-64 h-80 mx-auto shadow-2xl rounded-xl overflow-hidden border-4 border-white/20 dark:border-slate-800/50">
+                <div className="relative w-56 h-72 mx-auto shadow-2xl rounded-lg overflow-hidden border-4 border-white/40 dark:border-slate-800/60 bg-white/5 backdrop-blur-sm">
                   <Image
                     src="/book_cover.png"
-                    alt="3 AM Confessions Book Cover - A profound journey through midnight thoughts and revelations"
+                    alt="3 AM Confessions: My Life as an Overthinker - Book Cover"
                     fill
                     className="object-cover transition-transform duration-300 group-hover:scale-105"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-center pb-6">
-                    <Button className="bg-white/90 hover:bg-white text-slate-900 font-semibold">
-                      <ExternalLink className="w-4 h-4 mr-2" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-center pb-4">
+                    <Button className="bg-white/95 hover:bg-white text-slate-900 font-medium text-sm">
+                      <ExternalLink className="w-3.5 h-3.5 mr-1.5" />
                       Read Preview
                     </Button>
                   </div>
                 </div>
-                <div className="absolute -inset-4 bg-gradient-to-r from-red-500/10 to-rose-500/10 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-10" />
+                <div className="absolute -inset-3 bg-gradient-to-r from-red-500/20 to-rose-500/20 rounded-xl blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-10" />
               </motion.div>
 
               {/* Professional Countdown Timer */}
-              <div className="bg-gradient-to-br from-slate-900 to-slate-800 rounded-2xl p-6 border border-slate-700/50 shadow-2xl">
-                <div className="flex items-center justify-center gap-2 mb-6">
-                  <Clock className="w-5 h-5 text-red-400" />
-                  <span className="text-base font-semibold text-slate-200">
+              <div className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-md rounded-xl p-4 border border-slate-200/50 dark:border-slate-700/50 shadow-lg">
+                <div className="flex items-center justify-center gap-1.5 mb-4">
+                  <Clock className="w-4 h-4 text-red-500" />
+                  <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">
                     {timeLeft.is3AM ? "📖 Available Now!" : "⏳ Full Release In"}
                   </span>
                 </div>
                 
                 {!timeLeft.is3AM && (
-                  <div className="flex justify-center gap-4 text-center">
+                  <div className="flex justify-center gap-3 text-center">
                     <div className="flex flex-col items-center">
-                      <div className="bg-gradient-to-b from-red-600 to-rose-700 text-white text-2xl md:text-3xl font-mono font-bold rounded-lg px-3 py-3 min-w-[60px] shadow-lg border border-red-500/30">
+                      <div className="bg-gradient-to-b from-red-600 to-rose-700 text-white text-xl md:text-2xl font-mono font-bold rounded px-2 py-2 min-w-[50px] shadow-md border border-red-500/30">
                         {timeLeft.hours.toString().padStart(2, '0')}
                       </div>
-                      <span className="text-xs text-red-300 font-medium mt-2 uppercase tracking-wider">Hours</span>
+                      <span className="text-[10px] text-red-600 dark:text-red-400 font-medium mt-1.5 uppercase tracking-wider">HRS</span>
                     </div>
                     
-                    <div className="flex items-center justify-center">
-                      <div className="w-1 h-1 bg-red-500 rounded-full mx-1"></div>
-                      <div className="w-1 h-1 bg-red-500 rounded-full mx-1"></div>
+                    <div className="flex items-center justify-center pt-2">
+                      <div className="w-1 h-1 bg-red-500 rounded-full mx-0.5"></div>
+                      <div className="w-1 h-1 bg-red-500 rounded-full mx-0.5"></div>
                     </div>
                     
                     <div className="flex flex-col items-center">
-                      <div className="bg-gradient-to-b from-red-600 to-rose-700 text-white text-2xl md:text-3xl font-mono font-bold rounded-lg px-3 py-3 min-w-[60px] shadow-lg border border-red-500/30">
+                      <div className="bg-gradient-to-b from-red-600 to-rose-700 text-white text-xl md:text-2xl font-mono font-bold rounded px-2 py-2 min-w-[50px] shadow-md border border-red-500/30">
                         {timeLeft.minutes.toString().padStart(2, '0')}
                       </div>
-                      <span className="text-xs text-red-300 font-medium mt-2 uppercase tracking-wider">Minutes</span>
+                      <span className="text-[10px] text-red-600 dark:text-red-400 font-medium mt-1.5 uppercase tracking-wider">MIN</span>
                     </div>
                     
-                    <div className="flex items-center justify-center">
-                      <div className="w-1 h-1 bg-red-500 rounded-full mx-1"></div>
-                      <div className="w-1 h-1 bg-red-500 rounded-full mx-1"></div>
+                    <div className="flex items-center justify-center pt-2">
+                      <div className="w-1 h-1 bg-red-500 rounded-full mx-0.5"></div>
+                      <div className="w-1 h-1 bg-red-500 rounded-full mx-0.5"></div>
                     </div>
                     
                     <div className="flex flex-col items-center">
-                      <div className="bg-gradient-to-b from-red-600 to-rose-700 text-white text-2xl md:text-3xl font-mono font-bold rounded-lg px-3 py-3 min-w-[60px] shadow-lg border border-red-500/30">
+                      <div className="bg-gradient-to-b from-red-600 to-rose-700 text-white text-xl md:text-2xl font-mono font-bold rounded px-2 py-2 min-w-[50px] shadow-md border border-red-500/30">
                         {timeLeft.seconds.toString().padStart(2, '0')}
                       </div>
-                      <span className="text-xs text-red-300 font-medium mt-2 uppercase tracking-wider">Seconds</span>
+                      <span className="text-[10px] text-red-600 dark:text-red-400 font-medium mt-1.5 uppercase tracking-wider">SEC</span>
                     </div>
                   </div>
                 )}
                 
                 {timeLeft.is3AM && (
-                  <div className="text-center py-4">
+                  <div className="text-center py-2">
                     <Button 
-                      size="lg" 
-                      className="bg-gradient-to-r from-red-600 to-rose-700 hover:from-red-700 hover:to-rose-800 text-white font-bold shadow-lg"
+                      size="sm" 
+                      className="bg-gradient-to-r from-red-600 to-rose-700 hover:from-red-700 hover:to-rose-800 text-white font-semibold shadow-md text-sm"
                       onClick={() => window.open('/3AM-Confessions-Preview.pdf', '_blank')}
                       itemProp="url"
                     >
-                      <BookOpen className="w-5 h-5 mr-2" />
-                      Read Full Book Now
+                      <BookOpen className="w-4 h-4 mr-1.5" />
+                      Read Full Book
                     </Button>
                   </div>
                 )}
@@ -375,30 +365,30 @@ export function Hero() {
             </motion.div>
 
             {/* Bio */}
-            <motion.p className="max-w-2xl text-base text-muted-foreground text-center leading-relaxed font-light" variants={itemVariants} itemProp="description">
+            <motion.p className="max-w-2xl text-sm text-muted-foreground text-center leading-relaxed" variants={itemVariants} itemProp="description">
               {userDetails.bio}
             </motion.p>
 
             {/* Social Links */}
-            <motion.div className="flex items-center gap-2" variants={itemVariants}>
-              <Button variant="ghost" size="sm" className="h-10 w-10 rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700" asChild>
+            <motion.div className="flex items-center gap-1.5" variants={itemVariants}>
+              <Button variant="ghost" size="sm" className="h-9 w-9 rounded-full bg-white/50 dark:bg-slate-800/50 hover:bg-white dark:hover:bg-slate-700 backdrop-blur-sm" asChild>
                 <Link href={userDetails.socials.facebook} target="_blank" aria-label="Facebook" itemProp="sameAs">
-                  <Facebook className="h-4 w-4" />
+                  <Facebook className="h-3.5 w-3.5" />
                 </Link>
               </Button>
-              <Button variant="ghost" size="sm" className="h-10 w-10 rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700" asChild>
+              <Button variant="ghost" size="sm" className="h-9 w-9 rounded-full bg-white/50 dark:bg-slate-800/50 hover:bg-white dark:hover:bg-slate-700 backdrop-blur-sm" asChild>
                 <Link href={userDetails.socials.linkedin} target="_blank" aria-label="LinkedIn" itemProp="sameAs">
-                  <Linkedin className="h-4 w-4" />
+                  <Linkedin className="h-3.5 w-3.5" />
                 </Link>
               </Button>
-              <Button variant="ghost" size="sm" className="h-10 w-10 rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700" asChild>
+              <Button variant="ghost" size="sm" className="h-9 w-9 rounded-full bg-white/50 dark:bg-slate-800/50 hover:bg-white dark:hover:bg-slate-700 backdrop-blur-sm" asChild>
                 <Link href={userDetails.socials.email} aria-label="Email">
-                  <Mail className="h-4 w-4" />
+                  <Mail className="h-3.5 w-3.5" />
                 </Link>
               </Button>
-              <Button variant="ghost" size="sm" className="h-10 w-10 rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700" asChild>
+              <Button variant="ghost" size="sm" className="h-9 w-9 rounded-full bg-white/50 dark:bg-slate-800/50 hover:bg-white dark:hover:bg-slate-700 backdrop-blur-sm" asChild>
                 <Link href={userDetails.socials.whatsapp} target="_blank" aria-label="WhatsApp">
-                  <WhatsappIcon className="h-4 w-4" />
+                  <WhatsappIcon className="h-3.5 w-3.5" />
                 </Link>
               </Button>
             </motion.div>
