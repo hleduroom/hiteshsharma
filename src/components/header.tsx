@@ -1,51 +1,72 @@
+"use client";
+
 import Link from "next/link";
-import Image from "next/image";
-import { Code2, Menu } from "lucide-react";
+import { Menu } from "lucide-react";
 import { ThemeToggle } from "./theme-toggle";
 import { Button } from "./ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "./ui/sheet";
 
 export function Header() {
   const navLinks = [
-    { href: "#home", label: "Home" },
-    { href: "#about", label: "About" },
-    { href: "#projects", label: "Projects" },
-    { href: "#terminal", label: "Terminal" },
-    { href: "#contact", label: "Contact" },
+    { href: "/", label: "Home" },
+    { href: "/about", label: "About" },
+    { href: "/cart", label: "Cart" },
+    { href: "/book", label: "Book" },
+    { href: "/contact", label: "Contact" },
   ];
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container flex h-14 items-center">
-        <div className="mr-auto flex items-center gap-4">
-          <Link href="/" className="flex items-center space-x-2">
-            <Code2 className="h-6 w-6 text-primary" />
-            <span className="hidden font-bold sm:inline-block font-headline">
-              Hitesh Sharma
-            </span>
+    <header className="sticky top-0 z-50 w-full border-b border-white/10 bg-white/10 backdrop-blur-lg supports-[backdrop-filter]:bg-white/5 shadow-md">
+      <div className="container flex h-14 items-center justify-between">
+        {/* --- Left: Name in Holiday Font --- */}
+        <div className="flex items-center gap-3">
+          <Link href="/" className="text-2xl font-bold font-holiday text-foreground tracking-wide">
+            Hitesh Sharma
           </Link>
-          <div className="hidden items-center gap-4 md:flex">
-              <a href="https://hleduroom.com" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-primary">
-                <Image src="https://hleduroom.com/favicon.ico" alt="HLEduroom Logo" width={16} height={16} />
-                <span className="hidden md:inline">HLEduroom</span>
-              </a>
-              <a href="https://www.thehiteshsir.com" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-primary">
-                <Image src="https://www.thehiteshsir.com/favicon.ico" alt="The Hitesh Sir Logo" width={16} height={16} />
-                <span className="hidden md:inline">The Hitesh Sir</span>
-              </a>
-          </div>
         </div>
-        
-        <div className="flex items-center justify-end space-x-2">
-           <div className="flex items-center gap-2 md:hidden">
-              <a href="https://hleduroom.com" target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-sm font-medium text-muted-foreground hover:text-primary">
-                <Image src="https://hleduroom.com/favicon.ico" alt="HLEduroom Logo" width={16} height={16} />
-              </a>
-              <a href="https://www.thehiteshsir.com" target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-sm font-medium text-muted-foreground hover:text-primary">
-                <Image src="https://www.thehiteshsir.com/favicon.ico" alt="The Hitesh Sir Logo" width={16} height={16} />
-              </a>
-          </div>
+
+        {/* --- Center: Navigation (Desktop) --- */}
+        <nav className="hidden md:flex items-center gap-6">
+          {navLinks.map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              className="text-sm font-medium text-foreground/80 hover:text-primary transition-colors"
+            >
+              {link.label}
+            </Link>
+          ))}
+        </nav>
+
+        {/* --- Right: Theme toggle + Mobile menu --- */}
+        <div className="flex items-center gap-3">
           <ThemeToggle />
+
+          {/* Mobile Navigation */}
+          <Sheet>
+            <SheetTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="md:hidden hover:bg-white/20"
+              >
+                <Menu className="h-5 w-5" />
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="right" className="w-[200px] bg-white/10 backdrop-blur-xl border-white/20">
+              <nav className="flex flex-col gap-4 mt-6">
+                {navLinks.map((link) => (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    className="text-sm font-medium text-foreground/80 hover:text-primary transition-colors"
+                  >
+                    {link.label}
+                  </Link>
+                ))}
+              </nav>
+            </SheetContent>
+          </Sheet>
         </div>
       </div>
     </header>
