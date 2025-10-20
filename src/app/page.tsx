@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect } from "react";
@@ -14,7 +13,8 @@ import { Contact } from "@/components/sections/contact";
 
 const userDetails = {
   name: "Hitesh Sharma",
-  image: "https://res.cloudinary.com/dgxoe15jd/image/upload/v1756232910/retouch_2025080121291186_hcbobr.jpg",
+  image:
+    "https://res.cloudinary.com/dgxoe15jd/image/upload/v1756232910/retouch_2025080121291186_hcbobr.jpg",
 };
 
 export default function Home() {
@@ -24,7 +24,7 @@ export default function Home() {
     const timer = setTimeout(() => {
       setIsLoading(false);
       document.body.style.overflow = "auto";
-    }, 3000); 
+    }, 3000); // Preloader duration
 
     return () => {
       clearTimeout(timer);
@@ -35,18 +35,23 @@ export default function Home() {
   return (
     <>
       <AnimatePresence mode="wait">
-        {isLoading && <Preloader userImage={userDetails.image} userName={userDetails.name} />}
+        {isLoading && (
+          <Preloader
+            userImage={userDetails.image}
+            userName={userDetails.name}
+          />
+        )}
       </AnimatePresence>
 
       {!isLoading && (
-        <div className="flex min-h-screen flex-col bg-background">
+        <div className="flex min-h-screen flex-col bg-background text-foreground">
           <Header />
           <main className="flex-1">
             <Hero />
-            <div className="space-y-4">
+            <div className="space-y-16 py-12">
               <About />
-              {/* <Projects /> */}
-              {/* <TerminalSection /> */}
+              <Projects />
+              <TerminalSection />
               <Contact />
             </div>
           </main>
