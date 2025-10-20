@@ -78,12 +78,12 @@ const Preloader = ({ userImage, userName }: { userImage: string, userName: strin
         />
       </motion.div>
       
-      {/* 2. User Name with "Great Vibe" Font and Writing Animation */}
+      {/* 2. User Name with "Great Vibes" Font and Writing Animation */}
       <motion.div 
         // *************************************************************************
-        // *** FONT CHANGE: Replaced font-cursive with a placeholder `font-vibe` ***
+        // *** FONT CHANGE: Using the new utility class `font-signature` ***
         // *************************************************************************
-        className="mt-6 flex overflow-hidden text-4xl font-normal font-vibe text-foreground md:text-5xl" 
+        className="mt-6 flex overflow-hidden text-4xl font-normal font-signature text-foreground md:text-5xl" 
         variants={nameContainerVariants}
         initial="initial"
         animate="animate"
@@ -93,7 +93,7 @@ const Preloader = ({ userImage, userName }: { userImage: string, userName: strin
            <motion.span 
              key={index} 
              variants={letterVariants} 
-             className="inline-block leading-none" // `leading-none` helps with cursive font spacing
+             className="inline-block leading-none" 
            >
              {letter === " " ? "\u00A0" : letter}
            </motion.span>
