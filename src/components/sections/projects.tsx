@@ -1,40 +1,25 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
+// Import the data structure defined in "@/lib/placeholder-images"
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { Button } from "../ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "../ui/card";
 import { Section } from "./section";
-// Import Next.js Script component for JSON-LD
 import Script from 'next/script'; 
 
-// --- Project Data with URL (Type Mockup) ---
+// --- Component Data Setup ---
 
-// Define the structure of a project item
-interface ProjectItem {
-  id: string;
-  imageUrl: string;
-  description: string;
-  imageHint: string;
-  url: string; // Added for Schema and Link activation
-  name: string; // Added for Schema
-  tags: string[]; // Added for SEO/Tags
-}
-
-// Mocking the PlaceholderImages data to ensure required fields (name, url, tags) exist
-const projects: ProjectItem[] = PlaceHolderImages.map((p, index) => ({
-  ...p,
-  id: `project-${index + 1}`, // Ensure unique ID for Schema
-  name: `Featured Project ${index + 1}`,
-  url: `https://yourdomain.com/projects/${p.id}`, // REPLACE with your actual domain/URLs
-  tags: ["Web Development", "Education", "Next.js", "Tailwind CSS"], // Example tags
-}));
+// 1. We now use the imported data directly, as it contains 'name', 'url', and 'tags'.
+// The 'PlaceHolderImages' export from the lib file already contains the correct array.
+const projects = PlaceHolderImages;
 
 
 export function Projects() {
   return (
     <Section id="projects">
       {/* 1. JSON-LD Schema.org Markup for Projects */}
+      {/* This section now correctly uses the fields available on the imported 'projects' data */}
       {projects.map((project) => (
         <Script
           key={`schema-${project.id}`}
@@ -43,17 +28,17 @@ export function Projects() {
           dangerouslySetInnerHTML={{
             __html: JSON.stringify({
               "@context": "https://schema.org",
-              "@type": "SoftwareApplication", // A good type for technical projects
+              "@type": "SoftwareApplication", 
               "name": project.name,
               "description": project.description,
               "url": project.url,
               "applicationCategory": "DeveloperApplication",
               "image": project.imageUrl,
               "keywords": project.tags.join(', '),
-              "dateCreated": new Date().toISOString().split('T')[0], // Use the creation date
+              "dateCreated": "2024-01-01", // Use a fixed/actual project creation date, not runtime date
               "author": {
                 "@type": "Person",
-                "name": "Hitesh Sharma" // REPLACE with your full name
+                "name": "Hitesh Sharma" 
               }
             }),
           }}
@@ -75,7 +60,7 @@ export function Projects() {
           {projects.map((project) => (
             <Card key={project.id} className="overflow-hidden transition-all duration-300 hover:shadow-2xl hover:-translate-y-2 group">
               <CardHeader className="flex justify-center items-center p-6 pb-0">
-                {/* 2. Circular Image with Shadow Effect */}
+                {/* Circular Image with Shadow Effect */}
                 <div className="relative h-36 w-36 rounded-full shadow-lg transition-shadow duration-300 group-hover:shadow-primary/50 group-hover:shadow-2xl overflow-hidden border-4 border-background ring-4 ring-primary/20">
                   <Image
                     src={project.imageUrl}
