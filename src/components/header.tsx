@@ -92,23 +92,20 @@ export function Header() {
           })}
         </nav>
 
-        {/* Center - Animated Signature with Favicon Logo */}
+        {/* Center - Animated Signature */}
         <div className="flex items-center justify-center flex-1 lg:flex-none">
-          <Link href="/" className="group relative flex items-center gap-2"> {/* Added gap-2 */}
-            
-            {/* Favicon Logo */}
+          <Link href="/" className="group relative flex flex-col items-center">
+            {/* Animated Background Glow */}
             <motion.div
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.5 }}
-              className="relative h-6 w-6 rounded-full overflow-hidden shadow-md -mt-1"
-            >
-              <Image src="/favicon.ico" alt="Hitesh Sharma Logo" width={24} height={24} priority />
-            </motion.div>
+              initial={{ opacity: 0 }}
+              animate={{ opacity: [0, 0.4, 0.2, 0.5] }}
+              transition={{ duration: 3, repeat: Infinity }}
+              className="absolute inset-0 -z-10 rounded-full bg-gradient-to-r from-primary/30 via-white/5 to-primary/30 blur-xl"
+            />
 
             {/* Signature Text */}
             <motion.span
-              className="text-3xl sm:text-4xl md:text-5xl lg:text-5xl font-[Great_Vibes] bg-gradient-to-r from-foreground to-primary bg-clip-text text-transparent drop-shadow-md"
+              className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-[Great_Vibes] bg-gradient-to-r from-foreground to-primary bg-clip-text text-transparent drop-shadow-md"
               style={{ fontFamily: "'Great Vibes', cursive" }}
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
