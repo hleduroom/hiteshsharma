@@ -8,7 +8,6 @@ import { Hero } from "@/components/sections/hero";
 import { Preloader } from "@/components/preloader";
 import { About } from "@/components/sections/about";
 import { Projects } from "@/components/sections/projects";
-import { TerminalSection } from "@/components/sections/terminal-section";
 import { Contact } from "@/components/sections/contact";
 
 const userDetails = {
@@ -51,7 +50,6 @@ export default function Home() {
             <div className="space-y-16 py-12">
               <About />
               <Projects />
-              <TerminalSection />
               <Contact />
             </div>
           </main>
