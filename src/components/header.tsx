@@ -46,7 +46,7 @@ export function Header() {
             href="/" 
             className="text-3xl font-bold font-signature text-foreground tracking-wide"
           >
-            Hitesh Sharma
+            hitesh sharma
           </Link>
         </div>
 
