@@ -1,6 +1,8 @@
+"use client";
+
 import Link from "next/link";
-import Image from "next/image"; // Added Image import for favicon logo
-import { useState } from "react"; // Added useState for mobile menu state
+import Image from "next/image"; // Import Image for favicon
+import { useState } from "react"; // Import useState for Sheet state
 import {
   Menu,
   Sparkles,
@@ -12,25 +14,24 @@ import {
   Facebook,
   Instagram,
   Globe,
-  ArrowRight,
+  ArrowRight, // For external link indicator
 } from "lucide-react";
 import { ThemeToggle } from "./theme-toggle";
 import { Button } from "./ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "./ui/sheet";
 import { motion } from "framer-motion";
 
-// Removed unused import: import { Analytics } from "@vercel/analytics/next"
+// Vercel Analytics import is still excluded from this component, as it belongs in app/layout.tsx
 
 export function Header() {
   const [isSheetOpen, setIsSheetOpen] = useState(false);
 
   const navLinks = [
     { href: "/", label: "Home", icon: Home, external: false },
-    { href: "#about", label: "About", icon: User, external: false },
-    // Fixed external URL for Book
+    { href: "/about", label: "About", icon: User, external: false },
     { href: "https://www.hleduroom.com/instructor/hitesh", label: "Book", icon: BookOpen, external: true },
+    { href: "https://thehiteshsir.com", label: "Website", icon: Globe, external: true },
     { href: "/cart", label: "Cart", icon: ShoppingCart, external: false },
-    // Fixed external URL for Contact
     { href: "https://hleduroom.com/contact", label: "Contact", icon: Mail, external: true },
   ];
 
@@ -41,10 +42,27 @@ export function Header() {
     { href: "mailto:thehiteshsir@gmail.com", icon: Mail },
   ];
 
+  // Function to close the sheet on link click (for mobile navigation)
   const handleLinkClick = () => {
-    // Closes the mobile sheet when a link is clicked
     setIsSheetOpen(false);
   };
+
+  // --- Animation Variants for Mobile Menu ---
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.05,
+      },
+    },
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, x: -20 },
+    show: { opacity: 1, x: 0 },
+  };
+  // -----------------------------------------
 
   // Professional desktop navigation link renderer
   const renderDesktopNavLink = (link: typeof navLinks[0]) => {
@@ -59,28 +77,27 @@ export function Header() {
         target={link.external ? "_blank" : "_self"}
         rel={link.external ? "noopener noreferrer" : ""}
       >
-        {/* Reduced Icon Size to h-3.5 w-3.5 */}
         <Icon className="h-3.5 w-3.5 transition-transform group-hover:scale-105" />
         <span className="tracking-wide">{link.label}</span>
       </Link>
     );
   };
 
+
   return (
-    // APPLY GLASS EFFECT: backdrop-blur-xl and reduced background opacity
+    // GLASS EFFECT: backdrop-blur-xl and reduced background opacity
     <header className="sticky top-0 z-50 w-full backdrop-blur-xl bg-background/70 border-b border-border/50 shadow-lg">
-      <div className="container h-16 flex items-center justify-between px-4 sm:px-6 lg:px-8">
+      <div className="container h-16 md:h-18 flex items-center justify-between px-4 sm:px-6 lg:px-8">
 
         {/* Left - Desktop Navigation (Home, About) */}
         <nav className="hidden xl:flex items-center gap-1">
           {navLinks.slice(0, 2).map(renderDesktopNavLink)}
         </nav>
 
-        {/* Center - Professional Logo/Branding */}
+        {/* Center - Professional Logo/Branding with Favicon */}
         <div className="flex items-center justify-center flex-1 lg:flex-none">
           <Link href="/" className="group relative flex items-center gap-2">
-
-            {/* Favicon Logo */}
+             {/* Favicon Logo */}
             <motion.div
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
@@ -103,7 +120,7 @@ export function Header() {
           </Link>
         </div>
 
-        {/* Right - Desktop Nav + Controls (Book, Cart, Contact) */}
+        {/* Right - Desktop Nav + Controls */}
         <div className="hidden xl:flex items-center gap-1">
           {navLinks.slice(2).map(renderDesktopNavLink)}
 
@@ -120,43 +137,48 @@ export function Header() {
           <div className="p-1.5 rounded-lg border border-border">
             <ThemeToggle />
           </div>
+          
           <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}> {/* BIND STATE */}
             <SheetTrigger asChild>
-              <Button variant="outline" size="icon" className="h-10 w-10 border-border hover:bg-primary/5 transition-all duration-300 rounded-lg" >
+              <Button 
+                variant="outline" 
+                size="icon" 
+                className="h-10 w-10 border-border hover:bg-primary/5 transition-all duration-300 rounded-lg" 
+              >
+                {/* Menu Icon remains h-5 w-5 for touch target */}
                 <Menu className="h-5 w-5" />
               </Button>
             </SheetTrigger>
 
-            {/* APPLY GLASS EFFECT TO SHEET CONTENT: backdrop-blur-2xl */}
+            {/* SHEET GLASS EFFECT & PROFESSIONAL STYLING */}
             <SheetContent
-              side="right"
-              className="w-[85vw] max-w-sm bg-background/80 backdrop-blur-2xl border-l border-primary/20 shadow-2xl flex flex-col pt-10"
+              side="left" // Changed to left side for modern feel
+              className="w-[85vw] max-w-sm bg-background/80 backdrop-blur-2xl border-r border-primary/20 shadow-2xl flex flex-col pt-10"
             >
-              {/* Header Section (Simplified) */}
+              {/* Header Section (Branded) */}
               <div className="flex flex-col items-center p-4 mb-6 border-b border-border/50">
-                <div className="relative h-10 w-10 mb-2 rounded-full overflow-hidden shadow-lg border border-primary/20">
-                  <Image src="/favicon.ico" alt="Hitesh Sharma Logo" width={40} height={40} />
+                <div className="relative h-12 w-12 mb-2 rounded-full overflow-hidden shadow-lg border border-primary/20">
+                  <Image src="/favicon.ico" alt="Hitesh Sharma Logo" width={48} height={48} />
                 </div>
                 <span className="text-3xl font-bold tracking-tight text-foreground" >
                   Hitesh Sharma
                 </span>
                 <p className="text-sm text-muted-foreground flex items-center gap-1 mt-1">
-                  <Sparkles className="h-3 w-3 text-primary" /> Author & Developer Portfolio
+                  <Sparkles className="h-3 w-3 text-primary" /> Author & Developer
                 </p>
               </div>
 
               {/* Navigation with professional staggered animation */}
-              <nav className="flex flex-col gap-1 mb-6">
-                {navLinks.map((link, index) => {
+              <motion.nav 
+                className="flex flex-col gap-1 mb-6"
+                variants={containerVariants}
+                initial="hidden"
+                animate="show"
+              >
+                {navLinks.map((link) => {
                   const Icon = link.icon;
                   return (
-                    <motion.div
-                      key={link.href}
-                      // Staggered animation on sheet open
-                      initial={{ opacity: 0, x: 50 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ duration: 0.3, delay: index * 0.05 }}
-                    >
+                    <motion.div key={link.href} variants={itemVariants}>
                       <Link
                         href={link.href}
                         className="group flex items-center gap-3 px-3 py-3 text-sm font-medium text-foreground hover:text-primary transition-all duration-300 hover:bg-primary/5 rounded-lg"
@@ -164,7 +186,7 @@ export function Header() {
                         rel={link.external ? "noopener noreferrer" : ""}
                         onClick={handleLinkClick} // CLOSE SHEET ON CLICK
                       >
-                        {/* H-4 W-4 for better touch target */}
+                        {/* H-4 W-4 for better touch target and visibility */}
                         <Icon className="h-4 w-4 text-foreground/70 group-hover:text-primary" />
                         <span>{link.label}</span>
                         {/* External link indicator */}
@@ -173,7 +195,7 @@ export function Header() {
                     </motion.div>
                   );
                 })}
-              </nav>
+              </motion.nav>
 
               {/* Footer Social Links */}
               <div className="mt-auto pt-4 border-t border-border/50">
@@ -188,7 +210,6 @@ export function Header() {
                         rel="noopener noreferrer"
                         className="p-2 rounded-full border border-border hover:border-primary transition-all duration-300 hover:bg-primary/5 hover:scale-110 shadow-sm"
                       >
-                        {/* Reduced size for subtle social icons */}
                         <Icon className="h-3.5 w-3.5 text-foreground/70 hover:text-primary transition-colors" />
                       </a>
                     );
