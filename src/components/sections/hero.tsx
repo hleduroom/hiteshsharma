@@ -6,9 +6,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { Facebook, Linkedin, Mail } from "lucide-react";
 import { Badge } from "../ui/badge";
-import { useState, useEffect, useCallback, useMemo } from "react";
-// Import your custom font utility here if using Next.js 
-// import { greatVibes } from '@/app/fonts'; // Example for next/font
+import { useState, useEffect, useCallback } from "react";
 
 // --- Utility Components ---
 
@@ -27,6 +25,7 @@ function WhatsappIcon(props: React.SVGProps<SVGSVGElement>) {
       strokeLinecap="round"
       strokeLinejoin="round"
     >
+      {/* Path for a standard WhatsApp icon */}
       <path d="M22 14v4a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4" />
       <path d="M12 2C6.5 2 2 6.5 2 12c0 1.5.3 3 .8 4.3l-1.6 5.9 6-1.5c1.4.5 3 .8 4.8.8 5.5 0 9.9-4.5 9.9-10S17.5 2 12 2zM12 20c-1.5 0-3-.4-4.3-1l-3 3 1-3c-1-1.3-1.6-3-1.6-4.9 0-4.4 3.6-8 8-8s8 3.6 8 8-3.6 8-8 8zM17 14.5c-.3-.2-.5-.3-1.1-.6-.6-.3-.9-.4-1.2-.4-.3 0-.6-.1-.8.2s-.7.8-.8.9c-.1.2-.3.2-.5.1-.9-.4-1.7-.9-2.5-1.6-.6-.6-1-1.3-1.4-2s-.5-1.2-.2-1.6c.1-.2.3-.5.4-.6.1-.2.2-.4.3-.5.1-.2.1-.3.1-.6s0-.4-.3-.7c-.2-.2-.5-.6-.7-.8-.2-.3-.5-.2-.7-.2h-.4c-.2 0-.6.1-1 .5-.4.4-.7.9-.7 1.2s.7 1.6 1 1.9c.2.3.4.6.6.7.2.1.4.3.5.4.1.1.2.3.2.5s-.2.5-.2.7c-.1.2-.2.3-.4.5-.2.2-.4.3-.6.4-.3.2-.5.3-1 .6z" />
     </svg>
@@ -36,7 +35,7 @@ function WhatsappIcon(props: React.SVGProps<SVGSVGElement>) {
 // --- Book Constants ---
 const LAUNCH_HOUR = 3; // 3 AM
 const LAUNCH_MINUTE = 0; // 0 minutes
-// Note: You must place these PDFs in your public directory
+// NOTE: Ensure these files are in your public directory
 const PDF_PREVIEW_PATH = "/3AM-Confessions-Preview.pdf#page=1";
 const PDF_FULL_PATH = "/3AM-Confessions-Full.pdf"; 
 
@@ -66,8 +65,12 @@ const useLaunchCountdown = () => {
     launchDate.setHours(LAUNCH_HOUR, LAUNCH_MINUTE, 0, 0);
 
     // If it's already past 3 AM today, set the launch time to 3 AM tomorrow
+    // This is useful only if you want the timer to always count down to 3 AM, 
+    // but for a one-time launch today, the logic assumes the current date.
     if (now.getTime() > launchDate.getTime()) {
-      launchDate.setDate(launchDate.getDate() + 1);
+       // Check if it's past 3 AM today, but within the next 24 hours of today's 3 AM
+       // For a fixed "Today at 3 AM" launch, we'll keep the logic simple:
+       // If it's past 3 AM, the book is launched (isLaunched: true)
     }
     
     const difference = launchDate.getTime() - now.getTime();
@@ -86,8 +89,6 @@ const useLaunchCountdown = () => {
   const [timeLeft, setTimeLeft] = useState(calculateTimeLeft());
 
   useEffect(() => {
-    // Only run the timer if the difference is greater than zero, 
-    // though the calculateTimeLeft handles the return value correctly.
     const timer = setInterval(() => {
       setTimeLeft(calculateTimeLeft());
     }, 1000);
@@ -98,14 +99,11 @@ const useLaunchCountdown = () => {
   return timeLeft;
 };
 
-// --- Book Viewer Placeholder (for professional presentation) ---
+// --- Book Viewer Placeholder ---
 
 const BookViewer = ({ isLaunched }: { isLaunched: boolean }) => {
   const pdfPath = isLaunched ? PDF_FULL_PATH : PDF_PREVIEW_PATH;
   
-  // NOTE: This component is a professional placeholder. 
-  // To get the actual PDF preview and book turning effect, you need to 
-  // install and use external libraries (e.g., react-pdf, react-page-flip).
   return (
     <motion.div
       className="w-full max-w-lg mx-auto h-[400px] bg-card border-4 border-primary/50 rounded-lg shadow-2xl flex items-center justify-center overflow-hidden"
@@ -133,17 +131,21 @@ const BookViewer = ({ isLaunched }: { isLaunched: boolean }) => {
   );
 };
 
-// --- Countdown Display Component (FIXED TYPE ERROR) ---
+// --- Countdown Display Component (TypeScript & Variant Errors Fixed) ---
 
 const CountdownDisplay = ({ 
   hours, 
   minutes, 
   seconds, 
   isLaunched 
-}: ReturnType<typeof useLaunchCountdown>) => { // FIXED: Destructure all properties directly
+}: ReturnType<typeof useLaunchCountdown>) => {
   if (isLaunched) {
     return (
-      <Badge variant="success" className="text-lg px-4 py-2 bg-green-500 hover:bg-green-500 animate-none">
+      // FIX: Changed variant="success" to variant="default" (Valid variant)
+      <Badge 
+        variant="default" 
+        className="text-lg px-4 py-2 bg-green-500 hover:bg-green-500 animate-none text-white" 
+      >
         🎉 Book Published at 3 AM!
       </Badge>
     );
@@ -154,7 +156,7 @@ const CountdownDisplay = ({
   return (
     <div className="flex flex-col items-center">
       <Badge variant="outline" className="text-xs mb-2 border-primary text-primary">
-        Next Launch at 3:00 AM 
+        Next Launch at 3:00 AM Today
       </Badge>
       <div className="flex space-x-4">
         {[
@@ -253,6 +255,7 @@ export function Hero() {
 
           {/* 2. Book Publication Announcement & Countdown */}
           <motion.div className="text-center max-w-3xl" variants={itemVariants}>
+            {/* Using font-signature for the Great Vibes cursive look */}
             <h2 className="text-3xl sm:text-4xl font-extrabold mb-4 font-signature text-foreground">
               "3 AM Confessions: My Life as OverThinker" Book is Published!
             </h2>
@@ -262,7 +265,7 @@ export function Hero() {
                 : "The book will be fully published today at **3:00 AM**. Until then, enjoy the first page preview!"}
             </p>
             
-            {/* Countdown Display Call (passing individual props) */}
+            {/* Countdown Display Call (Passing corrected individual props) */}
             <CountdownDisplay 
                 hours={timeLeft.hours}
                 minutes={timeLeft.minutes}
