@@ -1,4 +1,4 @@
-import { bookData, relatedBooks, type Book } from '@/lib/data/book';
+import { mainBook, relatedBooks, allBooks, type Book } from '@/lib/data/books';
 import { notFound } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -16,14 +16,8 @@ interface BookDetailsPageProps {
 export default async function BookDetailsPage({ params }: BookDetailsPageProps) {
   const { id } = await params;
   
-  // Find the book - check main book first, then related books
-  let book: Book | undefined;
-  
-  if (id === bookData.id) {
-    book = bookData;
-  } else {
-    book = relatedBooks.find(b => b.id === id);
-  }
+  // Find the book
+  const book = allBooks.find(b => b.id === id);
 
   if (!book) {
     notFound();
@@ -160,7 +154,7 @@ export default async function BookDetailsPage({ params }: BookDetailsPageProps) 
         </div>
 
         {/* Related Books Section */}
-        {id === bookData.id && relatedBooks.length > 0 && (
+        {id === mainBook.id && relatedBooks.length > 0 && (
           <section className="mt-16">
             <div className="flex items-center justify-between mb-8">
               <h2 className="text-2xl font-bold">You Might Also Like</h2>
