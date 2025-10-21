@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useCart } from '@/lib/context/CartContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -31,6 +31,13 @@ export default function CheckoutPage() {
     nameOnCard: '',
     transactionId: ''
   });
+
+  // Handle empty cart redirect
+  useEffect(() => {
+    if (state.items.length === 0) {
+      router.push('/cart');
+    }
+  }, [state.items.length, router]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
@@ -90,9 +97,15 @@ export default function CheckoutPage() {
     }
   };
 
+  // Show loading or nothing while redirecting
   if (state.items.length === 0) {
-    router.push('/cart');
-    return null;
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white dark:from-slate-950 dark:to-slate-900 flex items-center justify-center">
+        <div className="text-center">
+          <p>Redirecting to cart...</p>
+        </div>
+      </div>
+    );
   }
 
   const selectedBook = state.items[0]?.book;
