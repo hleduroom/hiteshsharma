@@ -107,8 +107,8 @@ const structuredData = {
 function TypingAnimation() {
   const [text, setText] = useState('');
   const [currentIndex, setCurrentIndex] = useState(0);
-  const fullText = ""यः परिश्रमतः किञ्चित्, न तस्य दुर्लभं जगत्।"
-Normal Human try to Experiencing Every Moments of Life 🍃";
+  const fullText = `यः परिश्रमतः किञ्चित्, न तस्य दुर्लभं जगत्।
+Normal Human try to Experiencing Every Moments of Life 🍃`;
 
   useEffect(() => {
     if (currentIndex < fullText.length) {
