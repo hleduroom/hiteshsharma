@@ -17,7 +17,11 @@ export default function EbookPage() {
 
   const id = params.id as string;
 
-  if (id !== bookData.id) {
+  // Find the book data based on the ID
+  const bookData = allBooks.find(book => book.id === id) || mainBook;
+
+  // If book is not found, show 404
+  if (!bookData) {
     notFound();
   }
 
