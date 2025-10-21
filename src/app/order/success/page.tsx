@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { CheckCircle, Download, Mail, BookOpen, Clock, MapPin } from 'lucide-react';
 import Link from 'next/link';
-import { useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 
 interface ReceiptData {
   receiptId: string;
@@ -23,14 +23,24 @@ export default function OrderSuccessPage() {
   const [orderId, setOrderId] = useState('');
   const [orderDate, setOrderDate] = useState('');
   const [receiptData, setReceiptData] = useState<ReceiptData | null>(null);
-  const searchParams = useSearchParams();
-  const amount = searchParams.get('amount') || '0';
-  const currency = searchParams.get('currency') || 'NPR';
-  const email = searchParams.get('email') || '';
-  const urlOrderId = searchParams.get('orderId');
+  const [amount, setAmount] = useState('0');
+  const [currency, setCurrency] = useState('NPR');
+  const [email, setEmail] = useState('');
+  const router = useRouter();
 
   useEffect(() => {
+    // Get URL parameters from window location
+    const urlParams = new URLSearchParams(window.location.search);
+    const urlOrderId = urlParams.get('orderId');
+    const urlAmount = urlParams.get('amount');
+    const urlCurrency = urlParams.get('currency');
+    const urlEmail = urlParams.get('email');
+
     setOrderId(urlOrderId || `ORD-${Date.now()}`);
+    setAmount(urlAmount || '0');
+    setCurrency(urlCurrency || 'NPR');
+    setEmail(urlEmail || '');
+    
     setOrderDate(new Date().toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'long',
@@ -45,7 +55,7 @@ export default function OrderSuccessPage() {
     if (latestReceipt) {
       setReceiptData(latestReceipt);
     }
-  }, [urlOrderId]);
+  }, []);
 
   const downloadReceipt = () => {
     const receiptContent = `
