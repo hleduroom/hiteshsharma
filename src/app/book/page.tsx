@@ -1,4 +1,4 @@
-import { bookData, relatedBooks } from '@/lib/data/book';
+import { mainBook, relatedBooks } from '@/lib/data/books';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Star, BookOpen, ArrowRight, Share2 } from 'lucide-react';
@@ -25,8 +25,8 @@ export default function BookPage() {
             <div className="relative group">
               <div className="relative w-80 h-96 rounded-2xl overflow-hidden shadow-2xl">
                 <Image
-                  src={bookData.coverImage}
-                  alt={bookData.title}
+                  src={mainBook.coverImage}
+                  alt={mainBook.title}
                   width={320}
                   height={384}
                   className="object-cover transition-transform duration-300 group-hover:scale-105"
@@ -44,12 +44,12 @@ export default function BookPage() {
           <div className="space-y-6">
             <div>
               <Badge variant="secondary" className="mb-4">
-                {bookData.genre[0]}
+                {mainBook.genre[0]}
               </Badge>
               <h1 className="text-4xl md:text-5xl font-bold text-foreground font-shooting-star mb-4">
-                {bookData.title}
+                {mainBook.title}
               </h1>
-              <p className="text-xl text-muted-foreground mb-2">by {bookData.author}</p>
+              <p className="text-xl text-muted-foreground mb-2">by {mainBook.author}</p>
               
               {/* Rating */}
               <div className="flex items-center space-x-2 mb-4">
@@ -58,7 +58,7 @@ export default function BookPage() {
                     <Star
                       key={i}
                       className={`w-4 h-4 ${
-                        i < Math.floor(bookData.rating)
+                        i < Math.floor(mainBook.rating)
                           ? 'fill-yellow-400 text-yellow-400'
                           : 'text-gray-300'
                       }`}
@@ -66,7 +66,7 @@ export default function BookPage() {
                   ))}
                 </div>
                 <span className="text-sm text-muted-foreground">
-                  {bookData.rating} ({bookData.reviews} reviews)
+                  {mainBook.rating} ({mainBook.reviews} reviews)
                 </span>
               </div>
             </div>
@@ -75,23 +75,23 @@ export default function BookPage() {
             <div>
               <h3 className="text-lg font-semibold mb-2">About the Book</h3>
               <p className="text-muted-foreground leading-relaxed">
-                {bookData.description}
+                {mainBook.description}
               </p>
             </div>
 
             {/* Book Details */}
             <div className="grid grid-cols-2 gap-4 text-sm">
               <div>
-                <span className="font-semibold">Pages:</span> {bookData.pages}
+                <span className="font-semibold">Pages:</span> {mainBook.pages}
               </div>
               <div>
-                <span className="font-semibold">Language:</span> {bookData.language}
+                <span className="font-semibold">Language:</span> {mainBook.language}
               </div>
               <div>
-                <span className="font-semibold">Publisher:</span> {bookData.publisher}
+                <span className="font-semibold">Publisher:</span> {mainBook.publisher}
               </div>
               <div>
-                <span className="font-semibold">ISBN:</span> {bookData.isbn}
+                <span className="font-semibold">ISBN:</span> {mainBook.isbn}
               </div>
             </div>
 
@@ -99,19 +99,19 @@ export default function BookPage() {
             <div className="space-y-4">
               <div className="flex items-baseline space-x-2">
                 <span className="text-3xl font-bold text-foreground">
-                  Starting at {bookData.currency} {bookData.formats.ebook.price}
+                  Starting at {mainBook.currency} {mainBook.formats.ebook.price}
                 </span>
               </div>
 
               <div className="flex flex-col sm:flex-row gap-4">
-                <AddToCartButton book={bookData} />
+                <AddToCartButton book={mainBook} />
                 <Button
                   variant="outline"
                   size="lg"
                   className="flex-1"
                   asChild
                 >
-                  <Link href={`/preview/${bookData.id}`}>
+                  <Link href={`/preview/${mainBook.id}`}>
                     <BookOpen className="w-4 h-4 mr-2" />
                     Read Preview
                   </Link>
