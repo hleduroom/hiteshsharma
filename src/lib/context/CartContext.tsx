@@ -10,7 +10,7 @@ export interface CartItemPayload {
   currency: string;
   format: 'ebook' | 'paperback' | 'hardcover';
   coverImage: string;
-  deliveryCost?: number;
+  deliveryCost: number;
 }
 
 interface CartItem {
@@ -28,8 +28,7 @@ type CartAction =
   | { type: 'ADD_TO_CART'; payload: CartItemPayload & { quantity: number } }
   | { type: 'REMOVE_FROM_CART'; payload: string }
   | { type: 'UPDATE_QUANTITY'; payload: { id: string; quantity: number } }
-  | { type: 'CLEAR_CART' }
-  | { type: 'UPDATE_DELIVERY_FEE'; payload: number };
+  | { type: 'CLEAR_CART' };
 
 const CartContext = createContext<{
   state: CartState;
@@ -45,18 +44,29 @@ const cartReducer = (state: CartState, action: CartAction): CartState => {
       );
 
       const itemPrice = action.payload.price;
-      const deliveryCost = action.payload.format === 'ebook' ? 0 : 150;
+      const deliveryCost = action.payload.deliveryCost;
       const newQuantity = action.payload.quantity || 1;
 
       if (existingItem) {
+        const updatedItems = state.items.map(item =>
+          `${item.book.id}-${item.book.format}` === uniqueId
+            ? { ...item, quantity: item.quantity + newQuantity }
+            : item
+        );
+        
+        const newTotal = updatedItems.reduce((total, item) => 
+          total + (item.book.price * item.quantity), 0
+        );
+        
+        const newDeliveryFee = updatedItems.reduce((fee, item) => 
+          fee + (item.book.deliveryCost * item.quantity), 0
+        );
+
         return {
           ...state,
-          items: state.items.map(item =>
-            `${item.book.id}-${item.book.format}` === uniqueId
-              ? { ...item, quantity: item.quantity + newQuantity }
-              : item
-          ),
-          total: state.total + (itemPrice * newQuantity)
+          items: updatedItems,
+          total: newTotal,
+          deliveryFee: newDeliveryFee
         };
       }
 
@@ -69,7 +79,7 @@ const cartReducer = (state: CartState, action: CartAction): CartState => {
           currency: action.payload.currency,
           format: action.payload.format,
           coverImage: action.payload.coverImage,
-          deliveryCost
+          deliveryCost: action.payload.deliveryCost
         },
         quantity: newQuantity,
       };
@@ -77,21 +87,27 @@ const cartReducer = (state: CartState, action: CartAction): CartState => {
       return {
         ...state,
         items: [...state.items, newItem],
-        total: state.total + (itemPrice * newQuantity)
+        total: state.total + (itemPrice * newQuantity),
+        deliveryFee: state.deliveryFee + (deliveryCost * newQuantity)
       };
 
     case 'REMOVE_FROM_CART':
       const itemToRemove = state.items.find(item => 
         `${item.book.id}-${item.book.format}` === action.payload
       );
-      const removePrice = itemToRemove ? itemToRemove.book.price * itemToRemove.quantity : 0;
+      
+      if (!itemToRemove) return state;
+
+      const removePrice = itemToRemove.book.price * itemToRemove.quantity;
+      const removeDelivery = itemToRemove.book.deliveryCost * itemToRemove.quantity;
 
       return {
         ...state,
         items: state.items.filter(item => 
           `${item.book.id}-${item.book.format}` !== action.payload
         ),
-        total: state.total - removePrice
+        total: state.total - removePrice,
+        deliveryFee: state.deliveryFee - removeDelivery
       };
 
     case 'UPDATE_QUANTITY':
@@ -101,22 +117,28 @@ const cartReducer = (state: CartState, action: CartAction): CartState => {
       if (!itemToUpdate) return state;
 
       const updatePrice = itemToUpdate.book.price;
+      const updateDelivery = itemToUpdate.book.deliveryCost;
       const quantityDiff = action.payload.quantity - itemToUpdate.quantity;
 
-      return {
-        ...state,
-        items: state.items.map(item =>
-          `${item.book.id}-${item.book.format}` === action.payload.id
-            ? { ...item, quantity: action.payload.quantity }
-            : item
-        ),
-        total: state.total + (updatePrice * quantityDiff)
-      };
+      const updatedItems = state.items.map(item =>
+        `${item.book.id}-${item.book.format}` === action.payload.id
+          ? { ...item, quantity: action.payload.quantity }
+          : item
+      );
 
-    case 'UPDATE_DELIVERY_FEE':
+      const newTotal = updatedItems.reduce((total, item) => 
+        total + (item.book.price * item.quantity), 0
+      );
+      
+      const newDeliveryFee = updatedItems.reduce((fee, item) => 
+        fee + (item.book.deliveryCost * item.quantity), 0
+      );
+
       return {
         ...state,
-        deliveryFee: action.payload
+        items: updatedItems,
+        total: newTotal,
+        deliveryFee: newDeliveryFee
       };
 
     case 'CLEAR_CART':
