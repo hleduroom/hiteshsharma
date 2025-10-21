@@ -39,7 +39,7 @@ export const bookData: Book = {
   description: "A profound journey through midnight thoughts and revelations. Published daily at 3 AM, this book explores the life of an overthinker through intimate confessions and philosophical insights about life, dreams, and the human condition.",
   formats: {
     ebook: {
-      price: 399,
+      price: 299,
       features: [
         "Instant PDF download",
         "Mobile-friendly format",
@@ -81,3 +81,93 @@ export const bookData: Book = {
   rating: 4.8,
   reviews: 127
 };
+
+// Create related books array
+export const relatedBooks: Book[] = [
+  {
+    id: "mindfulness-guide",
+    title: "Mindfulness for Overthinkers",
+    author: "Dr. Sarah Johnson",
+    description: "Practical techniques to calm an overactive mind and find peace in the present moment.",
+    formats: {
+      ebook: {
+        price: 249,
+        features: [
+          "Instant PDF download",
+          "Practical exercises",
+          "Audio guided meditations"
+        ]
+      },
+      paperback: {
+        price: 499,
+        features: [
+          "High-quality print",
+          "Free shipping in Nepal"
+        ]
+      },
+      hardcover: {
+        price: 799,
+        features: [
+          "Premium hardcover",
+          "Free shipping in Nepal"
+        ]
+      }
+    },
+    currency: "NPR",
+    coverImage: "/related-book-1.jpg",
+    previewPdf: "/preview-1.pdf",
+    fullPdf: "/full-1.pdf",
+    ebookPassword: "MINDFUL2024",
+    pages: 180,
+    isbn: "9789937-1-9248-4",
+    publisher: "Mindful Publications",
+    publishedDate: "2024-09-15",
+    genre: ["Self-Help", "Psychology"],
+    language: "English",
+    rating: 4.5,
+    reviews: 89
+  },
+  {
+    id: "digital-detox",
+    title: "Digital Detox: Reclaim Your Time",
+    author: "Alex Thompson",
+    description: "Learn how to break free from digital distractions and reclaim your focus and productivity.",
+    formats: {
+      ebook: {
+        price: 279,
+        features: [
+          "Instant PDF download",
+          "30-day challenge plan",
+          "Productivity templates"
+        ]
+      },
+      paperback: {
+        price: 549,
+        features: [
+          "High-quality print",
+          "Free shipping in Nepal"
+        ]
+      },
+      hardcover: {
+        price: 849,
+        features: [
+          "Premium hardcover",
+          "Free shipping in Nepal"
+        ]
+      }
+    },
+    currency: "NPR",
+    coverImage: "/related-book-2.jpg",
+    previewPdf: "/preview-2.pdf",
+    fullPdf: "/full-2.pdf",
+    ebookPassword: "DETOX2024",
+    pages: 220,
+    isbn: "9789937-1-9249-1",
+    publisher: "Productivity Press",
+    publishedDate: "2024-08-20",
+    genre: ["Self-Help", "Productivity", "Technology"],
+    language: "English",
+    rating: 4.6,
+    reviews: 134
+  }
+];
