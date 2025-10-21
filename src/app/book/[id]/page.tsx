@@ -9,12 +9,12 @@ import { Star, Eye, ShoppingCart, Share2 } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Header } from "@/components/header";
 import { useCart } from '@/lib/context/CartContext';
 
 interface BookDetailsPageProps {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }
 
 type FormatType = 'ebook' | 'paperback' | 'hardcover';
@@ -33,14 +33,32 @@ interface CartItemPayload {
 type AddToCartActionPayload = CartItemPayload & { quantity: number };
 
 export default function BookDetailsPage({ params }: BookDetailsPageProps) {
-  const { id } = params;
-  const book = allBooks.find((b) => b.id === id);
-  if (!book) notFound();
-
+  const [book, setBook] = useState<Book | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  
   const { dispatch } = useCart();
   const [selectedFormat, setSelectedFormat] = useState<FormatType>('ebook');
 
+  useEffect(() => {
+    const loadBook = async () => {
+      try {
+        const { id } = await params;
+        const foundBook = allBooks.find((b) => b.id === id);
+        setBook(foundBook || null);
+      } catch (error) {
+        console.error('Error loading book:', error);
+        setBook(null);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadBook();
+  }, [params]);
+
   const handleBuyNow = () => {
+    if (!book) return;
+
     const deliveryCost = selectedFormat === 'ebook' ? 0 : 150;
     const payload: AddToCartActionPayload = {
       id: book.id,
@@ -61,8 +79,25 @@ export default function BookDetailsPage({ params }: BookDetailsPageProps) {
     window.location.href = '/checkout';
   };
 
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white dark:from-slate-950 dark:to-slate-900">
+        <Header />
+        <div className="container mx-auto px-4 py-16 flex justify-center items-center">
+          <div className="text-center">
+            <p>Loading book details...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!book) {
+    notFound();
+  }
+
   const relatedBooks = allBooks.filter(
-    (b) => b.id !== id && b.genre.some((g) => book.genre.includes(g))
+    (b) => b.id !== book.id && b.genre.some((g) => book.genre.includes(g))
   );
 
   return (
