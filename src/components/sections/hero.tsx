@@ -1,5 +1,6 @@
 "use client";
 
+import { Section } from "./section";
 import { motion } from "framer-motion";
 import { Button } from "../ui/button";
 import Link from "next/link";
