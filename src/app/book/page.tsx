@@ -1,4 +1,4 @@
-import { mainBook, relatedBooks } from '@/lib/data/books';
+import { mainBook, relatedBooks } from '@/lib/data/book';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Star, BookOpen, ArrowRight, Share2 } from 'lucide-react';
