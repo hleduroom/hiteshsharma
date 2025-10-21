@@ -26,16 +26,20 @@ export default async function BookDetailsPage({ params }: BookDetailsPageProps) 
   const [selectedFormat, setSelectedFormat] = useState<'ebook' | 'paperback' | 'hardcover'>('ebook');
 
   const handleBuyNow = () => {
-    dispatch({
-      type: 'ADD_TO_CART',
-      payload: {
-        book,
-        quantity: 1,
-        bookFormat: selectedFormat,
-      },
-    });
-    window.location.href = '/checkout';
-  };
+  dispatch({
+    type: 'ADD_TO_CART',
+    payload: {
+      id: book.id,
+      title: book.title,
+      price: book.formats[selectedFormat].price,
+      currency: book.currency,
+      quantity: 1,
+      format: selectedFormat,
+      coverImage: book.coverImage,
+    },
+  });
+  window.location.href = '/checkout';
+};
 
   const relatedBooks = allBooks.filter(
     (b) => b.id !== id && b.genre.some((g) => book.genre.includes(g))
