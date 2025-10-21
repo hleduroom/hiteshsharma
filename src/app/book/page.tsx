@@ -15,7 +15,7 @@ export default function BookPage() {
           <div className="flex items-center space-x-2 text-sm text-muted-foreground">
             <Link href="/" className="hover:text-foreground">Home</Link>
             <span>/</span>
-            <span className="text-foreground">Book</span>
+            <span className="text-foreground">Books</span>
           </div>
         </nav>
 
