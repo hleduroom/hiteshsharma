@@ -3,15 +3,28 @@
 import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { CheckCircle, Download, Mail, BookOpen, ArrowLeft, Clock } from 'lucide-react';
+import { CheckCircle, Download, Mail, BookOpen, ArrowLeft, Clock, MapPin } from 'lucide-react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
+
+interface ReceiptData {
+  receiptId: string;
+  orderId: string;
+  date: string;
+  customer: any;
+  items: any[];
+  paymentMethod: string;
+  total: number;
+  deliveryFee: number;
+  subtotal: number;
+}
 
 export default function OrderSuccessContent() {
   const [orderId, setOrderId] = useState('');
   const [orderDate, setOrderDate] = useState('');
+  const [receiptData, setReceiptData] = useState<ReceiptData | null>(null);
   const searchParams = useSearchParams();
-  const amount = searchParams.get('amount') || '399';
+  const amount = searchParams.get('amount') || '0';
   const currency = searchParams.get('currency') || 'NPR';
   const urlOrderId = searchParams.get('orderId');
 
@@ -24,6 +37,13 @@ export default function OrderSuccessContent() {
       hour: '2-digit',
       minute: '2-digit'
     }));
+
+    // Load receipt data from localStorage
+    const receipts = JSON.parse(localStorage.getItem('paymentReceipts') || '[]');
+    const latestReceipt = receipts[receipts.length - 1];
+    if (latestReceipt) {
+      setReceiptData(latestReceipt);
+    }
   }, [urlOrderId]);
 
   const downloadReceipt = () => {
@@ -31,39 +51,59 @@ export default function OrderSuccessContent() {
 H.L.-Eduroom Publications
 OFFICIAL ORDER RECEIPT
 ========================================
+Receipt ID: ${receiptData?.receiptId || 'RCP-' + Date.now()}
 Order ID: ${orderId}
 Date: ${orderDate}
 Status: COMPLETED
 
 ORDER DETAILS:
 ----------------------------------------
-Item: 3 AM Confessions: My Life as an Overthinker
-Format: E-book
-Quantity: 1
-Unit Price: ${currency} ${amount}
-Total Amount: ${currency} ${amount}
+${receiptData?.items.map((item: any) => `
+Item: ${item.book.title}
+Format: ${item.book.format.charAt(0).toUpperCase() + item.book.format.slice(1)}
+Quantity: ${item.quantity}
+Unit Price: ${item.book.currency} ${item.book.price}
+Delivery: ${item.book.deliveryCost ? item.book.currency + ' ' + item.book.deliveryCost : 'FREE'}
+`).join('')}
+
+PAYMENT SUMMARY:
+----------------------------------------
+Subtotal: ${currency} ${receiptData?.subtotal.toFixed(2) || amount}
+Delivery Fee: ${currency} ${receiptData?.deliveryFee.toFixed(2) || '0.00'}
+Total Amount: ${currency} ${receiptData?.total.toFixed(2) || amount}
 
 PAYMENT INFORMATION:
 ----------------------------------------
-Payment Method: Online Payment
-Amount Paid: ${currency} ${amount}
-Payment Status: Verified
+Payment Method: ${receiptData?.paymentMethod || 'Online Payment'}
+Amount Paid: ${currency} ${receiptData?.total.toFixed(2) || amount}
+Payment Status: Verified & Confirmed
 
-CONTACT INFORMATION:
+DELIVERY INFORMATION:
 ----------------------------------------
-Email: [Customer Email]
-Support: hleduroom@gmail.com
+${receiptData?.customer ? `
+Address: ${receiptData.customer.address}
+City: ${receiptData.customer.city}
+District: ${receiptData.customer.district}
+Province: ${receiptData.customer.province}
+Phone: ${receiptData.customer.phone}
+` : 'Digital Delivery'}
+
+CONTACT & SUPPORT:
+----------------------------------------
+Email: hleduroom@gmail.com
 Phone: +977-9827728726
+Website: thehiteshsir.com
 
 IMPORTANT NOTES:
 ----------------------------------------
-• E-book will be delivered within 24 hours
-• Check your email for download instructions
+• ${receiptData?.items.some((item: any) => item.book.format === 'ebook') ? 
+  'E-book will be delivered within 24 hours via email' : 
+  'Physical books will be delivered within 3-5 business days'}
 • Keep this receipt for future reference
 • For queries: thehiteshsir.com/contact
+• Returns accepted within 7 days for physical books
 
-Thank you for your purchase!
-H.L.-Eduroom Publications
+Thank you for supporting H.L.-Eduroom Publications!
     `.trim();
 
     const blob = new Blob([receiptContent], { type: 'text/plain' });
@@ -78,7 +118,35 @@ H.L.-Eduroom Publications
   };
 
   const sendEmailReceipt = () => {
+    // In a real app, this would call your backend API
     alert('Receipt has been sent to your email! You should receive it within minutes.');
+    
+    // Store email receipt in localStorage
+    const emailReceipts = JSON.parse(localStorage.getItem('emailReceipts') || '[]');
+    emailReceipts.push({
+      orderId,
+      sentAt: new Date().toISOString(),
+      receiptData
+    });
+    localStorage.setItem('emailReceipts', JSON.stringify(emailReceipts));
+  };
+
+  const getDeliveryTimeline = () => {
+    const hasPhysicalBook = receiptData?.items.some((item: any) => 
+      item.book.format === 'paperback' || item.book.format === 'hardcover'
+    );
+    
+    return hasPhysicalBook ? [
+      { status: 'Order Confirmed', description: 'Payment verified and order processed', completed: true },
+      { status: 'Processing', description: 'Book packaging and quality check', completed: false },
+      { status: 'Shipped', description: 'Dispatched via delivery partner', completed: false },
+      { status: 'Out for Delivery', description: 'Expected delivery in 3-5 days', completed: false },
+      { status: 'Delivered', description: 'Book delivered to your address', completed: false }
+    ] : [
+      { status: 'Order Confirmed', description: 'Payment verified and order processed', completed: true },
+      { status: 'E-book Generation', description: 'Preparing your digital copy', completed: false },
+      { status: 'Delivery', description: 'Sending to your email within 24 hours', completed: false }
+    ];
   };
 
   return (
@@ -115,17 +183,13 @@ H.L.-Eduroom Publications
                   <span>{orderDate}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="font-semibold">Product:</span>
-                  <span>3 AM Confessions: My Life as an Overthinker</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="font-semibold">Format:</span>
-                  <span>E-book</span>
+                  <span className="font-semibold">Payment Method:</span>
+                  <span className="capitalize">{receiptData?.paymentMethod?.replace('_', ' ') || 'Online Payment'}</span>
                 </div>
                 <div className="flex justify-between text-lg font-bold border-t pt-3">
                   <span>Total Paid:</span>
                   <span className="text-green-600">
-                    {currency} {amount}
+                    {currency} {receiptData?.total.toFixed(2) || amount}
                   </span>
                 </div>
               </div>
@@ -137,36 +201,28 @@ H.L.-Eduroom Publications
             <CardContent className="p-6">
               <h3 className="font-semibold mb-4 flex items-center justify-center">
                 <Clock className="w-5 h-5 mr-2" />
-                What Happens Next?
+                Delivery Timeline
               </h3>
-              <div className="space-y-3 text-left">
-                <div className="flex items-start space-x-3">
-                  <div className="bg-blue-100 rounded-full p-1 mt-1">
-                    <div className="w-2 h-2 bg-blue-600 rounded-full"></div>
+              <div className="space-y-4">
+                {getDeliveryTimeline().map((step, index) => (
+                  <div key={index} className="flex items-start space-x-3">
+                    <div className={`rounded-full p-1 mt-1 ${
+                      step.completed ? 'bg-green-100' : 'bg-gray-100'
+                    }`}>
+                      <div className={`w-2 h-2 rounded-full ${
+                        step.completed ? 'bg-green-600' : 'bg-gray-400'
+                      }`}></div>
+                    </div>
+                    <div className="flex-1">
+                      <p className={`font-medium ${step.completed ? 'text-green-700' : 'text-gray-700'}`}>
+                        {step.status}
+                      </p>
+                      <p className="text-sm text-muted-foreground">
+                        {step.description}
+                      </p>
+                    </div>
                   </div>
-                  <div>
-                    <p className="font-medium">Order Confirmed</p>
-                    <p className="text-sm text-muted-foreground">We've received your payment and order details</p>
-                  </div>
-                </div>
-                <div className="flex items-start space-x-3">
-                  <div className="bg-yellow-100 rounded-full p-1 mt-1">
-                    <div className="w-2 h-2 bg-yellow-600 rounded-full"></div>
-                  </div>
-                  <div>
-                    <p className="font-medium">Manual Verification</p>
-                    <p className="text-sm text-muted-foreground">Our team verifies the payment (within 2-6 hours)</p>
-                  </div>
-                </div>
-                <div className="flex items-start space-x-3">
-                  <div className="bg-green-100 rounded-full p-1 mt-1">
-                    <div className="w-2 h-2 bg-green-600 rounded-full"></div>
-                  </div>
-                  <div>
-                    <p className="font-medium">E-book Delivery</p>
-                    <p className="text-sm text-muted-foreground">You'll receive download instructions via email</p>
-                  </div>
-                </div>
+                ))}
               </div>
             </CardContent>
           </Card>
@@ -185,21 +241,24 @@ H.L.-Eduroom Publications
 
           {/* Support Information */}
           <div className="bg-muted/50 rounded-lg p-6 mb-8">
-            <h3 className="font-semibold mb-3">Need Immediate Assistance?</h3>
+            <h3 className="font-semibold mb-3 flex items-center justify-center">
+              <MapPin className="w-5 h-5 mr-2" />
+              Need Assistance?
+            </h3>
             <div className="text-sm text-muted-foreground space-y-2 text-left">
               <p>📧 <strong>Email:</strong> hleduroom@gmail.com</p>
               <p>📱 <strong>WhatsApp:</strong> +977-9827728726</p>
               <p>🌐 <strong>Website:</strong> thehiteshsir.com</p>
-              <p className="text-xs mt-3">
-                Please mention your Order ID: <code className="bg-gray-100 px-1 rounded">{orderId}</code> in all communications
+              <p className="text-xs mt-3 text-center">
+                Please mention your Order ID: <code className="bg-gray-100 px-2 py-1 rounded">{orderId}</code>
               </p>
             </div>
           </div>
 
           {/* Back to Shopping */}
-          <Button variant="ghost" asChild>
-            <Link href="/book" className="flex items-center">
-              <ArrowLeft className="w-4 h-4 mr-2" />
+          <Button asChild className="flex items-center">
+            <Link href="/book">
+              <BookOpen className="w-4 h-4 mr-2" />
               Continue Shopping
             </Link>
           </Button>
