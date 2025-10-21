@@ -4,7 +4,7 @@ import React, { createContext, useContext, useReducer, ReactNode } from 'react';
 import { Book } from '../data/book';
 
 interface CartItem {
-  book: Book;
+  book: Book & { bookFormat?: string };
   quantity: number;
 }
 
@@ -14,7 +14,7 @@ interface CartState {
 }
 
 type CartAction =
-  | { type: 'ADD_TO_CART'; payload: Book }
+  | { type: 'ADD_TO_CART'; payload: Book & { bookFormat?: string } }
   | { type: 'REMOVE_FROM_CART'; payload: string }
   | { type: 'UPDATE_QUANTITY'; payload: { id: string; quantity: number } }
   | { type: 'CLEAR_CART' };
@@ -27,12 +27,17 @@ const CartContext = createContext<{
 const cartReducer = (state: CartState, action: CartAction): CartState => {
   switch (action.type) {
     case 'ADD_TO_CART':
-      const existingItem = state.items.find(item => item.book.id === action.payload.id);
+      const existingItem = state.items.find(item => 
+        item.book.id === action.payload.id && 
+        item.book.bookFormat === action.payload.bookFormat
+      );
+      
       if (existingItem) {
         return {
           ...state,
           items: state.items.map(item =>
-            item.book.id === action.payload.id
+            item.book.id === action.payload.id && 
+            item.book.bookFormat === action.payload.bookFormat
               ? { ...item, quantity: item.quantity + 1 }
               : item
           ),
@@ -46,22 +51,28 @@ const cartReducer = (state: CartState, action: CartAction): CartState => {
       };
 
     case 'REMOVE_FROM_CART':
-      const itemToRemove = state.items.find(item => item.book.id === action.payload);
+      const itemToRemove = state.items.find(item => 
+        `${item.book.id}-${item.book.bookFormat}` === action.payload
+      );
       return {
         ...state,
-        items: state.items.filter(item => item.book.id !== action.payload),
+        items: state.items.filter(item => 
+          `${item.book.id}-${item.book.bookFormat}` !== action.payload
+        ),
         total: state.total - (itemToRemove ? itemToRemove.book.price * itemToRemove.quantity : 0)
       };
 
     case 'UPDATE_QUANTITY':
-      const itemToUpdate = state.items.find(item => item.book.id === action.payload.id);
+      const itemToUpdate = state.items.find(item => 
+        `${item.book.id}-${item.book.bookFormat}` === action.payload.id
+      );
       if (!itemToUpdate) return state;
       
       const quantityDiff = action.payload.quantity - itemToUpdate.quantity;
       return {
         ...state,
         items: state.items.map(item =>
-          item.book.id === action.payload.id
+          `${item.book.id}-${item.book.bookFormat}` === action.payload.id
             ? { ...item, quantity: action.payload.quantity }
             : item
         ),
