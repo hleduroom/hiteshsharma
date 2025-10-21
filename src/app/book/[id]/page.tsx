@@ -10,7 +10,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { useState } from 'react';
-import Header from '@/components/header';
+import { Header } from "@/components/header";
 import { useCart } from '@/lib/context/CartContext';
 
 interface BookDetailsPageProps {
