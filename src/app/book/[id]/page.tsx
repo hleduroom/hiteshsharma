@@ -4,8 +4,7 @@ import { allBooks, type Book } from '@/lib/data/book';
 import { notFound } from 'next/navigation';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-// NOTE: Assuming this component's type definition is fixed (see explanation below)
-import { AddToCartButton } from '@/components/ui/add-to-cart-button'; 
+import { AddToCartButton } from '@/components/ui/add-to-cart-button';
 import { Star, Eye, ShoppingCart, Share2 } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -18,38 +17,51 @@ interface BookDetailsPageProps {
   params: Promise<{ id: string }>;
 }
 
+// ⚠️ FIX 1: Define the strict type for an item that goes into the cart
+// This must match the type expected by your CartContext ADD_TO_CART action.
+type FormatType = 'ebook' | 'paperback' | 'hardcover';
+
+interface CartItemPayload {
+  id: string;
+  title: string;
+  price: number;
+  currency: string;
+  quantity: number;
+  format: FormatType;
+  coverImage: string;
+}
+
 export default async function BookDetailsPage({ params }: BookDetailsPageProps) {
   const { id } = await params;
   const book = allBooks.find((b) => b.id === id);
   if (!book) notFound();
 
-  const { dispatch } = useCart();
-  const [selectedFormat, setSelectedFormat] = useState<'ebook' | 'paperback' | 'hardcover'>('ebook');
+  // Assuming useCart returns dispatch
+  const { dispatch } = useCart(); 
+  const [selectedFormat, setSelectedFormat] = useState<FormatType>('ebook');
 
   const handleBuyNow = () => {
-  dispatch({
-    type: 'ADD_TO_CART',
-    payload: {
+    // ⚠️ FIX 2: Explicitly construct the payload to satisfy the CartContext's expected type
+    const payload: CartItemPayload = {
       id: book.id,
       title: book.title,
-      price: book.formats[selectedFormat].price,
+      // This is the line (around 35) that was failing before
+      price: book.formats[selectedFormat].price, 
       currency: book.currency,
       quantity: 1,
       format: selectedFormat,
       coverImage: book.coverImage,
-    },
-  });
-  window.location.href = '/checkout';
-};
-
-  const relatedBooks = allBooks.filter(
-    (b) => b.id !== id && b.genre.some((g) => book.genre.includes(g))
-  );
-
-  // --- FIX APPLIED HERE ---
-  // We explicitly construct the cart item object to ensure it has all required properties 
-  // (like price and format) that the AddToCartButton component expects.
-  const cartItemPayload = {
+    };
+    
+    dispatch({
+      type: 'ADD_TO_CART',
+      payload: payload,
+    });
+    window.location.href = '/checkout';
+  };
+  
+  // ⚠️ FIX 3: Also define the explicit payload object for AddToCartButton usage
+  const cartItemPayload: CartItemPayload = {
     id: book.id,
     title: book.title,
     price: book.formats[selectedFormat].price,
@@ -57,12 +69,12 @@ export default async function BookDetailsPage({ params }: BookDetailsPageProps) 
     quantity: 1,
     format: selectedFormat,
     coverImage: book.coverImage,
-    // Note: The original attempt was to pass '{ ...book, bookFormat: selectedFormat }'. 
-    // This was wrong because `...book` does not contain the dynamic `price` and 
-    // the `AddToCartButton` likely expects a structured object.
   };
-  // --- END FIX ---
-
+  
+  // --- Start of Original Code ---
+  const relatedBooks = allBooks.filter(
+    (b) => b.id !== id && b.genre.some((g) => book.genre.includes(g))
+  );
 
   return (
     <div className="relative min-h-screen overflow-hidden">
@@ -152,8 +164,8 @@ export default async function BookDetailsPage({ params }: BookDetailsPageProps) 
                 Buy Now
               </Button>
 
-              {/* APPLYING THE FIX HERE: Pass the explicit cart item payload */}
-              <AddToCartButton book={cartItemPayload} />
+              {/* Pass the fully constructed cart item payload */}
+              <AddToCartButton book={cartItemPayload} format={selectedFormat} />
 
               <Button asChild variant="outline" size="lg" className="flex-1 border-sky-300/60 hover:bg-sky-100/30 rounded-xl text-xs sm:text-sm">
                 <Link href={`/preview/${book.id}`}>
@@ -222,7 +234,6 @@ function HeaderSection({ book }: { book: Book }) {
 /* ---------------- SHARE BUTTON ---------------- */
 function ShareButton({ title, id }: { title: string; id: string }) {
   const [copied, setCopied] = useState(false);
-  // Safely get window.location.origin
   const link = typeof window !== 'undefined' ? `${window.location.origin}/book/${id}` : '';
 
   const handleShare = async () => {
