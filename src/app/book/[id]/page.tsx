@@ -35,11 +35,77 @@ import {
 import Image from 'next/image';
 import Link from 'next/link';
 import { AddToCartButton } from '@/components/ui/add-to-cart-button';
-import Header from '@/components/header';
-import Footer from '@/components/footer';
 
 interface BookWithFormat extends Book {
   bookFormat?: 'ebook' | 'paperback' | 'hardcover';
+}
+
+// Try different import patterns for header and footer
+let Header, Footer;
+
+try {
+  // Try named imports first
+  ({ Header } = require('@/components/header'));
+  ({ Footer } = require('@/components/footer'));
+} catch (error) {
+  // Fallback: Create simple header and footer components
+  Header = function SimpleHeader() {
+    return (
+      <header className="sticky top-0 z-50 border-b border-white/20 dark:border-slate-800/50 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl supports-backdrop-blur:bg-white/60">
+        <div className="container mx-auto px-4 sm:px-6 py-4">
+          <nav className="flex items-center justify-between">
+            <Link href="/" className="group transform transition-all duration-300 hover:scale-105">
+              <div className="flex items-center space-x-3">
+                <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center shadow-lg group-hover:shadow-xl transition-shadow duration-300">
+                  <PenTool className="w-4 h-4 text-white" />
+                </div>
+                <span className="text-xl font-semibold text-foreground font-handwriting bg-gradient-to-r from-slate-900 to-slate-700 dark:from-slate-100 dark:to-slate-300 bg-clip-text text-transparent">
+                  Hitesh Sharma
+                </span>
+              </div>
+            </Link>
+            <div className="hidden md:flex items-center space-x-6 text-sm">
+              <Link href="/books" className="text-muted-foreground hover:text-foreground transition-all duration-300 hover:scale-105 font-medium">Books</Link>
+              <Link href="/about" className="text-muted-foreground hover:text-foreground transition-all duration-300 hover:scale-105 font-medium">About</Link>
+              <Link href="/blog" className="text-muted-foreground hover:text-foreground transition-all duration-300 hover:scale-105 font-medium">Blog</Link>
+            </div>
+            <Button variant="ghost" size="sm" className="glass-effect border border-white/20 hover:scale-105 transition-all duration-300 group md:hidden">
+              <Menu className="w-4 h-4" />
+            </Button>
+          </nav>
+        </div>
+      </header>
+    );
+  };
+
+  Footer = function SimpleFooter() {
+    return (
+      <footer className="border-t border-white/20 mt-12 sm:mt-16 md:mt-20 lg:mt-24">
+        <div className="glass-effect backdrop-blur-sm shadow-lg">
+          <div className="container mx-auto px-6 py-8 sm:py-12">
+            <div className="text-center space-y-4">
+              <div className="flex items-center justify-center space-x-3 group hover:scale-105 transition-transform duration-300">
+                <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center shadow-lg group-hover:shadow-xl transition-shadow duration-300">
+                  <PenTool className="w-4 h-4 text-white" />
+                </div>
+                <span className="text-xl font-semibold font-handwriting bg-gradient-to-r from-slate-900 to-slate-700 dark:from-slate-100 dark:to-slate-300 bg-clip-text text-transparent">
+                  Hitesh Sharma
+                </span>
+              </div>
+              <p className="text-muted-foreground max-w-md mx-auto text-sm sm:text-base">
+                Transforming perspectives through the power of words and wisdom.
+              </p>
+              <div className="flex items-center justify-center space-x-4 sm:space-x-6 text-xs sm:text-sm text-muted-foreground">
+                <span>© 2024 H.L. Eduroom</span>
+                <span>•</span>
+                <span>All rights reserved</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </footer>
+    );
+  };
 }
 
 export default function BookDetailsPage() {
