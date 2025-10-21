@@ -52,7 +52,7 @@ export default function BookPage() {
                 {mainBook.title}
               </h1>
               <p className="text-xl text-muted-foreground mb-2">by {mainBook.author}</p>
-              
+
               {/* Rating */}
               <div className="flex items-center space-x-2 mb-4">
                 <div className="flex items-center">
