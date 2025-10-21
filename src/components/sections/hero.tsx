@@ -226,6 +226,10 @@ export function Hero() {
     ? "bg-white/10 hover:bg-white/20 border-white/20 text-white"
     : "bg-white/80 hover:bg-white border-slate-200 text-slate-700";
 
+  const ringColorClass = isDark 
+    ? "ring-white/10" 
+    : "ring-white/30";
+
   if (!mounted) {
     return (
       <section className="w-full min-h-screen flex items-center justify-center relative">
@@ -403,12 +407,7 @@ export function Hero() {
                     className="object-cover"
                     priority
                   />
-                  <div 
-                    className="absolute inset-0 ring-4 rounded-3xl"
-                    style={{
-                      ringColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.3)'
-                    }}
-                  />
+                  <div className={`absolute inset-0 ring-4 rounded-3xl ${ringColorClass}`} />
                 </motion.div>
 
                 {/* Book Showcase */}
