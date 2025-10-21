@@ -1,5 +1,35 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/db';
+
+// Temporary in-memory storage for development
+let books: any[] = [
+  {
+    id: "1",
+    title: "3 AM Confessions: My Life as an Overthinker",
+    author: "Hitesh Sharma",
+    description: "A profound journey through midnight thoughts and revelations.",
+    coverImage: "/book_cover_img.png",
+    previewPdf: "/3AM-Confessions-Preview.pdf",
+    fullPdf: "/3AM-Confessions-Full.pdf",
+    ebookPassword: "HLEDUROOM2024",
+    pages: 196,
+    isbn: "9789937-1-9247-7",
+    publisher: "H.L.-Eduroom Publications",
+    publishedDate: "2024-10-21T00:00:00.000Z",
+    language: "English",
+    rating: 4.8,
+    reviews: 127,
+    formats: [
+      { type: "ebook", price: 299 },
+      { type: "paperback", price: 599 },
+      { type: "hardcover", price: 899 }
+    ],
+    genres: [
+      { name: "Self-Help" },
+      { name: "Psychology" },
+      { name: "Personal Development" }
+    ]
+  }
+];
 
 export async function GET(request: NextRequest) {
   try {
@@ -9,49 +39,36 @@ export async function GET(request: NextRequest) {
     const genre = searchParams.get('genre');
     const search = searchParams.get('search');
 
-    const skip = (page - 1) * limit;
+    let filteredBooks = [...books];
 
-    const where: any = {};
-    
+    // Apply filters
     if (genre) {
-      where.genres = {
-        some: {
-          name: genre
-        }
-      };
+      filteredBooks = filteredBooks.filter(book => 
+        book.genres.some((g: any) => g.name === genre)
+      );
     }
 
     if (search) {
-      where.OR = [
-        { title: { contains: search, mode: 'insensitive' } },
-        { author: { contains: search, mode: 'insensitive' } },
-        { description: { contains: search, mode: 'insensitive' } }
-      ];
+      const searchLower = search.toLowerCase();
+      filteredBooks = filteredBooks.filter(book =>
+        book.title.toLowerCase().includes(searchLower) ||
+        book.author.toLowerCase().includes(searchLower) ||
+        book.description.toLowerCase().includes(searchLower)
+      );
     }
 
-    const [books, total] = await Promise.all([
-      prisma.book.findMany({
-        where,
-        include: {
-          formats: true,
-          genres: true
-        },
-        orderBy: {
-          createdAt: 'desc'
-        },
-        skip,
-        take: limit
-      }),
-      prisma.book.count({ where })
-    ]);
+    // Apply pagination
+    const startIndex = (page - 1) * limit;
+    const endIndex = startIndex + limit;
+    const paginatedBooks = filteredBooks.slice(startIndex, endIndex);
 
     return NextResponse.json({
-      books,
+      books: paginatedBooks,
       pagination: {
         page,
         limit,
-        total,
-        pages: Math.ceil(total / limit)
+        total: filteredBooks.length,
+        pages: Math.ceil(filteredBooks.length / limit)
       }
     });
   } catch (error) {
@@ -66,59 +83,18 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const {
-      title,
-      author,
-      description,
-      coverImage,
-      previewPdf,
-      fullPdf,
-      ebookPassword,
-      pages,
-      isbn,
-      publisher,
-      publishedDate,
-      language,
-      formats,
-      genres
-    } = body;
+    const newBook = {
+      id: Date.now().toString(),
+      ...body,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
 
-    const book = await prisma.book.create({
-      data: {
-        title,
-        author,
-        description,
-        coverImage,
-        previewPdf,
-        fullPdf,
-        ebookPassword,
-        pages: parseInt(pages),
-        isbn,
-        publisher,
-        publishedDate: new Date(publishedDate),
-        language,
-        formats: {
-          create: formats.map((format: any) => ({
-            type: format.type,
-            price: parseFloat(format.price),
-            features: format.features
-          }))
-        },
-        genres: {
-          create: genres.map((genre: string) => ({
-            name: genre
-          }))
-        }
-      },
-      include: {
-        formats: true,
-        genres: true
-      }
-    });
+    books.push(newBook);
 
     return NextResponse.json({ 
       success: true, 
-      book,
+      book: newBook,
       message: 'Book created successfully' 
     });
   } catch (error) {
