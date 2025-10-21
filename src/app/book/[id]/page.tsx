@@ -5,11 +5,11 @@ import { notFound } from 'next/navigation';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { AddToCartButton } from '@/components/ui/add-to-cart-button';
-import { Star, Eye, ShoppingCart, Share2 } from 'lucide-react';
+import { Star, Eye, ShoppingCart, Share2, MapPin, Truck } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Header } from "@/components/header";
 import { useCart } from '@/lib/context/CartContext';
 
@@ -19,73 +19,61 @@ interface BookDetailsPageProps {
 
 type FormatType = 'ebook' | 'paperback' | 'hardcover';
 
+interface CartItemPayload {
+  id: string;
+  title: string;
+  author: string;
+  price: number;
+  currency: string;
+  format: FormatType;
+  coverImage: string;
+  deliveryCost?: number;
+}
+
+type AddToCartActionPayload = CartItemPayload & { quantity: number };
+
 export default function BookDetailsPage({ params }: BookDetailsPageProps) {
-  const [book, setBook] = useState<Book | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  
-  const { dispatch } = useCart();
+  const [resolvedParams] = useState(() => params);
+  const { id } = resolvedParams;
+  const book = allBooks.find((b) => b.id === id);
+  if (!book) notFound();
+
+  const { dispatch } = useCart(); 
   const [selectedFormat, setSelectedFormat] = useState<FormatType>('ebook');
 
-  useEffect(() => {
-    const loadBook = async () => {
-      try {
-        const { id } = await params;
-        const foundBook = allBooks.find((b) => b.id === id);
-        setBook(foundBook || null);
-      } catch (error) {
-        console.error('Error loading book:', error);
-        setBook(null);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    loadBook();
-  }, [params]);
-
   const handleBuyNow = () => {
-    if (!book) return;
+    const isPhysicalBook = selectedFormat === 'paperback' || selectedFormat === 'hardcover';
+    const deliveryCost = isPhysicalBook ? 150 : 0;
 
-    const deliveryCost = selectedFormat === 'ebook' ? 0 : 150;
-    const payload = {
+    const payload: AddToCartActionPayload = {
       id: book.id,
       title: book.title,
       author: book.author,
-      price: book.formats[selectedFormat].price,
+      price: book.formats[selectedFormat].price + deliveryCost,
       currency: book.currency,
       quantity: 1,
       format: selectedFormat,
       coverImage: book.coverImage,
-      deliveryCost
+      deliveryCost,
     };
 
     dispatch({
       type: 'ADD_TO_CART',
       payload: payload,
     });
-    window.location.href = '/checkout';
+    
+    if (selectedFormat === 'ebook') {
+      window.location.href = '/checkout?ebook=true';
+    } else {
+      window.location.href = '/checkout';
+    }
   };
 
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white dark:from-slate-950 dark:to-slate-900">
-        <Header />
-        <div className="container mx-auto px-4 py-16 flex justify-center items-center">
-          <div className="text-center">
-            <p>Loading book details...</p>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  if (!book) {
-    notFound();
-  }
-
   const relatedBooks = allBooks.filter(
-    (b) => b.id !== book.id && b.genre.some((g) => book.genre.includes(g))
+    (b) => b.id !== id && b.genre.some((g) => book.genre.includes(g))
   );
+
+  const isPhysicalBook = selectedFormat === 'paperback' || selectedFormat === 'hardcover';
 
   return (
     <div className="relative min-h-screen overflow-hidden">
@@ -149,12 +137,21 @@ export default function BookDetailsPage({ params }: BookDetailsPageProps) {
                 <h4 className="font-semibold capitalize text-sm mb-1">{selectedFormat}</h4>
                 <p className="text-lg font-bold mb-2">
                   {book.currency} {book.formats[selectedFormat].price.toFixed(2)}
-                  {selectedFormat !== 'ebook' && (
-                    <span className="text-sm text-muted-foreground ml-2">
-                      + {book.currency} 150 delivery
-                    </span>
-                  )}
                 </p>
+                
+                {isPhysicalBook && (
+                  <div className="flex items-center gap-2 text-sm text-green-600 mb-2">
+                    <Truck className="w-4 h-4" />
+                    <span>+ {book.currency} 150 Delivery Fee</span>
+                  </div>
+                )}
+                
+                {selectedFormat === 'ebook' && (
+                  <div className="flex items-center gap-2 text-sm text-green-600 mb-2">
+                    <span>✓ Free Delivery (Digital)</span>
+                  </div>
+                )}
+                
                 <ul className="text-xs text-muted-foreground list-disc pl-5 space-y-1">
                   {book.formats[selectedFormat].features.map((feature, i) => (
                     <li key={i}>{feature}</li>
@@ -170,7 +167,7 @@ export default function BookDetailsPage({ params }: BookDetailsPageProps) {
                 onClick={handleBuyNow}
               >
                 <ShoppingCart className="w-4 h-4" />
-                Buy Now
+                Buy Now - {book.currency} {book.formats[selectedFormat].price + (isPhysicalBook ? 150 : 0)}
               </Button>
 
               <AddToCartButton book={book} format={selectedFormat} />
@@ -198,8 +195,8 @@ function HeaderSection({ book }: { book: Book }) {
     <>
       <div>
         <Badge variant="secondary" className="mb-2 text-xs">{book.genre[0]}</Badge>
-        <h1 className="text-3xl font-bold mb-1">{book.title}</h1>
-        <p className="text-base text-muted-foreground mb-2">by {book.author}</p>
+        <h1 className="text-3xl font-bold mb-1 font-handwriting">{book.title}</h1>
+        <p className="text-base text-muted-foreground mb-2 font-handwriting">by {book.author}</p>
 
         <div className="flex items-center gap-2">
           {[...Array(5)].map((_, i) => (
@@ -219,8 +216,8 @@ function HeaderSection({ book }: { book: Book }) {
       </div>
 
       <div>
-        <h3 className="text-base font-semibold mb-1">About the Book</h3>
-        <p className="text-sm text-muted-foreground leading-relaxed">
+        <h3 className="text-base font-semibold mb-1 font-handwriting">About the Book</h3>
+        <p className="text-sm text-muted-foreground leading-relaxed line-clamp-5 font-handwriting">
           {book.description}
         </p>
       </div>
@@ -258,7 +255,7 @@ function ShareButton({ title, id }: { title: string; id: string }) {
         variant="secondary"
         size="sm"
         onClick={handleShare}
-        className="flex items-center gap-2 rounded-xl shadow-sm hover:shadow-md transition"
+        className="flex items-center gap-2 rounded-xl shadow-sm hover:shadow-md transition font-handwriting"
       >
         <Share2 className="w-4 h-4" />
         {copied ? 'Link Copied!' : 'Share Book'}
@@ -276,7 +273,7 @@ function RelatedBooksSection({ relatedBooks }: { relatedBooks: Book[] }) {
       className="mt-20"
     >
       <div className="flex items-center justify-between mb-8">
-        <h2 className="text-xl font-bold">You Might Also Like</h2>
+        <h2 className="text-xl font-bold font-handwriting">You Might Also Like</h2>
         <Button variant="ghost" asChild>
           <Link href="/books">View All</Link>
         </Button>
@@ -297,8 +294,8 @@ function RelatedBooksSection({ relatedBooks }: { relatedBooks: Book[] }) {
                 height={300}
                 className="w-full h-48 object-cover rounded-lg mb-4"
               />
-              <h3 className="font-semibold text-sm mb-1">{relatedBook.title}</h3>
-              <p className="text-xs text-muted-foreground mb-2">by {relatedBook.author}</p>
+              <h3 className="font-semibold text-sm mb-1 font-handwriting">{relatedBook.title}</h3>
+              <p className="text-xs text-muted-foreground mb-2 font-handwriting">by {relatedBook.author}</p>
               <div className="flex items-center justify-between">
                 <span className="font-bold text-foreground text-sm">
                   {relatedBook.currency} {relatedBook.formats.ebook.price}
