@@ -17,8 +17,7 @@ interface BookDetailsPageProps {
   params: Promise<{ id: string }>;
 }
 
-// ⚠️ FIX 1: Define the strict type for an item that goes into the cart
-// This must match the type expected by your CartContext ADD_TO_CART action.
+// Keep the CartItemPayload definition (from CartContext) as it's used by handleBuyNow
 type FormatType = 'ebook' | 'paperback' | 'hardcover';
 
 interface CartItemPayload {
@@ -41,26 +40,26 @@ export default async function BookDetailsPage({ params }: BookDetailsPageProps) 
   const [selectedFormat, setSelectedFormat] = useState<FormatType>('ebook');
 
   const handleBuyNow = () => {
-    // ⚠️ FIX 2: Explicitly construct the payload to satisfy the CartContext's expected type
+    // FIX 1: Explicitly construct the payload to satisfy the CartContext's expected type (This part was correct)
     const payload: CartItemPayload = {
       id: book.id,
       title: book.title,
-      // This is the line (around 35) that was failing before
       price: book.formats[selectedFormat].price, 
       currency: book.currency,
       quantity: 1,
       format: selectedFormat,
       coverImage: book.coverImage,
     };
-    
+
     dispatch({
       type: 'ADD_TO_CART',
       payload: payload,
     });
     window.location.href = '/checkout';
   };
-  
-  // ⚠️ FIX 3: Also define the explicit payload object for AddToCartButton usage
+
+  // ❌ FIX 2: REMOVE the cartItemPayload constant as it's not needed for AddToCartButton and caused the error.
+  /*
   const cartItemPayload: CartItemPayload = {
     id: book.id,
     title: book.title,
@@ -70,7 +69,8 @@ export default async function BookDetailsPage({ params }: BookDetailsPageProps) 
     format: selectedFormat,
     coverImage: book.coverImage,
   };
-  
+  */
+
   // --- Start of Original Code ---
   const relatedBooks = allBooks.filter(
     (b) => b.id !== id && b.genre.some((g) => book.genre.includes(g))
@@ -164,8 +164,8 @@ export default async function BookDetailsPage({ params }: BookDetailsPageProps) 
                 Buy Now
               </Button>
 
-              {/* Pass the fully constructed cart item payload */}
-              <AddToCartButton book={cartItemPayload} format={selectedFormat} />
+              {/* ✅ FIX 3: Pass the full 'book' object here, as it's required by AddToCartButton's props */}
+              <AddToCartButton book={book} format={selectedFormat} />
 
               <Button asChild variant="outline" size="lg" className="flex-1 border-sky-300/60 hover:bg-sky-100/30 rounded-xl text-xs sm:text-sm">
                 <Link href={`/preview/${book.id}`}>
