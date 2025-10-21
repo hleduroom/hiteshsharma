@@ -24,10 +24,21 @@ const CartContext = createContext<{
   dispatch: React.Dispatch<CartAction>;
 } | undefined>(undefined);
 
+// Define valid format types
+type BookFormatKey = 'ebook' | 'paperback' | 'hardcover';
+
 // Helper function to get price based on format
 const getBookPrice = (book: Book & { bookFormat?: string }) => {
-  const format = book.bookFormat || 'ebook';
-  return book.formats[format]?.price || book.formats.ebook.price;
+  const format = (book.bookFormat || 'ebook') as BookFormatKey;
+  
+  // Type-safe access to the formats object
+  const formatData = book.formats[format];
+  if (formatData) {
+    return formatData.price;
+  }
+  
+  // Fallback to ebook price
+  return book.formats.ebook.price;
 };
 
 const cartReducer = (state: CartState, action: CartAction): CartState => {
@@ -37,9 +48,9 @@ const cartReducer = (state: CartState, action: CartAction): CartState => {
         item.book.id === action.payload.id && 
         item.book.bookFormat === action.payload.bookFormat
       );
-      
+
       const itemPrice = getBookPrice(action.payload);
-      
+
       if (existingItem) {
         return {
           ...state,
@@ -76,7 +87,7 @@ const cartReducer = (state: CartState, action: CartAction): CartState => {
         `${item.book.id}-${item.book.bookFormat}` === action.payload.id
       );
       if (!itemToUpdate) return state;
-      
+
       const updatePrice = getBookPrice(itemToUpdate.book);
       const quantityDiff = action.payload.quantity - itemToUpdate.quantity;
       return {
