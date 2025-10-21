@@ -9,48 +9,9 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Lock, QrCode, Smartphone, MapPin, Truck } from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
+import { NEPAL_LOCATIONS } from '@/lib/data/nepal-locations';
 
 type PaymentMethod = 'esewa' | 'khalti' | 'bank_transfer';
-
-const NEPAL_LOCATIONS = {
-  provinces: [
-    {
-      id: 1,
-      name: 'Province 1',
-      districts: ['Jhapa', 'Morang', 'Sunsari', 'Ilam', 'Dhankuta', 'Taplejung', 'Panchthar']
-    },
-    {
-      id: 2,
-      name: 'Madhesh Province',
-      districts: ['Sarlahi', 'Mahottari', 'Dhanusha', 'Siraha', 'Saptari', 'Parsa', 'Bara', 'Rautahat']
-    },
-    {
-      id: 3,
-      name: 'Bagmati Province',
-      districts: ['Kathmandu', 'Lalitpur', 'Bhaktapur', 'Kavrepalanchok', 'Dhading', 'Nuwakot', 'Rasuwa', 'Sindhupalchok', 'Dolakha']
-    },
-    {
-      id: 4,
-      name: 'Gandaki Province',
-      districts: ['Pokhara', 'Kaski', 'Syangja', 'Tanahu', 'Lamjung', 'Gorkha', 'Manang', 'Mustang']
-    },
-    {
-      id: 5,
-      name: 'Lumbini Province',
-      districts: ['Rupandehi', 'Nawalparasi', 'Kapilvastu', 'Palpa', 'Arghakhanchi', 'Gulmi', 'Rolpa', 'Pyuthan']
-    },
-    {
-      id: 6,
-      name: 'Karnali Province',
-      districts: ['Surkhet', 'Dailekh', 'Jajarkot', 'Dolpa', 'Jumla', 'Kalikot', 'Mugu', 'Humla']
-    },
-    {
-      id: 7,
-      name: 'Sudurpashchim Province',
-      districts: ['Kailali', 'Kanchanpur', 'Dadeldhura', 'Baitadi', 'Darchula', 'Bajhang', 'Bajura', 'Doti', 'Achham']
-    }
-  ]
-};
 
 export default function CheckoutPage() {
   const { state, dispatch } = useCart();
@@ -59,6 +20,7 @@ export default function CheckoutPage() {
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('esewa');
   const [selectedProvince, setSelectedProvince] = useState('');
   const [selectedDistrict, setSelectedDistrict] = useState('');
+  const [showMap, setShowMap] = useState(false);
 
   const [formData, setFormData] = useState({
     email: '',
@@ -71,6 +33,8 @@ export default function CheckoutPage() {
     transactionId: '',
     province: '',
     district: '',
+    latitude: '',
+    longitude: ''
   });
 
   useEffect(() => {
@@ -106,15 +70,17 @@ export default function CheckoutPage() {
     });
   };
 
-  const calculateDeliveryFee = () => {
-    const hasPhysicalBook = state.items.some(item => 
-      item.book.format === 'paperback' || item.book.format === 'hardcover'
-    );
-    return hasPhysicalBook ? 150 : 0;
-  };
-
   const generateOrderId = () => {
     return `ORD-${Date.now()}-${Math.random().toString(36).substr(2, 5).toUpperCase()}`;
+  };
+
+  const handleLocationSelect = (lat: number, lng: number) => {
+    setFormData({
+      ...formData,
+      latitude: lat.toString(),
+      longitude: lng.toString()
+    });
+    setShowMap(false);
   };
 
   const saveOrderToLocalStorage = (orderData: any) => {
@@ -123,15 +89,33 @@ export default function CheckoutPage() {
     localStorage.setItem('bookOrders', JSON.stringify(updatedOrders));
   };
 
+  const generateReceipt = (orderData: any) => {
+    const receipt = {
+      receiptId: `RCP-${Date.now()}`,
+      orderId: orderData.orderId,
+      date: new Date().toISOString(),
+      customer: orderData.customer,
+      items: orderData.items,
+      paymentMethod: orderData.paymentMethod,
+      total: orderData.total,
+      deliveryFee: state.deliveryFee,
+      subtotal: state.total
+    };
+    
+    const existingReceipts = JSON.parse(localStorage.getItem('paymentReceipts') || '[]');
+    const updatedReceipts = [...existingReceipts, receipt];
+    localStorage.setItem('paymentReceipts', JSON.stringify(updatedReceipts));
+    
+    return receipt;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsProcessing(true);
 
     try {
       const orderId = generateOrderId();
-      const deliveryFee = calculateDeliveryFee();
-      const subtotal = state.total;
-      const total = subtotal + deliveryFee;
+      const totalAmount = state.total + state.deliveryFee;
 
       const orderData = {
         orderId,
@@ -139,31 +123,22 @@ export default function CheckoutPage() {
         items: state.items,
         paymentMethod,
         transactionId: formData.transactionId,
-        subtotal,
-        deliveryFee,
-        total,
+        subtotal: state.total,
+        deliveryFee: state.deliveryFee,
+        total: totalAmount,
         status: 'confirmed',
         timestamp: new Date().toISOString()
       };
 
       // Save to localStorage
       saveOrderToLocalStorage(orderData);
+      generateReceipt(orderData);
 
-      // Send email confirmation
-      const emailResponse = await fetch('/api/orders', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(orderData),
-      });
-
-      if (!emailResponse.ok) {
-        console.warn('Failed to send email, but order was saved');
-      }
+      // Simulate payment processing
+      await new Promise(resolve => setTimeout(resolve, 2000));
 
       dispatch({ type: 'CLEAR_CART' });
-      router.push(`/order/success?orderId=${orderId}&amount=${total}&currency=NPR&email=${encodeURIComponent(formData.email)}`);
+      router.push(`/order/success?orderId=${orderId}&amount=${totalAmount}&currency=NPR&email=${encodeURIComponent(formData.email)}`);
     } catch (error) {
       console.error('Payment error:', error);
       alert('Payment failed. Please try again.');
@@ -182,9 +157,7 @@ export default function CheckoutPage() {
     );
   }
 
-  const deliveryFee = calculateDeliveryFee();
-  const subtotal = state.total;
-  const total = subtotal + deliveryFee;
+  const totalAmount = state.total + state.deliveryFee;
   const currency = 'NPR';
 
   return (
@@ -332,6 +305,40 @@ export default function CheckoutPage() {
                       />
                     </div>
                   </div>
+
+                  <div>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => setShowMap(!showMap)}
+                      className="flex items-center"
+                    >
+                      <MapPin className="w-4 h-4 mr-2" />
+                      {showMap ? 'Hide Map' : 'Pick Location on Map'}
+                    </Button>
+                    
+                    {showMap && (
+                      <div className="mt-4 p-4 border rounded-lg bg-gray-50">
+                        <div className="h-64 bg-gray-200 rounded-lg flex items-center justify-center">
+                          <p className="text-muted-foreground">
+                            Map Integration - Use Google Maps API or similar service
+                          </p>
+                        </div>
+                        <div className="mt-4 text-sm text-muted-foreground">
+                          <p>📍 Click on the map to select your exact delivery location</p>
+                          <p>🗺️ This helps our delivery partner find you easily</p>
+                        </div>
+                        <Button
+                          type="button"
+                          onClick={() => handleLocationSelect(27.7172, 85.3240)}
+                          className="mt-2"
+                          variant="outline"
+                        >
+                          Use Current Location (Kathmandu)
+                        </Button>
+                      </div>
+                    )}
+                  </div>
                 </CardContent>
               </Card>
 
@@ -378,8 +385,8 @@ export default function CheckoutPage() {
                         </h4>
                         <ol className="list-decimal list-inside space-y-1 text-sm text-blue-800">
                           <li>Open your {paymentMethod === 'esewa' ? 'eSewa' : 'Khalti'} app</li>
-                          <li>Scan the QR code below or enter merchant ID: <strong>+9779703869612</strong></li>
-                          <li>Pay the amount: <strong>{currency} {total.toFixed(2)}</strong></li>
+                          <li>Scan the QR code below or enter merchant ID: <strong>HLEDUROOM</strong></li>
+                          <li>Pay the amount: <strong>{currency} {totalAmount.toFixed(2)}</strong></li>
                           <li>Enter the transaction ID below after payment</li>
                         </ol>
                       </div>
@@ -414,10 +421,10 @@ export default function CheckoutPage() {
                       <div className="bg-green-50 border border-green-200 rounded-lg p-4">
                         <h4 className="font-semibold text-green-900 mb-2">Bank Transfer Details</h4>
                         <div className="text-sm text-green-800 space-y-2">
-                          <p><strong>Bank:</strong> Machapuchre Bank </p>
-                          <p><strong>Account Name:</strong> Hitesh Sharma</p>
+                          <p><strong>Bank:</strong> Nepal Investment Mega Bank</p>
+                          <p><strong>Account Name:</strong> H.L.-Eduroom</p>
                           <p><strong>Account Number:</strong> 1234567890123456</p>
-                          <p><strong>Amount:</strong> {currency} {total.toFixed(2)}</p>
+                          <p><strong>Amount:</strong> {currency} {totalAmount.toFixed(2)}</p>
                           <p><strong>Reference:</strong> Order {generateOrderId()}</p>
                         </div>
                       </div>
@@ -464,7 +471,7 @@ export default function CheckoutPage() {
                             <p className="text-xs text-muted-foreground">
                               by {item.book.author} | Format: {formatName} | Qty: {item.quantity}
                             </p>
-                            {item.book.deliveryCost && item.book.deliveryCost > 0 && (
+                            {item.book.deliveryCost > 0 && (
                               <p className="text-xs text-blue-600">
                                 + {currency} {item.book.deliveryCost} delivery
                               </p>
@@ -481,20 +488,20 @@ export default function CheckoutPage() {
                   <div className="border-t mt-4 pt-4 space-y-2">
                     <div className="flex justify-between">
                       <span>Subtotal</span>
-                      <span>{currency} {subtotal.toFixed(2)}</span>
+                      <span>{currency} {state.total.toFixed(2)}</span>
                     </div>
-                    {deliveryFee > 0 && (
+                    {state.deliveryFee > 0 && (
                       <div className="flex justify-between">
                         <span className="flex items-center">
                           <Truck className="w-4 h-4 mr-1" />
                           Delivery Fee
                         </span>
-                        <span>{currency} {deliveryFee.toFixed(2)}</span>
+                        <span>{currency} {state.deliveryFee.toFixed(2)}</span>
                       </div>
                     )}
                     <div className="flex justify-between font-bold text-lg border-t pt-2">
                       <span>Total</span>
-                      <span>{currency} {total.toFixed(2)}</span>
+                      <span>{currency} {totalAmount.toFixed(2)}</span>
                     </div>
                   </div>
 
@@ -509,7 +516,7 @@ export default function CheckoutPage() {
                     ) : (
                       <>
                         <Lock className="w-4 h-4 mr-2" />
-                        Complete Order - {currency} {total.toFixed(2)}
+                        Complete Order - {currency} {totalAmount.toFixed(2)}
                       </>
                     )}
                   </Button>
