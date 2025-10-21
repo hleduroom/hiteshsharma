@@ -17,18 +17,23 @@ interface BookDetailsPageProps {
   params: Promise<{ id: string }>;
 }
 
-// Keep the CartItemPayload definition (from CartContext) as it's used by handleBuyNow
+// Keep the FormatType definition
 type FormatType = 'ebook' | 'paperback' | 'hardcover';
 
+// 🛠️ FIX 1: Update CartItemPayload to include 'author'
+// This must match the CartItemPayload definition in CartContext.tsx
 interface CartItemPayload {
   id: string;
   title: string;
+  author: string; // <-- ADDED: Now required
   price: number;
   currency: string;
-  quantity: number;
   format: FormatType;
   coverImage: string;
 }
+
+// 🛠️ FIX 2: Define the exact type expected by the ADD_TO_CART dispatch action
+type AddToCartActionPayload = CartItemPayload & { quantity: number };
 
 export default async function BookDetailsPage({ params }: BookDetailsPageProps) {
   const { id } = await params;
@@ -40,13 +45,15 @@ export default async function BookDetailsPage({ params }: BookDetailsPageProps) 
   const [selectedFormat, setSelectedFormat] = useState<FormatType>('ebook');
 
   const handleBuyNow = () => {
-    // FIX 1: Explicitly construct the payload to satisfy the CartContext's expected type (This part was correct)
-    const payload: CartItemPayload = {
+    // 🛠️ FIX 3: Construct the payload using the new AddToCartActionPayload type
+    // and explicitly include 'author' and 'quantity'.
+    const payload: AddToCartActionPayload = {
       id: book.id,
       title: book.title,
+      author: book.author, // <-- ADDED
       price: book.formats[selectedFormat].price, 
       currency: book.currency,
-      quantity: 1,
+      quantity: 1, // <-- ADDED: Now required by the action type
       format: selectedFormat,
       coverImage: book.coverImage,
     };
@@ -58,18 +65,8 @@ export default async function BookDetailsPage({ params }: BookDetailsPageProps) 
     window.location.href = '/checkout';
   };
 
-  // ❌ FIX 2: REMOVE the cartItemPayload constant as it's not needed for AddToCartButton and caused the error.
-  /*
-  const cartItemPayload: CartItemPayload = {
-    id: book.id,
-    title: book.title,
-    price: book.formats[selectedFormat].price,
-    currency: book.currency,
-    quantity: 1,
-    format: selectedFormat,
-    coverImage: book.coverImage,
-  };
-  */
+  // The commented out `cartItemPayload` constant and its usage for AddToCartButton 
+  // were correctly removed/corrected in the previous step and should not be re-added here.
 
   // --- Start of Original Code ---
   const relatedBooks = allBooks.filter(
@@ -164,7 +161,7 @@ export default async function BookDetailsPage({ params }: BookDetailsPageProps) 
                 Buy Now
               </Button>
 
-              {/* ✅ FIX 3: Pass the full 'book' object here, as it's required by AddToCartButton's props */}
+              {/* Pass the full 'book' object, which AddToCartButton expects */}
               <AddToCartButton book={book} format={selectedFormat} />
 
               <Button asChild variant="outline" size="lg" className="flex-1 border-sky-300/60 hover:bg-sky-100/30 rounded-xl text-xs sm:text-sm">
