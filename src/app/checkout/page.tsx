@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { BookOpen, CreditCard, Lock, QrCode, Smartphone, MapPin, Truck } from 'lucide-react';
+import { Lock, QrCode, Smartphone, MapPin, Truck } from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 
@@ -59,7 +59,6 @@ export default function CheckoutPage() {
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('esewa');
   const [selectedProvince, setSelectedProvince] = useState('');
   const [selectedDistrict, setSelectedDistrict] = useState('');
-  const [showMap, setShowMap] = useState(false);
 
   const [formData, setFormData] = useState({
     email: '',
@@ -72,8 +71,6 @@ export default function CheckoutPage() {
     transactionId: '',
     province: '',
     district: '',
-    latitude: '',
-    longitude: ''
   });
 
   useEffect(() => {
@@ -116,54 +113,14 @@ export default function CheckoutPage() {
     return hasPhysicalBook ? 150 : 0;
   };
 
-  const getItemDetails = (item: any) => {
-    const format = item.book.format;
-    const price = item.book.price;
-    const currency = item.book.currency || 'NPR';
-    const formatName = format.charAt(0).toUpperCase() + format.slice(1);
-    const deliveryCost = format === 'ebook' ? 0 : 150;
-
-    return { price, currency, format, formatName, deliveryCost };
-  };
-
   const generateOrderId = () => {
     return `ORD-${Date.now()}-${Math.random().toString(36).substr(2, 5).toUpperCase()}`;
-  };
-
-  const handleLocationSelect = (lat: number, lng: number) => {
-    setFormData({
-      ...formData,
-      latitude: lat.toString(),
-      longitude: lng.toString()
-    });
-    setShowMap(false);
   };
 
   const saveOrderToLocalStorage = (orderData: any) => {
     const existingOrders = JSON.parse(localStorage.getItem('bookOrders') || '[]');
     const updatedOrders = [...existingOrders, orderData];
     localStorage.setItem('bookOrders', JSON.stringify(updatedOrders));
-  };
-
-  const generateReceipt = (orderData: any) => {
-    const receipt = {
-      receiptId: `RCP-${Date.now()}`,
-      orderId: orderData.orderId,
-      date: new Date().toISOString(),
-      customer: orderData.customer,
-      items: orderData.items,
-      paymentMethod: orderData.paymentMethod,
-      total: orderData.total,
-      deliveryFee: calculateDeliveryFee(),
-      subtotal: state.total
-    };
-    
-    // Save receipt to localStorage
-    const existingReceipts = JSON.parse(localStorage.getItem('paymentReceipts') || '[]');
-    const updatedReceipts = [...existingReceipts, receipt];
-    localStorage.setItem('paymentReceipts', JSON.stringify(updatedReceipts));
-    
-    return receipt;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -185,21 +142,28 @@ export default function CheckoutPage() {
         subtotal,
         deliveryFee,
         total,
-        status: 'pending',
+        status: 'confirmed',
         timestamp: new Date().toISOString()
       };
 
       // Save to localStorage
       saveOrderToLocalStorage(orderData);
-      
-      // Generate receipt
-      generateReceipt(orderData);
 
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      // Send email confirmation
+      const emailResponse = await fetch('/api/orders', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(orderData),
+      });
+
+      if (!emailResponse.ok) {
+        console.warn('Failed to send email, but order was saved');
+      }
 
       dispatch({ type: 'CLEAR_CART' });
-      router.push(`/order/success?orderId=${orderId}&amount=${total}&currency=NPR`);
+      router.push(`/order/success?orderId=${orderId}&amount=${total}&currency=NPR&email=${encodeURIComponent(formData.email)}`);
     } catch (error) {
       console.error('Payment error:', error);
       alert('Payment failed. Please try again.');
@@ -230,9 +194,7 @@ export default function CheckoutPage() {
 
         <form onSubmit={handleSubmit}>
           <div className="grid lg:grid-cols-2 gap-8">
-            {/* Checkout Form */}
             <div className="space-y-6">
-              {/* Contact Information */}
               <Card>
                 <CardHeader>
                   <CardTitle>Contact Information</CardTitle>
@@ -264,7 +226,6 @@ export default function CheckoutPage() {
                 </CardContent>
               </Card>
 
-              {/* Shipping Address */}
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center">
@@ -371,44 +332,9 @@ export default function CheckoutPage() {
                       />
                     </div>
                   </div>
-
-                  <div>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={() => setShowMap(!showMap)}
-                      className="flex items-center"
-                    >
-                      <MapPin className="w-4 h-4 mr-2" />
-                      {showMap ? 'Hide Map' : 'Pick Location on Map'}
-                    </Button>
-                    
-                    {showMap && (
-                      <div className="mt-4 p-4 border rounded-lg bg-gray-50">
-                        <div className="h-64 bg-gray-200 rounded-lg flex items-center justify-center">
-                          <p className="text-muted-foreground">
-                            Map Integration - Use Google Maps API or similar service
-                          </p>
-                        </div>
-                        <div className="mt-4 text-sm text-muted-foreground">
-                          <p>📍 Click on the map to select your exact delivery location</p>
-                          <p>🗺️ This helps our delivery partner find you easily</p>
-                        </div>
-                        <Button
-                          type="button"
-                          onClick={() => handleLocationSelect(27.7172, 85.3240)}
-                          className="mt-2"
-                          variant="outline"
-                        >
-                          Use Current Location (Kathmandu)
-                        </Button>
-                      </div>
-                    )}
-                  </div>
                 </CardContent>
               </Card>
 
-              {/* Payment Method */}
               <Card>
                 <CardHeader>
                   <CardTitle>Payment Method</CardTitle>
@@ -444,7 +370,6 @@ export default function CheckoutPage() {
                     </Button>
                   </div>
 
-                  {/* Digital Wallet Instructions */}
                   {(paymentMethod === 'esewa' || paymentMethod === 'khalti') && (
                     <div className="border-t pt-4 space-y-4">
                       <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
@@ -453,8 +378,8 @@ export default function CheckoutPage() {
                         </h4>
                         <ol className="list-decimal list-inside space-y-1 text-sm text-blue-800">
                           <li>Open your {paymentMethod === 'esewa' ? 'eSewa' : 'Khalti'} app</li>
-                          <li>Scan the QR code below or enter merchant ID: <strong>HLEDUROOM</strong></li>
-                          <li>Pay the amount: <strong>{currency} {total}</strong></li>
+                          <li>Scan the QR code below or enter merchant ID: <strong>+9779703869612</strong></li>
+                          <li>Pay the amount: <strong>{currency} {total.toFixed(2)}</strong></li>
                           <li>Enter the transaction ID below after payment</li>
                         </ol>
                       </div>
@@ -484,16 +409,15 @@ export default function CheckoutPage() {
                     </div>
                   )}
 
-                  {/* Bank Transfer Instructions */}
                   {paymentMethod === 'bank_transfer' && (
                     <div className="border-t pt-4 space-y-4">
                       <div className="bg-green-50 border border-green-200 rounded-lg p-4">
                         <h4 className="font-semibold text-green-900 mb-2">Bank Transfer Details</h4>
                         <div className="text-sm text-green-800 space-y-2">
-                          <p><strong>Bank:</strong> Nepal Investment Mega Bank</p>
-                          <p><strong>Account Name:</strong> H.L.-Eduroom</p>
+                          <p><strong>Bank:</strong> Machapuchre Bank </p>
+                          <p><strong>Account Name:</strong> Hitesh Sharma</p>
                           <p><strong>Account Number:</strong> 1234567890123456</p>
-                          <p><strong>Amount:</strong> {currency} {total}</p>
+                          <p><strong>Amount:</strong> {currency} {total.toFixed(2)}</p>
                           <p><strong>Reference:</strong> Order {generateOrderId()}</p>
                         </div>
                       </div>
@@ -515,7 +439,6 @@ export default function CheckoutPage() {
               </Card>
             </div>
 
-            {/* Order Summary */}
             <div className="space-y-6">
               <Card>
                 <CardHeader>
@@ -524,9 +447,11 @@ export default function CheckoutPage() {
                 <CardContent>
                   <div className="space-y-4">
                     {state.items.map((item) => {
-                      const itemDetails = getItemDetails(item);
+                      const itemTotal = (item.book.price * item.quantity).toFixed(2);
+                      const formatName = item.book.format.charAt(0).toUpperCase() + item.book.format.slice(1);
+                      
                       return (
-                        <div key={`${item.book.id}-${itemDetails.format}`} className="flex items-center space-x-3">
+                        <div key={`${item.book.id}-${item.book.format}`} className="flex items-center space-x-3">
                           <Image
                             src={item.book.coverImage}
                             alt={item.book.title}
@@ -537,16 +462,16 @@ export default function CheckoutPage() {
                           <div className="flex-1">
                             <h4 className="font-medium text-sm">{item.book.title}</h4>
                             <p className="text-xs text-muted-foreground">
-                              Format: {itemDetails.formatName} | Qty: {item.quantity}
+                              by {item.book.author} | Format: {formatName} | Qty: {item.quantity}
                             </p>
-                            {itemDetails.deliveryCost > 0 && (
+                            {item.book.deliveryCost && item.book.deliveryCost > 0 && (
                               <p className="text-xs text-blue-600">
-                                + {currency} {itemDetails.deliveryCost} delivery
+                                + {currency} {item.book.deliveryCost} delivery
                               </p>
                             )}
                           </div>
                           <span className="font-medium">
-                            {itemDetails.currency} {(itemDetails.price * item.quantity).toFixed(2)}
+                            {currency} {itemTotal}
                           </span>
                         </div>
                       );
