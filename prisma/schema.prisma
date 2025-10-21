@@ -77,7 +77,7 @@ model Order {
   currency       String   @default("NPR")
   paymentMethod  String
   transactionId  String?
-  status         OrderStatus @default(PENDING)
+  status         String   @default("PENDING") // Changed from OrderStatus enum
   notes          String?
 
   userId   String?
@@ -102,27 +102,29 @@ model OrderItem {
   createdAt DateTime @default(now())
 }
 
-enum OrderStatus {
-  PENDING
-  CONFIRMED
-  PROCESSING
-  SHIPPED
-  DELIVERED
-  CANCELLED
-}
+// Removed OrderStatus enum - using strings instead
+// enum OrderStatus {
+//   PENDING
+//   CONFIRMED
+//   PROCESSING
+//   SHIPPED
+//   DELIVERED
+//   CANCELLED
+// }
 
 model Admin {
   id        String   @id @default(cuid())
   email     String   @unique
   name      String
   password  String
-  role      AdminRole @default(MODERATOR)
+  role      String   @default("MODERATOR") // Changed from AdminRole enum
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
-enum AdminRole {
-  SUPER_ADMIN
-  ADMIN
-  MODERATOR
-}
+// Removed AdminRole enum - using strings instead
+// enum AdminRole {
+//   SUPER_ADMIN
+//   ADMIN
+//   MODERATOR
+// }
