@@ -107,7 +107,8 @@ const structuredData = {
 function TypingAnimation() {
   const [text, setText] = useState('');
   const [currentIndex, setCurrentIndex] = useState(0);
-  const fullText = "Normal Human try to Experiencing Moments of Life 🍃";
+  const fullText = ""यः परिश्रमतः किञ्चित्, न तस्य दुर्लभं जगत्।"
+Normal Human try to Experiencing Every Moments of Life 🍃";
 
   useEffect(() => {
     if (currentIndex < fullText.length) {
@@ -121,9 +122,9 @@ function TypingAnimation() {
   }, [currentIndex, fullText]);
 
   return (
-    <span className="text-base md:text-lg text-slate-600 dark:text-slate-400 font-light min-h-[24px] inline-block font-shooting-star">
+    <span className="text-sm md:text-base text-white/90 font-light min-h-[20px] inline-block font-shooting-star">
       {text}
-      <span className="inline-block w-0.5 h-5 bg-slate-400 dark:bg-slate-500 ml-1 animate-pulse" />
+      <span className="inline-block w-0.5 h-4 bg-white/70 ml-1 animate-pulse" />
     </span>
   );
 }
@@ -199,38 +200,39 @@ export function Hero() {
       
       <Analytics />
       
-      <section className="w-full min-h-screen flex items-center justify-center relative overflow-hidden bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
-        {/* Background Pattern */}
-        <div className="absolute inset-0 z-0 opacity-10">
-          <div className="absolute inset-0 bg-[radial-gradient(#64748b_1px,transparent_1px)] [background-size:16px_16px]" />
-        </div>
-
-        {/* Hero Image Background */}
+      <section className="w-full min-h-screen flex items-center justify-center relative overflow-hidden">
+        {/* User Image Background with Shadow Effect */}
         <div className="absolute inset-0 z-0">
           <Image
-            src="/book_cover_img.png"
-            alt="Abstract Background"
+            src={userDetails.image}
+            alt="Background"
             fill
-            className="object-cover opacity-5"
+            className="object-cover scale-110 blur-sm brightness-50"
             priority
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-white/80 via-white/60 to-white/90 dark:from-slate-950/90 dark:via-slate-950/80 dark:to-slate-950/95" />
+          <div className="absolute inset-0 bg-black/40" />
+          <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/70" />
         </div>
 
-        <div className="container px-4 md:px-6 relative z-10">
+        {/* Subtle Pattern Overlay */}
+        <div className="absolute inset-0 z-0 opacity-10">
+          <div className="absolute inset-0 bg-[radial-gradient(#ffffff_1px,transparent_1px)] [background-size:20px_20px]" />
+        </div>
+
+        <div className="container px-4 md:px-6 relative z-10 mt-16">
           <motion.div
-            className="flex flex-col items-center gap-10 max-w-6xl mx-auto"
+            className="flex flex-col items-center gap-12 max-w-6xl mx-auto"
             initial="hidden"
             animate="visible"
             variants={containerVariants}
           >
             {/* Main Content Grid */}
-            <div className="grid lg:grid-cols-2 gap-10 items-center w-full">
+            <div className="grid lg:grid-cols-2 gap-12 items-center w-full">
               {/* Left Column - Text Content */}
-              <motion.div className="space-y-6 text-center lg:text-left">
+              <motion.div className="space-y-8 text-center lg:text-left">
                 {/* Profile Image for Mobile */}
                 <motion.div
-                  className="lg:hidden relative h-28 w-28 mx-auto overflow-hidden rounded-full shadow-xl border-4 border-white/50 dark:border-slate-800/50 bg-white/10 backdrop-blur-sm"
+                  className="lg:hidden relative h-24 w-24 mx-auto overflow-hidden rounded-full shadow-2xl border-4 border-white/30 backdrop-blur-sm"
                   variants={imageVariants}
                   itemProp="image"
                 >
@@ -244,29 +246,29 @@ export function Hero() {
                 </motion.div>
 
                 {/* Name and Role */}
-                <motion.div className="space-y-3" variants={itemVariants}>
-                  <div className="space-y-2">
+                <motion.div className="space-y-4" variants={itemVariants}>
+                  <div className="space-y-3">
                     <Badge 
                       variant="secondary" 
-                      className="bg-slate-800 text-white px-3 py-1 text-xs font-medium border-0 mb-3 font-shooting-star"
+                      className="bg-white/20 text-white border-white/30 px-3 py-1 text-xs font-medium backdrop-blur-sm font-shooting-star"
                     >
                       Educator & Author
                     </Badge>
                     <h1 
-                      className="text-3xl md:text-5xl lg:text-6xl font-bold tracking-tight text-slate-900 dark:text-white font-shooting-star"
+                      className="text-2xl md:text-4xl lg:text-5xl font-bold text-white tracking-tight font-shooting-star"
                       itemProp="name"
                     >
                       {userDetails.name}
                     </h1>
                   </div>
-                  <div className="text-base md:text-lg text-slate-600 dark:text-slate-400 font-light">
+                  <div className="text-sm md:text-base text-white/90 font-light">
                     <TypingAnimation />
                   </div>
                 </motion.div>
 
                 {/* Bio */}
                 <motion.p 
-                  className="text-base text-slate-600 dark:text-slate-400 leading-relaxed max-w-2xl mx-auto lg:mx-0 font-shooting-star"
+                  className="text-sm text-white/80 leading-relaxed max-w-2xl mx-auto lg:mx-0 font-shooting-star"
                   variants={itemVariants}
                   itemProp="description"
                 >
@@ -277,22 +279,22 @@ export function Hero() {
                 <motion.div className="flex flex-col sm:flex-row gap-3 justify-center lg:justify-start" variants={itemVariants}>
                   <Button 
                     size="lg"
-                    className="bg-slate-900 hover:bg-slate-800 text-white px-6 py-5 text-sm font-medium rounded-full shadow-lg hover:shadow-xl transition-all duration-300 group font-shooting-star"
-                    onClick={() => window.open('/3AM-Confessions-Preview.pdf', '_blank')}
+                    className="bg-white/20 hover:bg-white/30 text-white border border-white/30 px-6 py-5 text-sm font-medium rounded-full backdrop-blur-sm hover:shadow-lg transition-all duration-300 group font-shooting-star"
+                    onClick={() => window.open('/book', '_blank')}
                   >
                     <BookOpen className="w-4 h-4 mr-2" />
-                    Read Book Preview
+                    Buy Book 
                     <ArrowRight className="w-3 h-3 ml-2 group-hover:translate-x-1 transition-transform" />
                   </Button>
                   <Button 
                     variant="outline"
                     size="lg"
-                    className="border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 px-6 py-5 text-sm font-medium rounded-full hover:bg-slate-50 dark:hover:bg-slate-800 transition-all duration-300 font-shooting-star"
+                    className="border-white/30 text-white hover:bg-white/10 px-6 py-5 text-sm font-medium rounded-full backdrop-blur-sm transition-all duration-300 font-shooting-star"
                     asChild
                   >
                     <Link href={userDetails.socials.whatsapp} target="_blank">
                       <WhatsappIcon className="w-4 h-4 mr-2" />
-                      Connect
+                      Connect With Me
                     </Link>
                   </Button>
                 </motion.div>
@@ -302,7 +304,7 @@ export function Hero() {
                   <Button 
                     variant="ghost" 
                     size="icon"
-                    className="h-10 w-10 rounded-full bg-white/50 dark:bg-slate-800/50 hover:bg-white dark:hover:bg-slate-700 backdrop-blur-sm border border-slate-200 dark:border-slate-700"
+                    className="h-10 w-10 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-sm border border-white/20 text-white"
                     asChild
                   >
                     <Link href={userDetails.socials.facebook} target="_blank" aria-label="Facebook" itemProp="sameAs">
@@ -312,7 +314,7 @@ export function Hero() {
                   <Button 
                     variant="ghost" 
                     size="icon"
-                    className="h-10 w-10 rounded-full bg-white/50 dark:bg-slate-800/50 hover:bg-white dark:hover:bg-slate-700 backdrop-blur-sm border border-slate-200 dark:border-slate-700"
+                    className="h-10 w-10 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-sm border border-white/20 text-white"
                     asChild
                   >
                     <Link href={userDetails.socials.linkedin} target="_blank" aria-label="LinkedIn" itemProp="sameAs">
@@ -322,7 +324,7 @@ export function Hero() {
                   <Button 
                     variant="ghost" 
                     size="icon"
-                    className="h-10 w-10 rounded-full bg-white/50 dark:bg-slate-800/50 hover:bg-white dark:hover:bg-slate-700 backdrop-blur-sm border border-slate-200 dark:border-slate-700"
+                    className="h-10 w-10 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-sm border border-white/20 text-white"
                     asChild
                   >
                     <Link href={userDetails.socials.email} aria-label="Email">
@@ -333,10 +335,10 @@ export function Hero() {
               </motion.div>
 
               {/* Right Column - Visual Content */}
-              <motion.div className="space-y-6">
-                {/* Profile Image for Desktop */}
+              <motion.div className="space-y-8">
+                {/* Profile Image for Desktop with Enhanced Shadow */}
                 <motion.div
-                  className="hidden lg:block relative h-80 w-80 mx-auto overflow-hidden rounded-2xl shadow-xl border-6 border-white/50 dark:border-slate-800/50 bg-white/10 backdrop-blur-sm"
+                  className="hidden lg:block relative h-72 w-72 mx-auto overflow-hidden rounded-2xl shadow-2xl border-4 border-white/30 backdrop-blur-sm"
                   variants={imageVariants}
                   itemProp="image"
                 >
@@ -347,6 +349,7 @@ export function Hero() {
                     className="object-cover"
                     priority
                   />
+                  <div className="absolute inset-0 ring-4 ring-white/10 rounded-2xl" />
                 </motion.div>
 
                 {/* Book Showcase */}
@@ -357,16 +360,16 @@ export function Hero() {
                   onClick={() => window.open('/3AM-Confessions-Preview.pdf', '_blank')}
                   itemProp="image"
                 >
-                  <div className="relative w-56 h-72 mx-auto shadow-xl rounded-lg overflow-hidden border-4 border-white/60 dark:border-slate-800/60 bg-white/5 backdrop-blur-sm">
+                  <div className="relative w-48 h-60 mx-auto shadow-2xl rounded-lg overflow-hidden border-2 border-white/30 backdrop-blur-sm bg-white/5">
                     <Image
                       src="/book_cover_img.png"
                       alt="3 AM Confessions: My Life as an Overthinker - Book Cover"
                       fill
                       className="object-cover transition-transform duration-500 group-hover:scale-110"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-end justify-center pb-4">
-                      <Button className="bg-white/95 hover:bg-white text-slate-900 font-medium text-xs px-4 py-2 rounded-full shadow-lg font-shooting-star">
-                        <ExternalLink className="w-3 h-3 mr-1.5" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-end justify-center pb-3">
+                      <Button className="bg-white/95 hover:bg-white text-slate-900 font-medium text-xs px-3 py-2 rounded-full shadow-lg font-shooting-star">
+                        <ExternalLink className="w-3 h-3 mr-1" />
                         Read Preview
                       </Button>
                     </div>
@@ -375,10 +378,10 @@ export function Hero() {
                   {/* Book Badge */}
                   <div className="absolute -top-2 -right-2 z-10">
                     <Badge 
-                      className="bg-gradient-to-r from-red-600 to-rose-700 text-white px-3 py-1 text-xs font-semibold border-0 shadow-lg font-shooting-star"
+                      className="bg-gradient-to-r from-red-500 to-rose-600 text-white px-3 py-1 text-xs font-semibold border-0 shadow-lg font-shooting-star"
                     >
                       <Star className="w-3 h-3 mr-1 fill-current" />
-                      NEW
+                      NEW Release
                     </Badge>
                   </div>
                 </motion.div>
