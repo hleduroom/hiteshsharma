@@ -6,17 +6,61 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { BookOpen, CreditCard, Lock, QrCode, Smartphone } from 'lucide-react';
+import { BookOpen, CreditCard, Lock, QrCode, Smartphone, MapPin, Truck } from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 
-type PaymentMethod = 'card' | 'esewa' | 'khalti' | 'bank_transfer';
+type PaymentMethod = 'esewa' | 'khalti' | 'bank_transfer';
+
+const NEPAL_LOCATIONS = {
+  provinces: [
+    {
+      id: 1,
+      name: 'Province 1',
+      districts: ['Jhapa', 'Morang', 'Sunsari', 'Ilam', 'Dhankuta', 'Taplejung', 'Panchthar']
+    },
+    {
+      id: 2,
+      name: 'Madhesh Province',
+      districts: ['Sarlahi', 'Mahottari', 'Dhanusha', 'Siraha', 'Saptari', 'Parsa', 'Bara', 'Rautahat']
+    },
+    {
+      id: 3,
+      name: 'Bagmati Province',
+      districts: ['Kathmandu', 'Lalitpur', 'Bhaktapur', 'Kavrepalanchok', 'Dhading', 'Nuwakot', 'Rasuwa', 'Sindhupalchok', 'Dolakha']
+    },
+    {
+      id: 4,
+      name: 'Gandaki Province',
+      districts: ['Pokhara', 'Kaski', 'Syangja', 'Tanahu', 'Lamjung', 'Gorkha', 'Manang', 'Mustang']
+    },
+    {
+      id: 5,
+      name: 'Lumbini Province',
+      districts: ['Rupandehi', 'Nawalparasi', 'Kapilvastu', 'Palpa', 'Arghakhanchi', 'Gulmi', 'Rolpa', 'Pyuthan']
+    },
+    {
+      id: 6,
+      name: 'Karnali Province',
+      districts: ['Surkhet', 'Dailekh', 'Jajarkot', 'Dolpa', 'Jumla', 'Kalikot', 'Mugu', 'Humla']
+    },
+    {
+      id: 7,
+      name: 'Sudurpashchim Province',
+      districts: ['Kailali', 'Kanchanpur', 'Dadeldhura', 'Baitadi', 'Darchula', 'Bajhang', 'Bajura', 'Doti', 'Achham']
+    }
+  ]
+};
 
 export default function CheckoutPage() {
   const { state, dispatch } = useCart();
   const router = useRouter();
   const [isProcessing, setIsProcessing] = useState(false);
-  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('card');
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('esewa');
+  const [selectedProvince, setSelectedProvince] = useState('');
+  const [selectedDistrict, setSelectedDistrict] = useState('');
+  const [showMap, setShowMap] = useState(false);
+
   const [formData, setFormData] = useState({
     email: '',
     firstName: '',
@@ -25,39 +69,101 @@ export default function CheckoutPage() {
     city: '',
     postalCode: '',
     phone: '',
-    cardNumber: '',
-    expiryDate: '',
-    cvv: '',
-    nameOnCard: '',
-    transactionId: ''
+    transactionId: '',
+    province: '',
+    district: '',
+    latitude: '',
+    longitude: ''
   });
 
-  // Handle empty cart redirect
   useEffect(() => {
     if (state.items.length === 0) {
       router.push('/cart');
     }
   }, [state.items.length, router]);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value
     });
   };
 
-  // Helper function to get item details
+  const handleProvinceChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const province = e.target.value;
+    setSelectedProvince(province);
+    setSelectedDistrict('');
+    setFormData({
+      ...formData,
+      province,
+      district: ''
+    });
+  };
+
+  const handleDistrictChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const district = e.target.value;
+    setSelectedDistrict(district);
+    setFormData({
+      ...formData,
+      district
+    });
+  };
+
+  const calculateDeliveryFee = () => {
+    const hasPhysicalBook = state.items.some(item => 
+      item.book.format === 'paperback' || item.book.format === 'hardcover'
+    );
+    return hasPhysicalBook ? 150 : 0;
+  };
+
   const getItemDetails = (item: any) => {
-    const format = item.book.bookFormat || 'ebook';
-    const price = item.book.formats[format]?.price || item.book.formats.ebook.price;
+    const format = item.book.format;
+    const price = item.book.price;
     const currency = item.book.currency || 'NPR';
     const formatName = format.charAt(0).toUpperCase() + format.slice(1);
-    
-    return { price, currency, format, formatName };
+    const deliveryCost = format === 'ebook' ? 0 : 150;
+
+    return { price, currency, format, formatName, deliveryCost };
   };
 
   const generateOrderId = () => {
     return `ORD-${Date.now()}-${Math.random().toString(36).substr(2, 5).toUpperCase()}`;
+  };
+
+  const handleLocationSelect = (lat: number, lng: number) => {
+    setFormData({
+      ...formData,
+      latitude: lat.toString(),
+      longitude: lng.toString()
+    });
+    setShowMap(false);
+  };
+
+  const saveOrderToLocalStorage = (orderData: any) => {
+    const existingOrders = JSON.parse(localStorage.getItem('bookOrders') || '[]');
+    const updatedOrders = [...existingOrders, orderData];
+    localStorage.setItem('bookOrders', JSON.stringify(updatedOrders));
+  };
+
+  const generateReceipt = (orderData: any) => {
+    const receipt = {
+      receiptId: `RCP-${Date.now()}`,
+      orderId: orderData.orderId,
+      date: new Date().toISOString(),
+      customer: orderData.customer,
+      items: orderData.items,
+      paymentMethod: orderData.paymentMethod,
+      total: orderData.total,
+      deliveryFee: calculateDeliveryFee(),
+      subtotal: state.total
+    };
+    
+    // Save receipt to localStorage
+    const existingReceipts = JSON.parse(localStorage.getItem('paymentReceipts') || '[]');
+    const updatedReceipts = [...existingReceipts, receipt];
+    localStorage.setItem('paymentReceipts', JSON.stringify(updatedReceipts));
+    
+    return receipt;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -66,29 +172,34 @@ export default function CheckoutPage() {
 
     try {
       const orderId = generateOrderId();
-      
-      // Simulate API call to your backend
-      const response = await fetch('/api/orders', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          orderId,
-          customer: formData,
-          items: state.items,
-          paymentMethod,
-          transactionId: formData.transactionId,
-          total: state.total
-        }),
-      });
+      const deliveryFee = calculateDeliveryFee();
+      const subtotal = state.total;
+      const total = subtotal + deliveryFee;
 
-      if (response.ok) {
-        dispatch({ type: 'CLEAR_CART' });
-        router.push(`/order/success?orderId=${orderId}&amount=${state.total}`);
-      } else {
-        throw new Error('Payment failed');
-      }
+      const orderData = {
+        orderId,
+        customer: formData,
+        items: state.items,
+        paymentMethod,
+        transactionId: formData.transactionId,
+        subtotal,
+        deliveryFee,
+        total,
+        status: 'pending',
+        timestamp: new Date().toISOString()
+      };
+
+      // Save to localStorage
+      saveOrderToLocalStorage(orderData);
+      
+      // Generate receipt
+      generateReceipt(orderData);
+
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 2000));
+
+      dispatch({ type: 'CLEAR_CART' });
+      router.push(`/order/success?orderId=${orderId}&amount=${total}&currency=NPR`);
     } catch (error) {
       console.error('Payment error:', error);
       alert('Payment failed. Please try again.');
@@ -97,7 +208,6 @@ export default function CheckoutPage() {
     }
   };
 
-  // Show loading or nothing while redirecting
   if (state.items.length === 0) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white dark:from-slate-950 dark:to-slate-900 flex items-center justify-center">
@@ -108,9 +218,10 @@ export default function CheckoutPage() {
     );
   }
 
-  const selectedBook = state.items[0]?.book;
-  const itemDetails = getItemDetails(state.items[0]);
-  const currency = itemDetails.currency;
+  const deliveryFee = calculateDeliveryFee();
+  const subtotal = state.total;
+  const total = subtotal + deliveryFee;
+  const currency = 'NPR';
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white dark:from-slate-950 dark:to-slate-900">
@@ -156,7 +267,10 @@ export default function CheckoutPage() {
               {/* Shipping Address */}
               <Card>
                 <CardHeader>
-                  <CardTitle>Shipping Address</CardTitle>
+                  <CardTitle className="flex items-center">
+                    <MapPin className="w-5 h-5 mr-2" />
+                    Shipping Address
+                  </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="grid grid-cols-2 gap-4">
@@ -181,20 +295,64 @@ export default function CheckoutPage() {
                       />
                     </div>
                   </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="province">Province *</Label>
+                      <select
+                        id="province"
+                        name="province"
+                        value={selectedProvince}
+                        onChange={handleProvinceChange}
+                        className="w-full p-2 border rounded-md"
+                        required
+                      >
+                        <option value="">Select Province</option>
+                        {NEPAL_LOCATIONS.provinces.map(province => (
+                          <option key={province.id} value={province.name}>
+                            {province.name}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    <div>
+                      <Label htmlFor="district">District *</Label>
+                      <select
+                        id="district"
+                        name="district"
+                        value={selectedDistrict}
+                        onChange={handleDistrictChange}
+                        className="w-full p-2 border rounded-md"
+                        disabled={!selectedProvince}
+                        required
+                      >
+                        <option value="">Select District</option>
+                        {selectedProvince && NEPAL_LOCATIONS.provinces
+                          .find(p => p.name === selectedProvince)
+                          ?.districts.map(district => (
+                            <option key={district} value={district}>
+                              {district}
+                            </option>
+                          ))}
+                      </select>
+                    </div>
+                  </div>
+
                   <div>
-                    <Label htmlFor="address">Address *</Label>
+                    <Label htmlFor="address">Street Address *</Label>
                     <Input
                       id="address"
                       name="address"
-                      placeholder="Street address"
+                      placeholder="Street address, Ward No., Landmark"
                       value={formData.address}
                       onChange={handleInputChange}
                       required
                     />
                   </div>
+
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <Label htmlFor="city">City *</Label>
+                      <Label htmlFor="city">City/Municipality *</Label>
                       <Input
                         id="city"
                         name="city"
@@ -204,15 +362,48 @@ export default function CheckoutPage() {
                       />
                     </div>
                     <div>
-                      <Label htmlFor="postalCode">Postal Code *</Label>
+                      <Label htmlFor="postalCode">Postal Code</Label>
                       <Input
                         id="postalCode"
                         name="postalCode"
                         value={formData.postalCode}
                         onChange={handleInputChange}
-                        required
                       />
                     </div>
+                  </div>
+
+                  <div>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => setShowMap(!showMap)}
+                      className="flex items-center"
+                    >
+                      <MapPin className="w-4 h-4 mr-2" />
+                      {showMap ? 'Hide Map' : 'Pick Location on Map'}
+                    </Button>
+                    
+                    {showMap && (
+                      <div className="mt-4 p-4 border rounded-lg bg-gray-50">
+                        <div className="h-64 bg-gray-200 rounded-lg flex items-center justify-center">
+                          <p className="text-muted-foreground">
+                            Map Integration - Use Google Maps API or similar service
+                          </p>
+                        </div>
+                        <div className="mt-4 text-sm text-muted-foreground">
+                          <p>📍 Click on the map to select your exact delivery location</p>
+                          <p>🗺️ This helps our delivery partner find you easily</p>
+                        </div>
+                        <Button
+                          type="button"
+                          onClick={() => handleLocationSelect(27.7172, 85.3240)}
+                          className="mt-2"
+                          variant="outline"
+                        >
+                          Use Current Location (Kathmandu)
+                        </Button>
+                      </div>
+                    )}
                   </div>
                 </CardContent>
               </Card>
@@ -223,96 +414,35 @@ export default function CheckoutPage() {
                   <CardTitle>Payment Method</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  {/* Payment Method Selection */}
-                  <div className="grid grid-cols-2 gap-4">
-                    <Button
-                      type="button"
-                      variant={paymentMethod === 'card' ? 'default' : 'outline'}
-                      onClick={() => setPaymentMethod('card')}
-                      className="h-16"
-                    >
-                      <CreditCard className="w-4 h-4 mr-2" />
-                      Card
-                    </Button>
+                  <div className="grid grid-cols-3 gap-4">
                     <Button
                       type="button"
                       variant={paymentMethod === 'esewa' ? 'default' : 'outline'}
                       onClick={() => setPaymentMethod('esewa')}
-                      className="h-16"
+                      className="h-16 flex-col"
                     >
-                      <QrCode className="w-4 h-4 mr-2" />
-                      eSewa
+                      <QrCode className="w-6 h-6 mb-1" />
+                      <span className="text-xs">eSewa</span>
                     </Button>
                     <Button
                       type="button"
                       variant={paymentMethod === 'khalti' ? 'default' : 'outline'}
                       onClick={() => setPaymentMethod('khalti')}
-                      className="h-16"
+                      className="h-16 flex-col"
                     >
-                      <Smartphone className="w-4 h-4 mr-2" />
-                      Khalti
+                      <Smartphone className="w-6 h-6 mb-1" />
+                      <span className="text-xs">Khalti</span>
                     </Button>
                     <Button
                       type="button"
                       variant={paymentMethod === 'bank_transfer' ? 'default' : 'outline'}
                       onClick={() => setPaymentMethod('bank_transfer')}
-                      className="h-16"
+                      className="h-16 flex-col"
                     >
-                      <Lock className="w-4 h-4 mr-2" />
-                      Bank Transfer
+                      <Lock className="w-6 h-6 mb-1" />
+                      <span className="text-xs">Bank Transfer</span>
                     </Button>
                   </div>
-
-                  {/* Card Payment Form */}
-                  {paymentMethod === 'card' && (
-                    <div className="space-y-4 border-t pt-4">
-                      <div>
-                        <Label htmlFor="nameOnCard">Name on Card *</Label>
-                        <Input
-                          id="nameOnCard"
-                          name="nameOnCard"
-                          value={formData.nameOnCard}
-                          onChange={handleInputChange}
-                          required
-                        />
-                      </div>
-                      <div>
-                        <Label htmlFor="cardNumber">Card Number *</Label>
-                        <Input
-                          id="cardNumber"
-                          name="cardNumber"
-                          placeholder="1234 5678 9012 3456"
-                          value={formData.cardNumber}
-                          onChange={handleInputChange}
-                          required
-                        />
-                      </div>
-                      <div className="grid grid-cols-2 gap-4">
-                        <div>
-                          <Label htmlFor="expiryDate">Expiry Date *</Label>
-                          <Input
-                            id="expiryDate"
-                            name="expiryDate"
-                            placeholder="MM/YY"
-                            value={formData.expiryDate}
-                            onChange={handleInputChange}
-                            required
-                          />
-                        </div>
-                        <div>
-                          <Label htmlFor="cvv">CVV *</Label>
-                          <Input
-                            id="cvv"
-                            name="cvv"
-                            placeholder="123"
-                            value={formData.cvv}
-                            onChange={handleInputChange}
-                            required
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  )}
 
                   {/* Digital Wallet Instructions */}
                   {(paymentMethod === 'esewa' || paymentMethod === 'khalti') && (
@@ -323,13 +453,12 @@ export default function CheckoutPage() {
                         </h4>
                         <ol className="list-decimal list-inside space-y-1 text-sm text-blue-800">
                           <li>Open your {paymentMethod === 'esewa' ? 'eSewa' : 'Khalti'} app</li>
-                          <li>Scan the QR code below or enter the merchant ID</li>
-                          <li>Pay the amount: <strong>{currency} {state.total}</strong></li>
+                          <li>Scan the QR code below or enter merchant ID: <strong>HLEDUROOM</strong></li>
+                          <li>Pay the amount: <strong>{currency} {total}</strong></li>
                           <li>Enter the transaction ID below after payment</li>
                         </ol>
                       </div>
 
-                      {/* QR Code Placeholder */}
                       <div className="flex justify-center">
                         <div className="bg-white p-4 rounded-lg border-2 border-dashed border-gray-300">
                           <div className="w-48 h-48 bg-gray-100 flex items-center justify-center">
@@ -364,7 +493,7 @@ export default function CheckoutPage() {
                           <p><strong>Bank:</strong> Nepal Investment Mega Bank</p>
                           <p><strong>Account Name:</strong> H.L.-Eduroom</p>
                           <p><strong>Account Number:</strong> 1234567890123456</p>
-                          <p><strong>Amount:</strong> {currency} {state.total}</p>
+                          <p><strong>Amount:</strong> {currency} {total}</p>
                           <p><strong>Reference:</strong> Order {generateOrderId()}</p>
                         </div>
                       </div>
@@ -410,9 +539,14 @@ export default function CheckoutPage() {
                             <p className="text-xs text-muted-foreground">
                               Format: {itemDetails.formatName} | Qty: {item.quantity}
                             </p>
+                            {itemDetails.deliveryCost > 0 && (
+                              <p className="text-xs text-blue-600">
+                                + {currency} {itemDetails.deliveryCost} delivery
+                              </p>
+                            )}
                           </div>
                           <span className="font-medium">
-                            {itemDetails.currency} {itemDetails.price * item.quantity}
+                            {itemDetails.currency} {(itemDetails.price * item.quantity).toFixed(2)}
                           </span>
                         </div>
                       );
@@ -422,15 +556,20 @@ export default function CheckoutPage() {
                   <div className="border-t mt-4 pt-4 space-y-2">
                     <div className="flex justify-between">
                       <span>Subtotal</span>
-                      <span>{currency} {state.total}</span>
+                      <span>{currency} {subtotal.toFixed(2)}</span>
                     </div>
-                    <div className="flex justify-between">
-                      <span>Shipping</span>
-                      <span>Free</span>
-                    </div>
+                    {deliveryFee > 0 && (
+                      <div className="flex justify-between">
+                        <span className="flex items-center">
+                          <Truck className="w-4 h-4 mr-1" />
+                          Delivery Fee
+                        </span>
+                        <span>{currency} {deliveryFee.toFixed(2)}</span>
+                      </div>
+                    )}
                     <div className="flex justify-between font-bold text-lg border-t pt-2">
                       <span>Total</span>
-                      <span>{currency} {state.total}</span>
+                      <span>{currency} {total.toFixed(2)}</span>
                     </div>
                   </div>
 
@@ -445,7 +584,7 @@ export default function CheckoutPage() {
                     ) : (
                       <>
                         <Lock className="w-4 h-4 mr-2" />
-                        Complete Order - {currency} {state.total}
+                        Complete Order - {currency} {total.toFixed(2)}
                       </>
                     )}
                   </Button>
