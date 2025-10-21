@@ -1,4 +1,4 @@
-import { bookData } from '@/lib/data/book';
+import { mainBook, allBooks } from '@/lib/data/books';
 import { notFound } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
