@@ -5,11 +5,14 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { CheckCircle, Download, Mail, BookOpen, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
-import { bookData } from '@/lib/data/book';
+import { useSearchParams } from 'next/navigation';
 
 export default function OrderSuccessPage() {
   const [orderId, setOrderId] = useState('');
   const [orderDate, setOrderDate] = useState('');
+  const searchParams = useSearchParams();
+  const amount = searchParams.get('amount') || '399';
+  const currency = searchParams.get('currency') || 'NPR';
 
   useEffect(() => {
     // Generate random order ID and current date
@@ -25,12 +28,12 @@ Order Confirmation Receipt
 Order ID: ${orderId}
 Date: ${orderDate}
 
-Item: ${bookData.title}
-Author: ${bookData.author}
+Item: 3 AM Confessions: My Life as an Overthinker
+Author: Hitesh Sharma
 Quantity: 1
-Price: ${bookData.currency} ${bookData.price}
+Price: ${currency} ${amount}
 
-Total Amount: ${bookData.currency} ${bookData.price}
+Total Amount: ${currency} ${amount}
 Payment Method: Credit Card
 Status: Completed
 
@@ -90,12 +93,12 @@ Website: thehiteshsir.com
                 </div>
                 <div className="flex justify-between">
                   <span className="font-semibold">Item:</span>
-                  <span>{bookData.title}</span>
+                  <span>3 AM Confessions: My Life as an Overthinker</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="font-semibold">Amount:</span>
                   <span className="font-bold text-lg">
-                    {bookData.currency} {bookData.price}
+                    {currency} {amount}
                   </span>
                 </div>
                 <div className="flex justify-between">
@@ -117,7 +120,7 @@ Website: thehiteshsir.com
               Email Receipt
             </Button>
             <Button variant="outline" asChild className="flex items-center">
-              <Link href={`/ebook/${bookData.id}`}>
+              <Link href="/ebook/3am-confessions">
                 <BookOpen className="w-4 h-4 mr-2" />
                 Read E-book
               </Link>
