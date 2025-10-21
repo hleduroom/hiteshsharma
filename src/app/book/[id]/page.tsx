@@ -14,7 +14,7 @@ import { Header } from "@/components/header";
 import { useCart } from '@/lib/context/CartContext';
 
 interface BookDetailsPageProps {
-  params: Promise<{ id: string }>;
+  params: { id: string };
 }
 
 type FormatType = 'ebook' | 'paperback' | 'hardcover';
@@ -33,7 +33,7 @@ interface CartItemPayload {
 type AddToCartActionPayload = CartItemPayload & { quantity: number };
 
 export default function BookDetailsPage({ params }: BookDetailsPageProps) {
-  const { id } = React.use(params);
+  const { id } = params;
   const book = allBooks.find((b) => b.id === id);
   if (!book) notFound();
 
@@ -171,16 +171,6 @@ export default function BookDetailsPage({ params }: BookDetailsPageProps) {
   );
 }
 
-// Server component
-export default async function BookDetailsPage({ params }: BookDetailsPageProps) {
-  const { id } = await params;
-  const book = allBooks.find((b) => b.id === id);
-  if (!book) notFound();
-
-  return <BookDetailsClient book={book} />;
-}
-
-/* ---------------- HEADER SECTION ---------------- */
 function HeaderSection({ book }: { book: Book }) {
   return (
     <>
@@ -225,7 +215,6 @@ function HeaderSection({ book }: { book: Book }) {
   );
 }
 
-/* ---------------- SHARE BUTTON ---------------- */
 function ShareButton({ title, id }: { title: string; id: string }) {
   const [copied, setCopied] = useState(false);
   const link = typeof window !== 'undefined' ? `${window.location.origin}/book/${id}` : '';
@@ -256,7 +245,6 @@ function ShareButton({ title, id }: { title: string; id: string }) {
   );
 }
 
-/* ---------------- RELATED BOOKS ---------------- */
 function RelatedBooksSection({ relatedBooks }: { relatedBooks: Book[] }) {
   return (
     <motion.section
