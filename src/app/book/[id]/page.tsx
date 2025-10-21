@@ -8,14 +8,15 @@ import Link from 'next/link';
 import { AddToCartButton } from '@/components/ui/add-to-cart-button';
 
 interface BookDetailsPageProps {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
 
-export default function BookDetailsPage({ params }: BookDetailsPageProps) {
-  const book = params.id === bookData.id ? bookData : 
-    relatedBooks.find(b => b.id === params.id);
+export default async function BookDetailsPage({ params }: BookDetailsPageProps) {
+  const { id } = await params;
+  const book = id === bookData.id ? bookData : 
+    relatedBooks.find(b => b.id === id);
 
   if (!book) {
     notFound();
@@ -43,7 +44,8 @@ export default function BookDetailsPage({ params }: BookDetailsPageProps) {
                 <Image
                   src={book.coverImage}
                   alt={book.title}
-                  fill
+                  width={320}
+                  height={384}
                   className="object-cover transition-transform duration-300 group-hover:scale-105"
                 />
               </div>
