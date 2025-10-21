@@ -50,19 +50,19 @@ export function About() {
       id="about"
       className="relative bg-cover bg-center bg-no-repeat py-20 bg-[url('/background.jpg')]"
     >
-      {/* Glass overlay */}
-      <div className="absolute inset-0 bg-black/50 backdrop-blur-md" />
+      {/* Open Glass Overlay */}
+      <div className="absolute inset-0 bg-white/10 dark:bg-black/20 border border-white/20 dark:border-black/30 rounded-2xl" />
 
       <div className="relative container grid items-center justify-center gap-4 px-4 text-center md:px-6 z-10">
         {/* Heading */}
         <div className="space-y-3">
           <h2
-            className="text-4xl md:text-5xl font-bold tracking-tight text-white font-[Pacifico]"
-            style={{ textShadow: "0 2px 10px rgba(255,255,255,0.3)" }}
+            className="text-4xl md:text-5xl font-bold tracking-tight text-white dark:text-gray-100 font-[Pacifico]"
+            style={{ textShadow: "0 2px 10px rgba(0,0,0,0.2)" }}
           >
-            About Me 
+            About Me 💫
           </h2>
-          <p className="mx-auto max-w-[700px] text-gray-200 md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed font-[Poppins]">
+          <p className="mx-auto max-w-[700px] text-gray-100 dark:text-gray-300 md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed font-[Poppins]">
             A developer, writer, and dreamer who loves building digital worlds,
             penning midnight poetry, and cracking jokes that only half the dev
             team understands. If art meets logic — that’s where you’ll find me.
@@ -74,7 +74,7 @@ export function About() {
           {skills.map((skill) => (
             <Card
               key={skill.name}
-              className="bg-white/10 backdrop-blur-lg border border-white/20 text-left text-white transition-transform duration-300 hover:-translate-y-2 hover:bg-white/20"
+              className="bg-white/20 dark:bg-black/20 border border-white/30 dark:border-black/40 text-left text-white dark:text-gray-100 transition-transform duration-300 hover:-translate-y-2 hover:bg-white/30 dark:hover:bg-black/30 rounded-xl"
             >
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-lg font-[Pacifico]">
@@ -83,7 +83,9 @@ export function About() {
                 {skill.icon}
               </CardHeader>
               <CardContent>
-                <p className="text-sm text-gray-200">{skill.description}</p>
+                <p className="text-sm text-gray-100 dark:text-gray-300">
+                  {skill.description}
+                </p>
               </CardContent>
             </Card>
           ))}
