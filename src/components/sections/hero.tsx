@@ -121,9 +121,9 @@ function TypingAnimation() {
   }, [currentIndex, fullText]);
 
   return (
-    <span className="text-lg md:text-xl text-slate-600 dark:text-slate-400 font-light min-h-[28px] inline-block">
+    <span className="text-base md:text-lg text-slate-600 dark:text-slate-400 font-light min-h-[24px] inline-block font-shooting-star">
       {text}
-      <span className="inline-block w-0.5 h-6 bg-slate-400 dark:bg-slate-500 ml-1 animate-pulse" />
+      <span className="inline-block w-0.5 h-5 bg-slate-400 dark:bg-slate-500 ml-1 animate-pulse" />
     </span>
   );
 }
@@ -208,7 +208,7 @@ export function Hero() {
         {/* Hero Image Background */}
         <div className="absolute inset-0 z-0">
           <Image
-            src="/book_cover.png"
+            src="/book_cover_img.png"
             alt="Abstract Background"
             fill
             className="object-cover opacity-5"
@@ -219,18 +219,18 @@ export function Hero() {
 
         <div className="container px-4 md:px-6 relative z-10">
           <motion.div
-            className="flex flex-col items-center gap-12 max-w-6xl mx-auto"
+            className="flex flex-col items-center gap-10 max-w-6xl mx-auto"
             initial="hidden"
             animate="visible"
             variants={containerVariants}
           >
             {/* Main Content Grid */}
-            <div className="grid lg:grid-cols-2 gap-12 items-center w-full">
+            <div className="grid lg:grid-cols-2 gap-10 items-center w-full">
               {/* Left Column - Text Content */}
-              <motion.div className="space-y-8 text-center lg:text-left">
+              <motion.div className="space-y-6 text-center lg:text-left">
                 {/* Profile Image for Mobile */}
                 <motion.div
-                  className="lg:hidden relative h-32 w-32 mx-auto overflow-hidden rounded-full shadow-2xl border-4 border-white/50 dark:border-slate-800/50 bg-white/10 backdrop-blur-sm"
+                  className="lg:hidden relative h-28 w-28 mx-auto overflow-hidden rounded-full shadow-xl border-4 border-white/50 dark:border-slate-800/50 bg-white/10 backdrop-blur-sm"
                   variants={imageVariants}
                   itemProp="image"
                 >
@@ -244,29 +244,29 @@ export function Hero() {
                 </motion.div>
 
                 {/* Name and Role */}
-                <motion.div className="space-y-4" variants={itemVariants}>
+                <motion.div className="space-y-3" variants={itemVariants}>
                   <div className="space-y-2">
                     <Badge 
                       variant="secondary" 
-                      className="bg-slate-800 text-white px-3 py-1 text-xs font-medium border-0 mb-4"
+                      className="bg-slate-800 text-white px-3 py-1 text-xs font-medium border-0 mb-3 font-shooting-star"
                     >
                       Educator & Author
                     </Badge>
                     <h1 
-                      className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight font-headline text-slate-900 dark:text-white"
+                      className="text-3xl md:text-5xl lg:text-6xl font-bold tracking-tight text-slate-900 dark:text-white font-shooting-star"
                       itemProp="name"
                     >
                       {userDetails.name}
                     </h1>
                   </div>
-                  <div className="text-lg md:text-xl text-slate-600 dark:text-slate-400 font-light">
+                  <div className="text-base md:text-lg text-slate-600 dark:text-slate-400 font-light">
                     <TypingAnimation />
                   </div>
                 </motion.div>
 
                 {/* Bio */}
                 <motion.p 
-                  className="text-lg text-slate-600 dark:text-slate-400 leading-relaxed max-w-2xl mx-auto lg:mx-0"
+                  className="text-base text-slate-600 dark:text-slate-400 leading-relaxed max-w-2xl mx-auto lg:mx-0 font-shooting-star"
                   variants={itemVariants}
                   itemProp="description"
                 >
@@ -274,69 +274,69 @@ export function Hero() {
                 </motion.p>
 
                 {/* CTA Buttons */}
-                <motion.div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start" variants={itemVariants}>
+                <motion.div className="flex flex-col sm:flex-row gap-3 justify-center lg:justify-start" variants={itemVariants}>
                   <Button 
                     size="lg"
-                    className="bg-slate-900 hover:bg-slate-800 text-white px-8 py-6 text-base font-medium rounded-full shadow-lg hover:shadow-xl transition-all duration-300 group"
+                    className="bg-slate-900 hover:bg-slate-800 text-white px-6 py-5 text-sm font-medium rounded-full shadow-lg hover:shadow-xl transition-all duration-300 group font-shooting-star"
                     onClick={() => window.open('/3AM-Confessions-Preview.pdf', '_blank')}
                   >
-                    <BookOpen className="w-5 h-5 mr-2" />
+                    <BookOpen className="w-4 h-4 mr-2" />
                     Read Book Preview
-                    <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+                    <ArrowRight className="w-3 h-3 ml-2 group-hover:translate-x-1 transition-transform" />
                   </Button>
                   <Button 
                     variant="outline"
                     size="lg"
-                    className="border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 px-8 py-6 text-base font-medium rounded-full hover:bg-slate-50 dark:hover:bg-slate-800 transition-all duration-300"
+                    className="border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 px-6 py-5 text-sm font-medium rounded-full hover:bg-slate-50 dark:hover:bg-slate-800 transition-all duration-300 font-shooting-star"
                     asChild
                   >
                     <Link href={userDetails.socials.whatsapp} target="_blank">
-                      <WhatsappIcon className="w-5 h-5 mr-2" />
+                      <WhatsappIcon className="w-4 h-4 mr-2" />
                       Connect
                     </Link>
                   </Button>
                 </motion.div>
 
                 {/* Social Links */}
-                <motion.div className="flex items-center gap-3 justify-center lg:justify-start" variants={itemVariants}>
+                <motion.div className="flex items-center gap-2 justify-center lg:justify-start" variants={itemVariants}>
                   <Button 
                     variant="ghost" 
                     size="icon"
-                    className="h-12 w-12 rounded-full bg-white/50 dark:bg-slate-800/50 hover:bg-white dark:hover:bg-slate-700 backdrop-blur-sm border border-slate-200 dark:border-slate-700"
+                    className="h-10 w-10 rounded-full bg-white/50 dark:bg-slate-800/50 hover:bg-white dark:hover:bg-slate-700 backdrop-blur-sm border border-slate-200 dark:border-slate-700"
                     asChild
                   >
                     <Link href={userDetails.socials.facebook} target="_blank" aria-label="Facebook" itemProp="sameAs">
-                      <Facebook className="h-5 w-5" />
+                      <Facebook className="h-4 w-4" />
                     </Link>
                   </Button>
                   <Button 
                     variant="ghost" 
                     size="icon"
-                    className="h-12 w-12 rounded-full bg-white/50 dark:bg-slate-800/50 hover:bg-white dark:hover:bg-slate-700 backdrop-blur-sm border border-slate-200 dark:border-slate-700"
+                    className="h-10 w-10 rounded-full bg-white/50 dark:bg-slate-800/50 hover:bg-white dark:hover:bg-slate-700 backdrop-blur-sm border border-slate-200 dark:border-slate-700"
                     asChild
                   >
                     <Link href={userDetails.socials.linkedin} target="_blank" aria-label="LinkedIn" itemProp="sameAs">
-                      <Linkedin className="h-5 w-5" />
+                      <Linkedin className="h-4 w-4" />
                     </Link>
                   </Button>
                   <Button 
                     variant="ghost" 
                     size="icon"
-                    className="h-12 w-12 rounded-full bg-white/50 dark:bg-slate-800/50 hover:bg-white dark:hover:bg-slate-700 backdrop-blur-sm border border-slate-200 dark:border-slate-700"
+                    className="h-10 w-10 rounded-full bg-white/50 dark:bg-slate-800/50 hover:bg-white dark:hover:bg-slate-700 backdrop-blur-sm border border-slate-200 dark:border-slate-700"
                     asChild
                   >
                     <Link href={userDetails.socials.email} aria-label="Email">
-                      <Mail className="h-5 w-5" />
+                      <Mail className="h-4 w-4" />
                     </Link>
                   </Button>
                 </motion.div>
               </motion.div>
 
               {/* Right Column - Visual Content */}
-              <motion.div className="space-y-8">
+              <motion.div className="space-y-6">
                 {/* Profile Image for Desktop */}
                 <motion.div
-                  className="hidden lg:block relative h-96 w-96 mx-auto overflow-hidden rounded-3xl shadow-2xl border-8 border-white/50 dark:border-slate-800/50 bg-white/10 backdrop-blur-sm"
+                  className="hidden lg:block relative h-80 w-80 mx-auto overflow-hidden rounded-2xl shadow-xl border-6 border-white/50 dark:border-slate-800/50 bg-white/10 backdrop-blur-sm"
                   variants={imageVariants}
                   itemProp="image"
                 >
@@ -357,28 +357,28 @@ export function Hero() {
                   onClick={() => window.open('/3AM-Confessions-Preview.pdf', '_blank')}
                   itemProp="image"
                 >
-                  <div className="relative w-64 h-80 mx-auto shadow-2xl rounded-xl overflow-hidden border-4 border-white/60 dark:border-slate-800/60 bg-white/5 backdrop-blur-sm">
+                  <div className="relative w-56 h-72 mx-auto shadow-xl rounded-lg overflow-hidden border-4 border-white/60 dark:border-slate-800/60 bg-white/5 backdrop-blur-sm">
                     <Image
-                      src="/book_cover.png"
+                      src="/book_cover_img.png"
                       alt="3 AM Confessions: My Life as an Overthinker - Book Cover"
                       fill
                       className="object-cover transition-transform duration-500 group-hover:scale-110"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-end justify-center pb-6">
-                      <Button className="bg-white/95 hover:bg-white text-slate-900 font-medium text-sm px-6 py-3 rounded-full shadow-lg">
-                        <ExternalLink className="w-4 h-4 mr-2" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-end justify-center pb-4">
+                      <Button className="bg-white/95 hover:bg-white text-slate-900 font-medium text-xs px-4 py-2 rounded-full shadow-lg font-shooting-star">
+                        <ExternalLink className="w-3 h-3 mr-1.5" />
                         Read Preview
                       </Button>
                     </div>
                   </div>
                   
                   {/* Book Badge */}
-                  <div className="absolute -top-3 -right-3 z-10">
+                  <div className="absolute -top-2 -right-2 z-10">
                     <Badge 
-                      className="bg-gradient-to-r from-red-600 to-rose-700 text-white px-4 py-2 text-sm font-semibold border-0 shadow-lg"
+                      className="bg-gradient-to-r from-red-600 to-rose-700 text-white px-3 py-1 text-xs font-semibold border-0 shadow-lg font-shooting-star"
                     >
-                      <Star className="w-4 h-4 mr-1.5 fill-current" />
-                      NEW RELEASE
+                      <Star className="w-3 h-3 mr-1 fill-current" />
+                      NEW
                     </Badge>
                   </div>
                 </motion.div>
