@@ -1,4 +1,4 @@
-import { mainBook, relatedBooks, allBooks, type Book } from '@/lib/data/books';
+import { mainBook, relatedBooks, allBooks, type Book } from '@/lib/data/book';
 import { notFound } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
