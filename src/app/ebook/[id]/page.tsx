@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from 'react';
-import { bookData } from '@/lib/data/book';
+import { mainBook, allBooks } from '@/lib/data/books';
 import { notFound, useParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
