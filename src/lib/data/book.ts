@@ -33,7 +33,7 @@ export interface Book {
 }
 
 export const mainBook: Book = {
-  id: "3am-confessions",
+  id: "3am-confession",
   title: "3 AM Confessions: My Life as an Overthinker",
   author: "Hitesh Sharma",
   description: "A profound journey through midnight thoughts and revelations. Published daily at 3 AM, this book explores the life of an overthinker through intimate confessions and philosophical insights about life, dreams, and the human condition.",
