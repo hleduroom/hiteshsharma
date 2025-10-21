@@ -1,118 +1,79 @@
-import {
-  Award,
-  BookOpen,
-  BrainCircuit,
-  Code,
-  PenLine,
-  Mic2,
-  Sparkles,
-  Heart,
-  Moon,
-} from "lucide-react";
+"use client";
+
+import { Award, BookOpen, BrainCircuit, Code, Heart, MessageCircle } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Section } from "./section";
-import { Dancing_Script } from "next/font/google";
-
-const dancing = Dancing_Script({
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-});
 
 const skills = [
   {
     icon: <Code className="h-8 w-8 text-primary" />,
     name: "Web Development",
-    description:
-      "Turning caffeine and chaos into clean, beautiful code. I make the internet a prettier, faster, and funnier place — one div at a time.",
+    description: "I turn caffeine into code and dreams into deploys.",
   },
   {
     icon: <BrainCircuit className="h-8 w-8 text-primary" />,
     name: "3D & Graphics",
-    description:
-      "Because flat design is boring — I bring visuals to life that breathe, move, and occasionally break physics.",
+    description: "Making pixels dance and 3D worlds come alive!",
   },
   {
     icon: <BookOpen className="h-8 w-8 text-primary" />,
-    name: "Education",
-    description:
-      "Teaching with purpose and punchlines — because the best lessons are the ones you actually remember.",
+    name: "Book Writing",
+    description: "Pouring late-night thoughts into poetic chaos. #3AMConfessions",
   },
   {
-    icon: <PenLine className="h-8 w-8 text-primary" />,
-    name: "Book Writing",
-    description:
-      "Writing words that sound like heartbeats — blending emotion, truth, and midnight coffee in every page.",
+    icon: <Award className="h-8 w-8 text-primary" />,
+    name: "UI/UX Design",
+    description: "Designing experiences smoother than your crush’s smile.",
+  },
+  {
+    icon: <MessageCircle className="h-8 w-8 text-primary" />,
+    name: "BakBak & Talks",
+    description: "Certified chatterbox. Can discuss from JavaScript to Jalebi.",
   },
   {
     icon: <Heart className="h-8 w-8 text-primary" />,
-    name: "Romantic Creativity",
-    description:
-      "Half developer, half poet — turning feelings into pixels and code into confessions. Logic meets love here.",
-  },
-  {
-    icon: <Mic2 className="h-8 w-8 text-primary" />,
-    name: "BakBak (Talking)",
-    description:
-      "Expert in creative conversation — from deep life theories to bad jokes that somehow make sense.",
-  },
-  {
-    icon: <Sparkles className="h-8 w-8 text-primary" />,
-    name: "Creative Chaos Management",
-    description:
-      "Balancing projects, playlists, and procrastination — because chaos can be beautiful if you dance with it.",
-  },
-  {
-    icon: <Moon className="h-8 w-8 text-primary" />,
-    name: "Late-Night Philosopher",
-    description:
-      "Debugging code and emotions at 3 AM — sipping tea, questioning existence, and sometimes finding the bug in life itself.",
+    name: "Romantic Coding",
+    description: "Writing code and love letters—both with equal syntax errors.",
   },
 ];
 
 export function About() {
   return (
-    <Section id="about" className="bg-secondary relative overflow-hidden">
-      <div className="container grid items-center justify-center gap-4 px-4 text-center md:px-6">
+    <Section
+      id="about"
+      className="relative bg-cover bg-center bg-no-repeat py-20"
+      style={{ backgroundImage: "url('/background.jpg')" }}
+    >
+      {/* Glass effect overlay */}
+      <div className="absolute inset-0 bg-black/40 backdrop-blur-md" />
+
+      <div className="relative container grid items-center justify-center gap-4 px-4 text-center md:px-6 z-10">
         <div className="space-y-3">
           <h2
-            className={`text-4xl md:text-5xl font-bold tracking-tighter font-headline ${dancing.className} text-primary`}
+            className="text-4xl md:text-5xl font-bold tracking-tight text-white font-[Pacifico]"
+            style={{ textShadow: "0 2px 10px rgba(255,255,255,0.2)" }}
           >
-            About Me
+            About Me 💫
           </h2>
-          <p className="mx-auto max-w-[750px] text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
-            I’m a developer, educator, and storyteller who codes with logic and
-            writes with love. From building{" "}
-            <span className="font-semibold text-foreground">H.L.-Eduroom</span>{" "}
-            to crafting words that keep readers awake at 3 AM, I believe in
-            creating things that *feel* — whether it's a website, a line of
-            code, or a verse from the heart.
-          </p>
-
-          <p
-            className={`mt-2 text-lg text-primary/90 ${dancing.className}`}
-          >
-            “Code with logic, write with emotion, and live like poetry.”
+          <p className="mx-auto max-w-[700px] text-gray-200 md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed font-[Poppins]">
+            A developer, writer, and dreamer who loves building digital worlds,
+            penning midnight poetry, and cracking jokes that only half the dev
+            team understands. If art meets logic — that’s where you’ll find me.
           </p>
         </div>
 
-        <div className="mx-auto grid max-w-6xl gap-6 pt-12 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        <div className="mx-auto grid max-w-5xl gap-6 pt-12 sm:grid-cols-2 lg:grid-cols-3">
           {skills.map((skill) => (
             <Card
               key={skill.name}
-              className="text-left transition-transform duration-300 hover:-translate-y-2 hover:shadow-lg hover:bg-background/80 backdrop-blur-sm"
+              className="bg-white/10 backdrop-blur-lg border border-white/20 text-left text-white transition-transform duration-300 hover:-translate-y-2 hover:bg-white/20"
             >
               <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <CardTitle
-                  className={`text-lg font-medium font-headline ${dancing.className}`}
-                >
-                  {skill.name}
-                </CardTitle>
+                <CardTitle className="text-lg font-[Pacifico]">{skill.name}</CardTitle>
                 {skill.icon}
               </CardHeader>
               <CardContent>
-                <p className="text-sm text-muted-foreground">
-                  {skill.description}
-                </p>
+                <p className="text-sm text-gray-200">{skill.description}</p>
               </CardContent>
             </Card>
           ))}
