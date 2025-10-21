@@ -102,7 +102,7 @@ export default function CartPage() {
             <div className="space-y-2 mb-4">
               <div className="flex justify-between">
                 <span>Subtotal</span>
-                <span>{bookData.currency} {state.total}</span>
+                <span>{state.items[0]?.book.currency || 'NPR'} {state.total}</span>
               </div>
               <div className="flex justify-between">
                 <span>Shipping</span>
@@ -110,11 +110,11 @@ export default function CartPage() {
               </div>
               <div className="flex justify-between">
                 <span>Tax</span>
-                <span>{bookData.currency} 0</span>
+                <span>{state.items[0]?.book.currency || 'NPR'} 0</span>
               </div>
               <div className="border-t pt-2 flex justify-between font-bold text-lg">
                 <span>Total</span>
-                <span>{bookData.currency} {state.total}</span>
+                <span>{state.items[0]?.book.currency || 'NPR'} {state.total}</span>
               </div>
             </div>
 
