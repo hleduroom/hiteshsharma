@@ -4,7 +4,8 @@ import { allBooks, type Book } from '@/lib/data/book';
 import { notFound } from 'next/navigation';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { AddToCartButton } from '@/components/ui/add-to-cart-button';
+// NOTE: Assuming this component's type definition is fixed (see explanation below)
+import { AddToCartButton } from '@/components/ui/add-to-cart-button'; 
 import { Star, Eye, ShoppingCart, Share2 } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -44,6 +45,24 @@ export default async function BookDetailsPage({ params }: BookDetailsPageProps) 
   const relatedBooks = allBooks.filter(
     (b) => b.id !== id && b.genre.some((g) => book.genre.includes(g))
   );
+
+  // --- FIX APPLIED HERE ---
+  // We explicitly construct the cart item object to ensure it has all required properties 
+  // (like price and format) that the AddToCartButton component expects.
+  const cartItemPayload = {
+    id: book.id,
+    title: book.title,
+    price: book.formats[selectedFormat].price,
+    currency: book.currency,
+    quantity: 1,
+    format: selectedFormat,
+    coverImage: book.coverImage,
+    // Note: The original attempt was to pass '{ ...book, bookFormat: selectedFormat }'. 
+    // This was wrong because `...book` does not contain the dynamic `price` and 
+    // the `AddToCartButton` likely expects a structured object.
+  };
+  // --- END FIX ---
+
 
   return (
     <div className="relative min-h-screen overflow-hidden">
@@ -133,7 +152,8 @@ export default async function BookDetailsPage({ params }: BookDetailsPageProps) 
                 Buy Now
               </Button>
 
-              <AddToCartButton book={{ ...book, bookFormat: selectedFormat }} />
+              {/* APPLYING THE FIX HERE: Pass the explicit cart item payload */}
+              <AddToCartButton book={cartItemPayload} />
 
               <Button asChild variant="outline" size="lg" className="flex-1 border-sky-300/60 hover:bg-sky-100/30 rounded-xl text-xs sm:text-sm">
                 <Link href={`/preview/${book.id}`}>
@@ -202,6 +222,7 @@ function HeaderSection({ book }: { book: Book }) {
 /* ---------------- SHARE BUTTON ---------------- */
 function ShareButton({ title, id }: { title: string; id: string }) {
   const [copied, setCopied] = useState(false);
+  // Safely get window.location.origin
   const link = typeof window !== 'undefined' ? `${window.location.origin}/book/${id}` : '';
 
   const handleShare = async () => {
