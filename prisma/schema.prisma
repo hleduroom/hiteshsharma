@@ -1,0 +1,126 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  orders Order[]
+}
+
+model Book {
+  id          String   @id @default(cuid())
+  title       String
+  author      String
+  description String
+  coverImage  String
+  previewPdf  String
+  fullPdf     String
+  ebookPassword String
+  pages       Int
+  isbn        String   @unique
+  publisher   String
+  publishedDate DateTime
+  language    String
+  rating      Float    @default(0)
+  reviews     Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  formats    BookFormat[]
+  genres     BookGenre[]
+  orders     OrderItem[]
+}
+
+model BookFormat {
+  id        String   @id @default(cuid())
+  type      String   // ebook, paperback, hardcover
+  price     Float
+  features  String[] // Stored as JSON
+  bookId    String
+  book      Book     @relation(fields: [bookId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([bookId, type])
+}
+
+model BookGenre {
+  id     String @id @default(cuid())
+  name   String
+  bookId String
+  book   Book   @relation(fields: [bookId], references: [id], onDelete: Cascade)
+
+  @@unique([bookId, name])
+}
+
+model Order {
+  id             String   @id @default(cuid())
+  orderId        String   @unique
+  customerEmail  String
+  customerName   String
+  customerPhone  String?
+  shippingAddress String?
+  totalAmount    Float
+  currency       String   @default("NPR")
+  paymentMethod  String
+  transactionId  String?
+  status         OrderStatus @default(PENDING)
+  notes          String?
+
+  userId   String?
+  user     User?    @relation(fields: [userId], references: [id])
+
+  items    OrderItem[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model OrderItem {
+  id       String @id @default(cuid())
+  bookId   String
+  book     Book   @relation(fields: [bookId], references: [id])
+  orderId  String
+  order    Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  format   String
+  quantity Int    @default(1)
+  price    Float
+
+  createdAt DateTime @default(now())
+}
+
+enum OrderStatus {
+  PENDING
+  CONFIRMED
+  PROCESSING
+  SHIPPED
+  DELIVERED
+  CANCELLED
+}
+
+model Admin {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String
+  password  String
+  role      AdminRole @default(MODERATOR)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum AdminRole {
+  SUPER_ADMIN
+  ADMIN
+  MODERATOR
+}
