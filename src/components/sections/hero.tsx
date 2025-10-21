@@ -256,7 +256,7 @@ export function Hero() {
         {/* Dynamic Background based on theme */}
         <div className="absolute inset-0 z-0">
           <Image
-            src={userDetails.image}
+            src=https://res.cloudinary.com/dgxoe15jd/image/upload/v1761015446/retouch_2025102108414547_ghmbru.jpg
             alt="Professional Background"
             fill
             className="object-cover scale-110"
