@@ -1,6 +1,13 @@
 "use client";
 
-import { Award, BookOpen, BrainCircuit, Code, Heart, MessageCircle } from "lucide-react";
+import {
+  Award,
+  BookOpen,
+  BrainCircuit,
+  Code,
+  Heart,
+  MessageCircle,
+} from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Section } from "./section";
 
@@ -41,19 +48,19 @@ export function About() {
   return (
     <Section
       id="about"
-      className="relative bg-cover bg-center bg-no-repeat py-20"
-      style={{ backgroundImage: "url('/background.jpg')" }}
+      className="relative bg-cover bg-center bg-no-repeat py-20 bg-[url('/background.jpg')]"
     >
-      {/* Glass effect overlay */}
-      <div className="absolute inset-0 bg-black/40 backdrop-blur-md" />
+      {/* Glass overlay */}
+      <div className="absolute inset-0 bg-black/50 backdrop-blur-md" />
 
       <div className="relative container grid items-center justify-center gap-4 px-4 text-center md:px-6 z-10">
+        {/* Heading */}
         <div className="space-y-3">
           <h2
             className="text-4xl md:text-5xl font-bold tracking-tight text-white font-[Pacifico]"
-            style={{ textShadow: "0 2px 10px rgba(255,255,255,0.2)" }}
+            style={{ textShadow: "0 2px 10px rgba(255,255,255,0.3)" }}
           >
-            About Me 💫
+            About Me 
           </h2>
           <p className="mx-auto max-w-[700px] text-gray-200 md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed font-[Poppins]">
             A developer, writer, and dreamer who loves building digital worlds,
@@ -62,6 +69,7 @@ export function About() {
           </p>
         </div>
 
+        {/* Skills */}
         <div className="mx-auto grid max-w-5xl gap-6 pt-12 sm:grid-cols-2 lg:grid-cols-3">
           {skills.map((skill) => (
             <Card
@@ -69,7 +77,9 @@ export function About() {
               className="bg-white/10 backdrop-blur-lg border border-white/20 text-left text-white transition-transform duration-300 hover:-translate-y-2 hover:bg-white/20"
             >
               <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <CardTitle className="text-lg font-[Pacifico]">{skill.name}</CardTitle>
+                <CardTitle className="text-lg font-[Pacifico]">
+                  {skill.name}
+                </CardTitle>
                 {skill.icon}
               </CardHeader>
               <CardContent>
