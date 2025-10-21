@@ -27,7 +27,8 @@ export default function BookPage() {
                 <Image
                   src={bookData.coverImage}
                   alt={bookData.title}
-                  fill
+                  width={320}
+                  height={384}
                   className="object-cover transition-transform duration-300 group-hover:scale-105"
                 />
               </div>
@@ -116,7 +117,7 @@ export default function BookPage() {
                   className="flex-1"
                   asChild
                 >
-                  <Link href={`/book/${bookData.id}`}>
+                  <Link href={`/preview/${bookData.id}`}>
                     <BookOpen className="w-4 h-4 mr-2" />
                     Read Preview
                   </Link>
