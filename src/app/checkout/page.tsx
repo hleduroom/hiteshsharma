@@ -229,7 +229,7 @@ export default function CheckoutPage() {
                   <div className="border-t mt-4 pt-4 space-y-2">
                     <div className="flex justify-between">
                       <span>Subtotal</span>
-                      <span>{bookData.currency} {state.total}</span>
+                      <span>{state.items[0]?.book.currency || 'NPR'} {state.total}</span>
                     </div>
                     <div className="flex justify-between">
                       <span>Shipping</span>
@@ -237,7 +237,7 @@ export default function CheckoutPage() {
                     </div>
                     <div className="flex justify-between font-bold text-lg border-t pt-2">
                       <span>Total</span>
-                      <span>{bookData.currency} {state.total}</span>
+                      <span>{state.items[0]?.book.currency || 'NPR'} {state.total}</span>
                     </div>
                   </div>
 
