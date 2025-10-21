@@ -32,7 +32,8 @@ class EmailService {
   private transporter: nodemailer.Transporter;
 
   constructor() {
-    this.transporter = nodemailer.createTransporter({
+    // FIX: Changed createTransporter to createTransport
+    this.transporter = nodemailer.createTransport({
       service: 'gmail',
       auth: {
         user: process.env.GMAIL_USER,
@@ -64,7 +65,7 @@ class EmailService {
     const { customerEmail, customerName, orderId, bookTitle, format, price, currency, transactionId, paymentMethod } = data;
 
     const subject = `Order Confirmation - ${orderId}`;
-    
+
     const html = this.generateOrderConfirmationTemplate({
       customerName,
       orderId,
@@ -88,7 +89,7 @@ class EmailService {
     const { customerEmail, customerName, orderId, bookTitle, format, price, currency, transactionId, paymentMethod, customerPhone, shippingAddress } = data;
 
     const subject = `🛒 NEW ORDER: ${orderId} - ${bookTitle} (${format})`;
-    
+
     const html = this.generateAdminNotificationTemplate({
       customerEmail,
       customerName,
@@ -114,7 +115,7 @@ class EmailService {
     const { customerEmail, customerName, orderId, bookTitle, status, notes } = data;
 
     const subject = `Order Update - ${orderId}`;
-    
+
     const html = this.generateStatusUpdateTemplate({
       customerName,
       orderId,
