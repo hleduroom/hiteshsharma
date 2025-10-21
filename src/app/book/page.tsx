@@ -3,8 +3,17 @@
 import { allBooks } from '@/lib/data/book';
 import Image from 'next/image';
 import Link from 'next/link';
-import Header from '@/components/header';
-import Footer from '@/components/footer';
+
+// Check if your header and footer are named exports
+import { Header } from '@/components/header';
+import { Footer } from '@/components/footer';
+
+// If the above doesn't work, try these alternatives:
+// import Header from '@/components/layout/header';
+// import Footer from '@/components/layout/footer';
+// or
+// import { MainHeader as Header } from '@/components/header';
+// import { MainFooter as Footer } from '@/components/footer';
 
 export default function BooksPage() {
   return (
