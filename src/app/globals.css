@@ -1,7 +1,7 @@
-/* Import Google Fonts */
+/* 🌟 Import Google Fonts */
 @import url('https://fonts.googleapis.com/css2?family=Great+Vibes&family=Pacifico&family=Dancing+Script&family=Sacramento&family=Parisienne&family=Roboto:wght@400;500;700&family=Montserrat:wght@400;600;700&display=swap');
 
-/* Import local Shooting Star font */
+/* ✨ Import local custom Shooting Star font */
 @font-face {
   font-family: "Shooting Star";
   src: url("/fonts/ShootingStar.ttf") format("truetype"),
@@ -11,13 +11,15 @@
   font-display: swap;
 }
 
+/* 🌀 Tailwind Core */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+/* 🎨 Theme Layer */
 @layer base {
   :root {
-    /* Colors */
+    /* 🌈 Colors */
     --background: 0 0% 100%;
     --foreground: 224 71.4% 4.1%;
     --card: 0 0% 100%;
@@ -39,7 +41,7 @@
     --ring: 221.2 83.2% 53.3%;
     --radius: 0.5rem;
 
-    /* Fonts */
+    /* ✍️ Font Families */
     --font-handwriting: 'Great Vibes', 'Pacifico', 'Dancing Script', 'Sacramento', 'Parisienne', cursive;
     --font-sans: 'Roboto', 'Helvetica', 'Arial', sans-serif;
     --font-professional: 'Montserrat', 'Roboto', sans-serif;
@@ -47,6 +49,7 @@
     --font-shooting-star: 'Shooting Star', cursive;
   }
 
+  /* 🌙 Dark Mode Palette */
   .dark {
     --background: 222.2 84% 4.9%;
     --foreground: 210 20% 98%;
@@ -70,15 +73,18 @@
   }
 }
 
+/* 🧠 Base Typography + Styles */
 @layer base {
   * {
     @apply border-border;
   }
+
   html {
     @apply scroll-smooth;
   }
+
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground antialiased;
     font-family: var(--font-sans);
   }
 
@@ -86,15 +92,33 @@
     font-family: var(--font-professional);
   }
 
+  /* 💫 Handwriting styles for headings, romantic sections, quotes */
   .handwriting {
     font-family: var(--font-handwriting);
   }
 
+  /* 🌸 Holiday / playful vibe (great for About section headers) */
   .holiday {
     font-family: var(--font-holiday);
   }
 
+  /* 🌠 Unique Shooting Star font usage */
   .shooting-star {
     font-family: var(--font-shooting-star);
+    letter-spacing: 0.05em;
+  }
+
+  /* 🎇 Animated floating text feel (optional for creative headers) */
+  .floating-text {
+    animation: floaty 4s ease-in-out infinite;
+  }
+
+  @keyframes floaty {
+    0%, 100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-6px);
+    }
   }
 }
