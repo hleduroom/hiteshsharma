@@ -25,13 +25,6 @@ export default function CartPage() {
     dispatch({ type: 'REMOVE_FROM_CART', payload: id });
   };
 
-  const calculateDeliveryFee = () => {
-    const hasPhysicalBook = state.items.some(item => 
-      item.book.format === 'paperback' || item.book.format === 'hardcover'
-    );
-    return hasPhysicalBook ? 150 : 0;
-  };
-
   if (state.items.length === 0) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white dark:from-slate-950 dark:to-slate-900">
@@ -53,10 +46,8 @@ export default function CartPage() {
     );
   }
 
-  const deliveryFee = calculateDeliveryFee();
-  const subtotal = state.total;
-  const total = subtotal + deliveryFee;
   const currency = state.items[0]?.book.currency || 'NPR';
+  const totalAmount = state.total + state.deliveryFee;
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white dark:from-slate-950 dark:to-slate-900">
@@ -69,7 +60,7 @@ export default function CartPage() {
               const itemPrice = item.book.price;
               const itemCurrency = item.book.currency;
               const format = item.book.format;
-              const deliveryCost = item.book.deliveryCost || 0;
+              const deliveryCost = item.book.deliveryCost;
 
               const uniqueId = getItemUniqueId(item);
               const formatName = format.charAt(0).toUpperCase() + format.slice(1);
@@ -90,7 +81,7 @@ export default function CartPage() {
                     <p className="text-sm text-muted-foreground">by {item.book.author}</p>
                     <p className="text-sm text-muted-foreground">Format: {formatName}</p>
                     {deliveryCost > 0 && (
-                      <p className="text-sm text-blue-600">+ {currency} {deliveryCost} delivery</p>
+                      <p className="text-sm text-blue-600">+ {currency} {deliveryCost} delivery per item</p>
                     )}
                     <p className="font-bold text-lg mt-2">{itemCurrency} {itemTotal}</p>
                   </div>
@@ -132,17 +123,17 @@ export default function CartPage() {
             <div className="space-y-2 mb-4">
               <div className="flex justify-between">
                 <span>Subtotal</span>
-                <span>{currency} {subtotal.toFixed(2)}</span>
+                <span>{currency} {state.total.toFixed(2)}</span>
               </div>
-              {deliveryFee > 0 && (
+              {state.deliveryFee > 0 && (
                 <div className="flex justify-between">
                   <span>Delivery Fee</span>
-                  <span>{currency} {deliveryFee.toFixed(2)}</span>
+                  <span>{currency} {state.deliveryFee.toFixed(2)}</span>
                 </div>
               )}
               <div className="border-t pt-2 flex justify-between font-bold text-lg">
                 <span>Total</span>
-                <span>{currency} {total.toFixed(2)}</span>
+                <span>{currency} {totalAmount.toFixed(2)}</span>
               </div>
             </div>
 
