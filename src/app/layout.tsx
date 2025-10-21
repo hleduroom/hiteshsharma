@@ -4,6 +4,7 @@ import "./globals.css";
 import { cn } from "@/lib/utils";
 import { Providers } from "./providers";
 import { Toaster } from "@/components/ui/toaster";
+import { CartProvider } from "@/lib/context/CartContext";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 
@@ -18,7 +19,7 @@ export const metadata: Metadata = {
     title: "Hitesh Sharma | Portfolio",
     description:
       "Explore Hitesh Sharma's work, projects, and expertise in technology and innovation.",
-    url: "https://yourdomain.com", // 🔧 Replace with your actual domain
+    url: "https://hiteshsharma.com.np", // 🔧 Replace with your actual domain
     siteName: "Hitesh Sharma Portfolio",
     images: [
       {
@@ -63,8 +64,10 @@ export default function RootLayout({
       </head>
       <body className={cn("font-body antialiased", inter.variable)}>
         <Providers>
-          {children}
-          <Toaster />
+          <CartProvider>
+            {children}
+            <Toaster />
+          </CartProvider>
         </Providers>
       </body>
     </html>
