@@ -3,167 +3,184 @@
 import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { CheckCircle, Download, Mail, BookOpen, Clock, MapPin } from 'lucide-react';
+import { CheckCircle, Download, Mail, BookOpen, ArrowLeft, Clock, Truck, MapPin } from 'lucide-react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
+import jsPDF from 'jspdf';
 
-interface ReceiptData {
-  receiptId: string;
+interface OrderDetails {
   orderId: string;
-  date: string;
-  customer: any;
-  items: any[];
-  paymentMethod: string;
-  total: number;
-  deliveryFee: number;
-  subtotal: number;
+  orderDate: string;
+  amount: string;
+  currency: string;
+  items: Array<{
+    title: string;
+    format: string;
+    quantity: number;
+    price: number;
+    deliveryCost: number;
+  }>;
+  customer: {
+    email: string;
+    phone: string;
+    address?: string;
+  };
 }
 
-export default function OrderSuccessPage() {
-  const [orderId, setOrderId] = useState('');
-  const [orderDate, setOrderDate] = useState('');
-  const [receiptData, setReceiptData] = useState<ReceiptData | null>(null);
-  const [amount, setAmount] = useState('0');
-  const [currency, setCurrency] = useState('NPR');
-  const [email, setEmail] = useState('');
-  const router = useRouter();
+export default function OrderSuccessContent() {
+  const [orderDetails, setOrderDetails] = useState<OrderDetails | null>(null);
+  const searchParams = useSearchParams();
+  const amount = searchParams.get('amount') || '0';
+  const currency = searchParams.get('currency') || 'NPR';
+  const urlOrderId = searchParams.get('orderId');
 
   useEffect(() => {
-    // Get URL parameters from window location
-    const urlParams = new URLSearchParams(window.location.search);
-    const urlOrderId = urlParams.get('orderId');
-    const urlAmount = urlParams.get('amount');
-    const urlCurrency = urlParams.get('currency');
-    const urlEmail = urlParams.get('email');
-
-    setOrderId(urlOrderId || `ORD-${Date.now()}`);
-    setAmount(urlAmount || '0');
-    setCurrency(urlCurrency || 'NPR');
-    setEmail(urlEmail || '');
+    const orderData: OrderDetails = {
+      orderId: urlOrderId || `ORD-${Date.now()}`,
+      orderDate: new Date().toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      }),
+      amount,
+      currency,
+      items: [{
+        title: "3 AM Confessions: My Life as an Overthinker",
+        format: "E-book",
+        quantity: 1,
+        price: parseFloat(amount),
+        deliveryCost: 0
+      }],
+      customer: {
+        email: "customer@example.com",
+        phone: "+977-98XXXXXXXX"
+      }
+    };
     
-    setOrderDate(new Date().toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    }));
+    setOrderDetails(orderData);
+  }, [urlOrderId, amount, currency]);
 
-    // Load receipt data from localStorage
-    const receipts = JSON.parse(localStorage.getItem('paymentReceipts') || '[]');
-    const latestReceipt = receipts[receipts.length - 1];
-    if (latestReceipt) {
-      setReceiptData(latestReceipt);
-    }
-  }, []);
+  const generatePDFReceipt = () => {
+    if (!orderDetails) return;
 
-  const downloadReceipt = () => {
-    const receiptContent = `
-H.L.-Eduroom Publications
-OFFICIAL ORDER RECEIPT
-========================================
-Receipt ID: ${receiptData?.receiptId || 'RCP-' + Date.now()}
-Order ID: ${orderId}
-Date: ${orderDate}
-Status: COMPLETED
-
-ORDER DETAILS:
-----------------------------------------
-${receiptData?.items.map((item: any) => `
-Item: ${item.book.title}
-Author: ${item.book.author}
-Format: ${item.book.format.charAt(0).toUpperCase() + item.book.format.slice(1)}
-Quantity: ${item.quantity}
-Unit Price: ${item.book.currency} ${item.book.price}
-Delivery: ${item.book.deliveryCost ? item.book.currency + ' ' + item.book.deliveryCost : 'FREE'}
-Subtotal: ${item.book.currency} ${(item.book.price * item.quantity).toFixed(2)}
-`).join('')}
-
-PAYMENT SUMMARY:
-----------------------------------------
-Subtotal: ${currency} ${receiptData?.subtotal.toFixed(2) || amount}
-Delivery Fee: ${currency} ${receiptData?.deliveryFee.toFixed(2) || '0.00'}
-Total Amount: ${currency} ${receiptData?.total.toFixed(2) || amount}
-
-PAYMENT INFORMATION:
-----------------------------------------
-Payment Method: ${receiptData?.paymentMethod?.toUpperCase() || 'ONLINE PAYMENT'}
-Amount Paid: ${currency} ${receiptData?.total.toFixed(2) || amount}
-Payment Status: VERIFIED & CONFIRMED
-Transaction ID: ${receiptData?.customer?.transactionId || 'N/A'}
-
-DELIVERY INFORMATION:
-----------------------------------------
-${receiptData?.customer ? `
-Customer: ${receiptData.customer.firstName} ${receiptData.customer.lastName}
-Email: ${receiptData.customer.email}
-Phone: ${receiptData.customer.phone}
-Address: ${receiptData.customer.address}
-City: ${receiptData.customer.city}
-District: ${receiptData.customer.district}
-Province: ${receiptData.customer.province}
-` : 'Digital Delivery'}
-
-CONTACT & SUPPORT:
-----------------------------------------
-Email: hleduroom@gmail.com
-Phone: +977-9827728726
-Website: thehiteshsir.com
-
-IMPORTANT NOTES:
-----------------------------------------
-• ${receiptData?.items.some((item: any) => item.book.format === 'ebook') ? 
-  'E-book will be delivered within 24 hours via email' : 
-  'Physical books will be delivered within 3-5 business days'}
-• Keep this receipt for future reference
-• For queries: thehiteshsir.com/contact
-• Returns accepted within 7 days for physical books
-
-Thank you for supporting H.L.-Eduroom Publications!
-========================================
-    `.trim();
-
-    const blob = new Blob([receiptContent], { type: 'text/plain' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `receipt-${orderId}.txt`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
+    const doc = new jsPDF();
+    
+    // Add professional styling
+    doc.setFillColor(59, 130, 246);
+    doc.rect(0, 0, 210, 30, 'F');
+    
+    // Header
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(20);
+    doc.setFont('helvetica', 'bold');
+    doc.text('H.L.-Eduroom Publications', 105, 15, { align: 'center' });
+    
+    doc.setFontSize(12);
+    doc.text('OFFICIAL ORDER RECEIPT', 105, 22, { align: 'center' });
+    
+    // Reset text color
+    doc.setTextColor(0, 0, 0);
+    
+    // Order Details
+    doc.setFontSize(10);
+    let yPosition = 45;
+    
+    doc.setFont('helvetica', 'bold');
+    doc.text('ORDER INFORMATION:', 15, yPosition);
+    yPosition += 8;
+    
+    doc.setFont('helvetica', 'normal');
+    doc.text(`Order ID: ${orderDetails.orderId}`, 20, yPosition);
+    yPosition += 6;
+    doc.text(`Order Date: ${orderDetails.orderDate}`, 20, yPosition);
+    yPosition += 6;
+    doc.text(`Status: COMPLETED`, 20, yPosition);
+    yPosition += 12;
+    
+    // Order Items
+    doc.setFont('helvetica', 'bold');
+    doc.text('ORDER DETAILS:', 15, yPosition);
+    yPosition += 8;
+    
+    orderDetails.items.forEach(item => {
+      doc.setFont('helvetica', 'normal');
+      doc.text(`• ${item.title}`, 20, yPosition);
+      yPosition += 5;
+      doc.text(`  Format: ${item.format} | Qty: ${item.quantity}`, 20, yPosition);
+      yPosition += 5;
+      doc.text(`  Unit Price: ${orderDetails.currency} ${item.price}`, 20, yPosition);
+      yPosition += 5;
+      if (item.deliveryCost > 0) {
+        doc.text(`  Delivery: ${orderDetails.currency} ${item.deliveryCost}`, 20, yPosition);
+        yPosition += 5;
+      }
+      yPosition += 3;
+    });
+    
+    // Payment Summary
+    doc.setFont('helvetica', 'bold');
+    doc.text('PAYMENT SUMMARY:', 15, yPosition);
+    yPosition += 8;
+    
+    doc.setFont('helvetica', 'normal');
+    doc.text(`Subtotal: ${orderDetails.currency} ${(parseFloat(amount) - 150).toFixed(2)}`, 20, yPosition);
+    yPosition += 5;
+    doc.text(`Delivery Fee: ${orderDetails.currency} 150.00`, 20, yPosition);
+    yPosition += 5;
+    doc.setFont('helvetica', 'bold');
+    doc.text(`Total Paid: ${orderDetails.currency} ${orderDetails.amount}`, 20, yPosition);
+    yPosition += 12;
+    
+    // Customer Info
+    doc.setFont('helvetica', 'bold');
+    doc.text('CUSTOMER INFORMATION:', 15, yPosition);
+    yPosition += 8;
+    
+    doc.setFont('helvetica', 'normal');
+    doc.text(`Email: ${orderDetails.customer.email}`, 20, yPosition);
+    yPosition += 5;
+    doc.text(`Phone: ${orderDetails.customer.phone}`, 20, yPosition);
+    yPosition += 12;
+    
+    // Footer
+    doc.setFont('helvetica', 'bold');
+    doc.text('IMPORTANT NOTES:', 15, yPosition);
+    yPosition += 8;
+    
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(8);
+    const notes = [
+      '• E-book will be delivered within 24 hours',
+      '• Check your email for download instructions',
+      '• Keep this receipt for future reference',
+      '• For queries: thehiteshsir.com/contact',
+      '• Support: hleduroom@gmail.com | +977-9827728726'
+    ];
+    
+    notes.forEach(note => {
+      doc.text(note, 20, yPosition);
+      yPosition += 4;
+    });
+    
+    // Final thank you
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'bold');
+    doc.text('Thank you for your purchase!', 105, yPosition + 10, { align: 'center' });
+    doc.setFont('helvetica', 'normal');
+    doc.text('H.L.-Eduroom Publications', 105, yPosition + 16, { align: 'center' });
+    
+    doc.save(`receipt-${orderDetails.orderId}.pdf`);
   };
 
   const sendEmailReceipt = () => {
     alert('Receipt has been sent to your email! You should receive it within minutes.');
-    
-    // Store email receipt in localStorage
-    const emailReceipts = JSON.parse(localStorage.getItem('emailReceipts') || '[]');
-    emailReceipts.push({
-      orderId,
-      sentAt: new Date().toISOString(),
-      receiptData
-    });
-    localStorage.setItem('emailReceipts', JSON.stringify(emailReceipts));
   };
 
-  const getDeliveryTimeline = () => {
-    const hasPhysicalBook = receiptData?.items.some((item: any) => 
-      item.book.format === 'paperback' || item.book.format === 'hardcover'
-    );
-    
-    return hasPhysicalBook ? [
-      { status: 'Order Confirmed', description: 'Payment verified and order processed', completed: true },
-      { status: 'Processing', description: 'Book packaging and quality check', completed: false },
-      { status: 'Shipped', description: 'Dispatched via delivery partner', completed: false },
-      { status: 'Out for Delivery', description: 'Expected delivery in 3-5 days', completed: false },
-      { status: 'Delivered', description: 'Book delivered to your address', completed: false }
-    ] : [
-      { status: 'Order Confirmed', description: 'Payment verified and order processed', completed: true },
-      { status: 'E-book Generation', description: 'Preparing your digital copy', completed: false },
-      { status: 'Delivery', description: 'Sending to your email within 24 hours', completed: false }
-    ];
-  };
+  if (!orderDetails) {
+    return <div className="min-h-screen flex items-center justify-center font-handwriting">Loading...</div>;
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-green-50 to-white dark:from-green-950 dark:to-slate-900">
@@ -175,10 +192,10 @@ Thank you for supporting H.L.-Eduroom Publications!
             </div>
           </div>
 
-          <h1 className="text-3xl font-bold text-foreground mb-4">
+          <h1 className="text-3xl font-bold text-foreground mb-4 font-handwriting">
             Payment Successful! 🎉
           </h1>
-          <p className="text-muted-foreground mb-8">
+          <p className="text-muted-foreground mb-8 font-handwriting">
             Thank you for your order. We've sent a confirmation email with your order details.
           </p>
 
@@ -186,23 +203,27 @@ Thank you for supporting H.L.-Eduroom Publications!
             <CardContent className="p-6">
               <div className="space-y-4 text-left">
                 <div className="flex justify-between items-center">
-                  <span className="font-semibold">Order ID:</span>
-                  <span className="font-mono text-lg bg-green-100 px-2 py-1 rounded">
-                    {orderId}
+                  <span className="font-semibold font-handwriting">Order ID:</span>
+                  <span className="font-mono text-lg bg-green-100 px-2 py-1 rounded font-handwriting">
+                    {orderDetails.orderId}
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="font-semibold">Order Date:</span>
-                  <span>{orderDate}</span>
+                  <span className="font-semibold font-handwriting">Order Date:</span>
+                  <span className="font-handwriting">{orderDetails.orderDate}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="font-semibold">Payment Method:</span>
-                  <span className="capitalize">{receiptData?.paymentMethod?.replace('_', ' ') || 'Online Payment'}</span>
+                  <span className="font-semibold font-handwriting">Product:</span>
+                  <span className="font-handwriting">3 AM Confessions: My Life as an Overthinker</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="font-semibold font-handwriting">Format:</span>
+                  <span className="font-handwriting">E-book</span>
                 </div>
                 <div className="flex justify-between text-lg font-bold border-t pt-3">
-                  <span>Total Paid:</span>
-                  <span className="text-green-600">
-                    {currency} {receiptData?.total.toFixed(2) || amount}
+                  <span className="font-handwriting">Total Paid:</span>
+                  <span className="text-green-600 font-handwriting">
+                    {orderDetails.currency} {orderDetails.amount}
                   </span>
                 </div>
               </div>
@@ -211,63 +232,68 @@ Thank you for supporting H.L.-Eduroom Publications!
 
           <Card className="mb-8">
             <CardContent className="p-6">
-              <h3 className="font-semibold mb-4 flex items-center justify-center">
+              <h3 className="font-semibold mb-4 flex items-center justify-center font-handwriting">
                 <Clock className="w-5 h-5 mr-2" />
-                Delivery Timeline
+                What Happens Next?
               </h3>
-              <div className="space-y-4">
-                {getDeliveryTimeline().map((step, index) => (
-                  <div key={index} className="flex items-start space-x-3">
-                    <div className={`rounded-full p-1 mt-1 ${
-                      step.completed ? 'bg-green-100' : 'bg-gray-100'
-                    }`}>
-                      <div className={`w-2 h-2 rounded-full ${
-                        step.completed ? 'bg-green-600' : 'bg-gray-400'
-                      }`}></div>
-                    </div>
-                    <div className="flex-1">
-                      <p className={`font-medium ${step.completed ? 'text-green-700' : 'text-gray-700'}`}>
-                        {step.status}
-                      </p>
-                      <p className="text-sm text-muted-foreground">
-                        {step.description}
-                      </p>
-                    </div>
+              <div className="space-y-3 text-left">
+                <div className="flex items-start space-x-3">
+                  <div className="bg-blue-100 rounded-full p-1 mt-1">
+                    <div className="w-2 h-2 bg-blue-600 rounded-full"></div>
                   </div>
-                ))}
+                  <div>
+                    <p className="font-medium font-handwriting">Order Confirmed</p>
+                    <p className="text-sm text-muted-foreground font-handwriting">We've received your payment and order details</p>
+                  </div>
+                </div>
+                <div className="flex items-start space-x-3">
+                  <div className="bg-yellow-100 rounded-full p-1 mt-1">
+                    <div className="w-2 h-2 bg-yellow-600 rounded-full"></div>
+                  </div>
+                  <div>
+                    <p className="font-medium font-handwriting">Manual Verification</p>
+                    <p className="text-sm text-muted-foreground font-handwriting">Our team verifies the payment (within 2-6 hours)</p>
+                  </div>
+                </div>
+                <div className="flex items-start space-x-3">
+                  <div className="bg-green-100 rounded-full p-1 mt-1">
+                    <div className="w-2 h-2 bg-green-600 rounded-full"></div>
+                  </div>
+                  <div>
+                    <p className="font-medium font-handwriting">E-book Delivery</p>
+                    <p className="text-sm text-muted-foreground font-handwriting">You'll receive download instructions via email</p>
+                  </div>
+                </div>
               </div>
             </CardContent>
           </Card>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8">
-            <Button onClick={downloadReceipt} className="flex items-center">
+            <Button onClick={generatePDFReceipt} className="flex items-center font-handwriting">
               <Download className="w-4 h-4 mr-2" />
-              Download Receipt
+              Download PDF Receipt
             </Button>
-            <Button variant="outline" onClick={sendEmailReceipt} className="flex items-center">
+            <Button variant="outline" onClick={sendEmailReceipt} className="flex items-center font-handwriting">
               <Mail className="w-4 h-4 mr-2" />
               Email Receipt
             </Button>
           </div>
 
           <div className="bg-muted/50 rounded-lg p-6 mb-8">
-            <h3 className="font-semibold mb-3 flex items-center justify-center">
-              <MapPin className="w-5 h-5 mr-2" />
-              Need Assistance?
-            </h3>
-            <div className="text-sm text-muted-foreground space-y-2 text-left">
+            <h3 className="font-semibold mb-3 font-handwriting">Need Immediate Assistance?</h3>
+            <div className="text-sm text-muted-foreground space-y-2 text-left font-handwriting">
               <p>📧 <strong>Email:</strong> hleduroom@gmail.com</p>
               <p>📱 <strong>WhatsApp:</strong> +977-9827728726</p>
               <p>🌐 <strong>Website:</strong> thehiteshsir.com</p>
-              <p className="text-xs mt-3 text-center">
-                Please mention your Order ID: <code className="bg-gray-100 px-2 py-1 rounded">{orderId}</code>
+              <p className="text-xs mt-3">
+                Please mention your Order ID: <code className="bg-gray-100 px-1 rounded">{orderDetails.orderId}</code> in all communications
               </p>
             </div>
           </div>
 
-          <Button asChild className="flex items-center">
-            <Link href="/book">
-              <BookOpen className="w-4 h-4 mr-2" />
+          <Button variant="ghost" asChild>
+            <Link href="/book" className="flex items-center font-handwriting">
+              <ArrowLeft className="w-4 h-4 mr-2" />
               Continue Shopping
             </Link>
           </Button>
