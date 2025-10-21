@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/db';
 import { emailService } from '@/lib/server/email';
+
+// Temporary in-memory storage for development
+let orders: any[] = [];
 
 export async function POST(request: NextRequest) {
   try {
@@ -14,37 +16,33 @@ export async function POST(request: NextRequest) {
       total
     } = body;
 
-    // Create order in database
-    const order = await prisma.order.create({
-      data: {
-        orderId,
-        customerEmail: customer.email,
-        customerName: `${customer.firstName} ${customer.lastName}`,
-        customerPhone: customer.phone,
-        shippingAddress: `${customer.address}, ${customer.city}, ${customer.postalCode}`,
-        totalAmount: total,
-        paymentMethod,
-        transactionId,
-        status: 'PENDING',
-        items: {
-          create: items.map((item: any) => ({
-            bookId: item.book.id,
-            format: item.book.bookFormat || 'ebook',
-            quantity: item.quantity,
-            price: item.book.formats[item.book.bookFormat || 'ebook']?.price || item.book.formats.ebook.price
-          }))
-        }
-      },
-      include: {
-        items: {
-          include: {
-            book: true
-          }
-        }
-      }
-    });
+    const newOrder = {
+      id: Date.now().toString(),
+      orderId,
+      customerEmail: customer.email,
+      customerName: `${customer.firstName} ${customer.lastName}`,
+      customerPhone: customer.phone,
+      shippingAddress: `${customer.address}, ${customer.city}, ${customer.postalCode}`,
+      totalAmount: total,
+      paymentMethod,
+      transactionId,
+      status: 'PENDING',
+      items: items.map((item: any) => ({
+        book: {
+          title: item.book.title,
+          author: item.book.author
+        },
+        format: item.book.bookFormat || 'ebook',
+        quantity: item.quantity,
+        price: item.book.formats[item.book.bookFormat || 'ebook']?.price || item.book.formats.ebook.price
+      })),
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
 
-    const firstItem = order.items[0];
+    orders.push(newOrder);
+
+    const firstItem = newOrder.items[0];
     const format = firstItem.format;
     const formatName = format.charAt(0).toUpperCase() + format.slice(1);
 
@@ -78,7 +76,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ 
       success: true, 
-      orderId: order.orderId,
+      orderId: newOrder.orderId,
       message: 'Order processed successfully' 
     });
   } catch (error) {
@@ -97,36 +95,24 @@ export async function GET(request: NextRequest) {
     const limit = parseInt(searchParams.get('limit') || '10');
     const status = searchParams.get('status');
 
-    const skip = (page - 1) * limit;
+    let filteredOrders = [...orders];
 
-    const where = status ? { status } : {};
+    if (status) {
+      filteredOrders = filteredOrders.filter(order => order.status === status);
+    }
 
-    const [orders, total] = await Promise.all([
-      prisma.order.findMany({
-        where,
-        include: {
-          items: {
-            include: {
-              book: true
-            }
-          }
-        },
-        orderBy: {
-          createdAt: 'desc'
-        },
-        skip,
-        take: limit
-      }),
-      prisma.order.count({ where })
-    ]);
+    // Apply pagination
+    const startIndex = (page - 1) * limit;
+    const endIndex = startIndex + limit;
+    const paginatedOrders = filteredOrders.slice(startIndex, endIndex);
 
     return NextResponse.json({
-      orders,
+      orders: paginatedOrders,
       pagination: {
         page,
         limit,
-        total,
-        pages: Math.ceil(total / limit)
+        total: filteredOrders.length,
+        pages: Math.ceil(filteredOrders.length / limit)
       }
     });
   } catch (error) {
