@@ -7,20 +7,20 @@ import { Book } from '@/lib/data/book';
 import { useState } from 'react';
 
 // Define the precise type of the item being added to the cart
+// This must match the CartItemPayload in CartContext exactly
 interface CartItemPayload {
   id: string;
   title: string;
+  author: string; // ADDED: This was missing
   price: number;
   currency: string;
-  quantity: number;
   format: 'ebook' | 'paperback' | 'hardcover';
   coverImage: string;
+  deliveryCost?: number; // ADDED: For delivery fee calculation
 }
 
 interface AddToCartButtonProps {
-  // We still need the full book data to calculate the price
   book: Book;
-  // This prop tells us which price to use
   format?: 'ebook' | 'paperback' | 'hardcover';
 }
 
@@ -31,19 +31,22 @@ export function AddToCartButton({ book, format = 'ebook' }: AddToCartButtonProps
   // Calculate required variables
   const formatPrice = book.formats[format].price;
   const formatName = format.charAt(0).toUpperCase() + format.slice(1);
+  const deliveryCost = format === 'ebook' ? 0 : 150;
 
   const handleAddToCart = () => {
     setIsAdding(true);
 
-    // FIX: Explicitly construct the payload object to match CartContext's expected type
-    const cartItem: CartItemPayload = {
+    // Construct the payload object to match CartContext's expected type exactly
+    const cartItem = {
       id: book.id,
       title: book.title,
-      price: formatPrice, // Use the calculated price
+      author: book.author, // ADDED: This was missing
+      price: formatPrice,
       currency: book.currency,
-      quantity: 1, // Default to 1
-      format: format, // Use the selected format
+      quantity: 1,
+      format: format,
       coverImage: book.coverImage,
+      deliveryCost: deliveryCost // ADDED: For delivery fee tracking
     };
 
     dispatch({ type: 'ADD_TO_CART', payload: cartItem });
