@@ -2,25 +2,22 @@
 
 import { useState } from 'react';
 import { bookData } from '@/lib/data/book';
-import { notFound } from 'next/navigation';
+import { notFound, useParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Lock, Download, Eye, AlertCircle } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 
-interface EbookPageProps {
-  params: {
-    id: string;
-  };
-}
-
-export default function EbookPage({ params }: EbookPageProps) {
+export default function EbookPage() {
+  const params = useParams();
   const [password, setPassword] = useState('');
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [error, setError] = useState('');
 
-  if (params.id !== bookData.id) {
+  const id = params.id as string;
+
+  if (id !== bookData.id) {
     notFound();
   }
 
