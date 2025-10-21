@@ -9,10 +9,7 @@ import Link from 'next/link';
 export default function CartPage() {
   const { state, dispatch } = useCart();
 
-  // Helper function to create the unique ID for dispatching actions
-  // The CartContext now uses 'id-format' as the unique key for items
   const getItemUniqueId = (item: any) => {
-    // We assume the cart item object has the final 'format' property
     return `${item.book.id}-${item.book.format}`; 
   };
 
@@ -27,9 +24,6 @@ export default function CartPage() {
   const removeFromCart = (id: string) => {
     dispatch({ type: 'REMOVE_FROM_CART', payload: id });
   };
-
-  // ❌ REMOVE: getItemPrice is no longer needed; price is directly on item.book.price
-  // ❌ REMOVE: getItemCurrency is no longer needed; currency is directly on item.book.currency
 
   if (state.items.length === 0) {
     return (
@@ -52,7 +46,6 @@ export default function CartPage() {
     );
   }
 
-  // Use the currency of the first item for the total summary display
   const totalCurrency = state.items[0]?.book.currency || 'USD';
 
   return (
@@ -64,17 +57,15 @@ export default function CartPage() {
           {/* Cart Items */}
           <div className="lg:col-span-2 space-y-4">
             {state.items.map((item) => {
-              // ⚠️ FIX: Access price and currency directly from the simplified cart item object
               const itemPrice = item.book.price; 
               const itemCurrency = item.book.currency;
-              const format = item.book.format; // Format is now a string property
-              
+              const format = item.book.format;
+
               const uniqueId = getItemUniqueId(item);
               const formatName = format.charAt(0).toUpperCase() + format.slice(1);
               const itemTotal = (itemPrice * item.quantity).toFixed(2);
 
               return (
-                // ⚠️ FIX: Use the new unique ID for the key
                 <div key={uniqueId} className="bg-card border rounded-lg p-4 flex items-center space-x-4">
                   <Image
                     src={item.book.coverImage}
@@ -86,17 +77,9 @@ export default function CartPage() {
 
                   <div className="flex-1">
                     <h3 className="font-semibold">{item.book.title}</h3>
-                    {/* The author and full book properties are not available on the simplified CartItem type.
-                        If you need them, you must add them back to the CartItemPayload definition.
-                        I'm assuming they are NOT needed for the cart state.
-                        
-                        If author is still required, you must re-add it to CartItemPayload and CartContext logic.
-                        For now, I'll comment out the author to fix the type error.
-                    */}
-                    {/* <p className="text-sm text-muted-foreground">by {item.book.author}</p> */} 
+                    <p className="text-sm text-muted-foreground">by {item.book.author}</p>
                     <p className="text-sm text-muted-foreground">Format: {formatName}</p>
-                    {/* Display item total price (price * quantity) is often better here */}
-                    <p className="font-bold text-lg">{itemCurrency} {itemTotal}</p> 
+                    <p className="font-bold text-lg">{itemCurrency} {itemTotal}</p>
                   </div>
 
                   <div className="flex items-center space-x-2">
@@ -136,8 +119,7 @@ export default function CartPage() {
             <div className="space-y-2 mb-4">
               <div className="flex justify-between">
                 <span>Subtotal</span>
-                {/* ⚠️ FIX: Use totalCurrency */}
-                <span>{totalCurrency} {state.total.toFixed(2)}</span> 
+                <span>{totalCurrency} {state.total.toFixed(2)}</span>
               </div>
               <div className="flex justify-between">
                 <span>Shipping</span>
@@ -145,13 +127,11 @@ export default function CartPage() {
               </div>
               <div className="flex justify-between">
                 <span>Tax</span>
-                {/* ⚠️ FIX: Use totalCurrency */}
-                <span>{totalCurrency} 0.00</span> 
+                <span>{totalCurrency} 0.00</span>
               </div>
               <div className="border-t pt-2 flex justify-between font-bold text-lg">
                 <span>Total</span>
-                {/* ⚠️ FIX: Use totalCurrency */}
-                <span>{totalCurrency} {state.total.toFixed(2)}</span> 
+                <span>{totalCurrency} {state.total.toFixed(2)}</span>
               </div>
             </div>
 
