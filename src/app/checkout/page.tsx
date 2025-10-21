@@ -39,6 +39,16 @@ export default function CheckoutPage() {
     });
   };
 
+  // Helper function to get item details
+  const getItemDetails = (item: any) => {
+    const format = item.book.bookFormat || 'ebook';
+    const price = item.book.formats[format]?.price || item.book.formats.ebook.price;
+    const currency = item.book.currency || 'NPR';
+    const formatName = format.charAt(0).toUpperCase() + format.slice(1);
+    
+    return { price, currency, format, formatName };
+  };
+
   const generateOrderId = () => {
     return `ORD-${Date.now()}-${Math.random().toString(36).substr(2, 5).toUpperCase()}`;
   };
@@ -86,7 +96,8 @@ export default function CheckoutPage() {
   }
 
   const selectedBook = state.items[0]?.book;
-  const selectedFormat = state.items[0]?.bookFormat || 'ebook';
+  const itemDetails = getItemDetails(state.items[0]);
+  const currency = itemDetails.currency;
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white dark:from-slate-950 dark:to-slate-900">
@@ -300,7 +311,7 @@ export default function CheckoutPage() {
                         <ol className="list-decimal list-inside space-y-1 text-sm text-blue-800">
                           <li>Open your {paymentMethod === 'esewa' ? 'eSewa' : 'Khalti'} app</li>
                           <li>Scan the QR code below or enter the merchant ID</li>
-                          <li>Pay the amount: <strong>NPR {state.total}</strong></li>
+                          <li>Pay the amount: <strong>{currency} {state.total}</strong></li>
                           <li>Enter the transaction ID below after payment</li>
                         </ol>
                       </div>
@@ -340,7 +351,7 @@ export default function CheckoutPage() {
                           <p><strong>Bank:</strong> Nepal Investment Mega Bank</p>
                           <p><strong>Account Name:</strong> H.L.-Eduroom</p>
                           <p><strong>Account Number:</strong> 1234567890123456</p>
-                          <p><strong>Amount:</strong> NPR {state.total}</p>
+                          <p><strong>Amount:</strong> {currency} {state.total}</p>
                           <p><strong>Reference:</strong> Order {generateOrderId()}</p>
                         </div>
                       </div>
@@ -370,32 +381,35 @@ export default function CheckoutPage() {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
-                    {state.items.map((item) => (
-                      <div key={item.book.id} className="flex items-center space-x-3">
-                        <Image
-                          src={item.book.coverImage}
-                          alt={item.book.title}
-                          width={60}
-                          height={80}
-                          className="rounded object-cover"
-                        />
-                        <div className="flex-1">
-                          <h4 className="font-medium text-sm">{item.book.title}</h4>
-                          <p className="text-xs text-muted-foreground">
-                            Format: {selectedFormat} | Qty: {item.quantity}
-                          </p>
+                    {state.items.map((item) => {
+                      const itemDetails = getItemDetails(item);
+                      return (
+                        <div key={`${item.book.id}-${itemDetails.format}`} className="flex items-center space-x-3">
+                          <Image
+                            src={item.book.coverImage}
+                            alt={item.book.title}
+                            width={60}
+                            height={80}
+                            className="rounded object-cover"
+                          />
+                          <div className="flex-1">
+                            <h4 className="font-medium text-sm">{item.book.title}</h4>
+                            <p className="text-xs text-muted-foreground">
+                              Format: {itemDetails.formatName} | Qty: {item.quantity}
+                            </p>
+                          </div>
+                          <span className="font-medium">
+                            {itemDetails.currency} {itemDetails.price * item.quantity}
+                          </span>
                         </div>
-                        <span className="font-medium">
-                          {item.book.currency} {item.book.price * item.quantity}
-                        </span>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
 
                   <div className="border-t mt-4 pt-4 space-y-2">
                     <div className="flex justify-between">
                       <span>Subtotal</span>
-                      <span>{selectedBook.currency} {state.total}</span>
+                      <span>{currency} {state.total}</span>
                     </div>
                     <div className="flex justify-between">
                       <span>Shipping</span>
@@ -403,7 +417,7 @@ export default function CheckoutPage() {
                     </div>
                     <div className="flex justify-between font-bold text-lg border-t pt-2">
                       <span>Total</span>
-                      <span>{selectedBook.currency} {state.total}</span>
+                      <span>{currency} {state.total}</span>
                     </div>
                   </div>
 
@@ -418,7 +432,7 @@ export default function CheckoutPage() {
                     ) : (
                       <>
                         <Lock className="w-4 h-4 mr-2" />
-                        Complete Order - {selectedBook.currency} {state.total}
+                        Complete Order - {currency} {state.total}
                       </>
                     )}
                   </Button>
