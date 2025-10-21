@@ -19,19 +19,6 @@ interface BookDetailsPageProps {
 
 type FormatType = 'ebook' | 'paperback' | 'hardcover';
 
-interface CartItemPayload {
-  id: string;
-  title: string;
-  author: string;
-  price: number;
-  currency: string;
-  format: FormatType;
-  coverImage: string;
-  deliveryCost?: number;
-}
-
-type AddToCartActionPayload = CartItemPayload & { quantity: number };
-
 export default function BookDetailsPage({ params }: BookDetailsPageProps) {
   const [book, setBook] = useState<Book | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -60,7 +47,7 @@ export default function BookDetailsPage({ params }: BookDetailsPageProps) {
     if (!book) return;
 
     const deliveryCost = selectedFormat === 'ebook' ? 0 : 150;
-    const payload: AddToCartActionPayload = {
+    const payload = {
       id: book.id,
       title: book.title,
       author: book.author,
@@ -233,7 +220,7 @@ function HeaderSection({ book }: { book: Book }) {
 
       <div>
         <h3 className="text-base font-semibold mb-1">About the Book</h3>
-        <p className="text-sm text-muted-foreground leading-relaxed line-clamp-5">
+        <p className="text-sm text-muted-foreground leading-relaxed">
           {book.description}
         </p>
       </div>
