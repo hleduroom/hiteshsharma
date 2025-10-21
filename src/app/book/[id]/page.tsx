@@ -19,21 +19,39 @@ interface BookDetailsPageProps {
 
 type FormatType = 'ebook' | 'paperback' | 'hardcover';
 
-// Client component wrapper
-function BookDetailsClient({ book }: { book: Book }) {
+interface CartItemPayload {
+  id: string;
+  title: string;
+  author: string;
+  price: number;
+  currency: string;
+  format: FormatType;
+  coverImage: string;
+  deliveryCost?: number;
+}
+
+type AddToCartActionPayload = CartItemPayload & { quantity: number };
+
+export default function BookDetailsPage({ params }: BookDetailsPageProps) {
+  const { id } = React.use(params);
+  const book = allBooks.find((b) => b.id === id);
+  if (!book) notFound();
+
   const { dispatch } = useCart();
   const [selectedFormat, setSelectedFormat] = useState<FormatType>('ebook');
 
   const handleBuyNow = () => {
-    const payload = {
+    const deliveryCost = selectedFormat === 'ebook' ? 0 : 150;
+    const payload: AddToCartActionPayload = {
       id: book.id,
       title: book.title,
       author: book.author,
-      price: book.formats[selectedFormat].price, 
+      price: book.formats[selectedFormat].price,
       currency: book.currency,
       quantity: 1,
       format: selectedFormat,
       coverImage: book.coverImage,
+      deliveryCost
     };
 
     dispatch({
@@ -44,12 +62,11 @@ function BookDetailsClient({ book }: { book: Book }) {
   };
 
   const relatedBooks = allBooks.filter(
-    (b) => b.id !== book.id && b.genre.some((g) => book.genre.includes(g))
+    (b) => b.id !== id && b.genre.some((g) => book.genre.includes(g))
   );
 
   return (
     <div className="relative min-h-screen overflow-hidden">
-      {/* Background */}
       <div className="absolute inset-0 -z-10">
         <Image
           src={book.coverImage}
@@ -61,18 +78,15 @@ function BookDetailsClient({ book }: { book: Book }) {
         <div className="absolute inset-0 bg-gradient-to-b from-white/70 via-white/60 to-white dark:from-slate-950/70 dark:via-slate-900/60 dark:to-slate-900/80 backdrop-blur-md" />
       </div>
 
-      {/* Header */}
       <Header />
 
       <div className="container mx-auto px-4 py-16">
-        {/* Hero */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7 }}
           className="flex flex-col lg:flex-row items-center gap-12"
         >
-          {/* Cover Image */}
           <div className="relative w-full lg:w-1/2 flex justify-center">
             <div className="relative w-full max-w-2xl rounded-3xl overflow-hidden shadow-2xl border border-white/20 backdrop-blur-md group">
               <Image
@@ -85,7 +99,6 @@ function BookDetailsClient({ book }: { book: Book }) {
             </div>
           </div>
 
-          {/* Info Section */}
           <motion.div
             initial={{ opacity: 0, x: 40 }}
             animate={{ opacity: 1, x: 0 }}
@@ -94,7 +107,6 @@ function BookDetailsClient({ book }: { book: Book }) {
           >
             <HeaderSection book={book} />
 
-            {/* Format Selector */}
             <div className="space-y-3">
               <h3 className="text-base font-semibold">Choose Format</h3>
               <div className="flex gap-2 flex-wrap">
@@ -115,6 +127,11 @@ function BookDetailsClient({ book }: { book: Book }) {
                 <h4 className="font-semibold capitalize text-sm mb-1">{selectedFormat}</h4>
                 <p className="text-lg font-bold mb-2">
                   {book.currency} {book.formats[selectedFormat].price.toFixed(2)}
+                  {selectedFormat !== 'ebook' && (
+                    <span className="text-sm text-muted-foreground ml-2">
+                      + {book.currency} 150 delivery
+                    </span>
+                  )}
                 </p>
                 <ul className="text-xs text-muted-foreground list-disc pl-5 space-y-1">
                   {book.formats[selectedFormat].features.map((feature, i) => (
@@ -124,7 +141,6 @@ function BookDetailsClient({ book }: { book: Book }) {
               </div>
             </div>
 
-            {/* Action Buttons */}
             <div className="flex flex-col sm:flex-row gap-3 mt-4">
               <Button
                 size="lg"
@@ -149,7 +165,6 @@ function BookDetailsClient({ book }: { book: Book }) {
           </motion.div>
         </motion.div>
 
-        {/* Related Books */}
         {relatedBooks.length > 0 && <RelatedBooksSection relatedBooks={relatedBooks} />}
       </div>
     </div>
