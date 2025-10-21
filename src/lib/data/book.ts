@@ -32,7 +32,7 @@ export interface Book {
   reviews: number;
 }
 
-export const bookData: Book = {
+export const mainBook: Book = {
   id: "3am-confessions",
   title: "3 AM Confessions: My Life as an Overthinker",
   author: "Hitesh Sharma",
@@ -82,7 +82,6 @@ export const bookData: Book = {
   reviews: 127
 };
 
-// Create related books array
 export const relatedBooks: Book[] = [
   {
     id: "mindfulness-guide",
@@ -171,3 +170,11 @@ export const relatedBooks: Book[] = [
     reviews: 134
   }
 ];
+
+// Export all books for easy access
+export const allBooks: Book[] = [mainBook, ...relatedBooks];
+
+// Helper function to find book by ID
+export function getBookById(id: string): Book | undefined {
+  return allBooks.find(book => book.id === id);
+}
