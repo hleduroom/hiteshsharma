@@ -21,6 +21,17 @@ export default function CartPage() {
     dispatch({ type: 'REMOVE_FROM_CART', payload: id });
   };
 
+  // Helper function to get the price based on format
+  const getItemPrice = (item: any) => {
+    const format = item.book.bookFormat || 'ebook';
+    return item.book.formats[format]?.price || item.book.formats.ebook.price;
+  };
+
+  // Helper function to get the currency
+  const getItemCurrency = (item: any) => {
+    return item.book.currency || 'NPR';
+  };
+
   if (state.items.length === 0) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white dark:from-slate-950 dark:to-slate-900">
@@ -50,49 +61,57 @@ export default function CartPage() {
         <div className="grid lg:grid-cols-3 gap-8">
           {/* Cart Items */}
           <div className="lg:col-span-2 space-y-4">
-            {state.items.map((item) => (
-              <div key={item.book.id} className="bg-card border rounded-lg p-4 flex items-center space-x-4">
-                <Image
-                  src={item.book.coverImage}
-                  alt={item.book.title}
-                  width={80}
-                  height={120}
-                  className="rounded-lg object-cover"
-                />
-                
-                <div className="flex-1">
-                  <h3 className="font-semibold">{item.book.title}</h3>
-                  <p className="text-sm text-muted-foreground">by {item.book.author}</p>
-                  <p className="font-bold text-lg">{item.book.currency} {item.book.price}</p>
-                </div>
+            {state.items.map((item) => {
+              const itemPrice = getItemPrice(item);
+              const itemCurrency = getItemCurrency(item);
+              const format = item.book.bookFormat || 'ebook';
+              const formatName = format.charAt(0).toUpperCase() + format.slice(1);
+              
+              return (
+                <div key={`${item.book.id}-${format}`} className="bg-card border rounded-lg p-4 flex items-center space-x-4">
+                  <Image
+                    src={item.book.coverImage}
+                    alt={item.book.title}
+                    width={80}
+                    height={120}
+                    className="rounded-lg object-cover"
+                  />
+                  
+                  <div className="flex-1">
+                    <h3 className="font-semibold">{item.book.title}</h3>
+                    <p className="text-sm text-muted-foreground">by {item.book.author}</p>
+                    <p className="text-sm text-muted-foreground">Format: {formatName}</p>
+                    <p className="font-bold text-lg">{itemCurrency} {itemPrice}</p>
+                  </div>
 
-                <div className="flex items-center space-x-2">
+                  <div className="flex items-center space-x-2">
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      onClick={() => updateQuantity(`${item.book.id}-${format}`, item.quantity - 1)}
+                    >
+                      <Minus className="w-4 h-4" />
+                    </Button>
+                    <span className="w-8 text-center">{item.quantity}</span>
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      onClick={() => updateQuantity(`${item.book.id}-${format}`, item.quantity + 1)}
+                    >
+                      <Plus className="w-4 h-4" />
+                    </Button>
+                  </div>
+
                   <Button
-                    variant="outline"
+                    variant="ghost"
                     size="icon"
-                    onClick={() => updateQuantity(item.book.id, item.quantity - 1)}
+                    onClick={() => removeFromCart(`${item.book.id}-${format}`)}
                   >
-                    <Minus className="w-4 h-4" />
-                  </Button>
-                  <span className="w-8 text-center">{item.quantity}</span>
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    onClick={() => updateQuantity(item.book.id, item.quantity + 1)}
-                  >
-                    <Plus className="w-4 h-4" />
+                    <Trash2 className="w-4 h-4" />
                   </Button>
                 </div>
-
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => removeFromCart(item.book.id)}
-                >
-                  <Trash2 className="w-4 h-4" />
-                </Button>
-              </div>
-            ))}
+              );
+            })}
           </div>
 
           {/* Order Summary */}
@@ -102,7 +121,7 @@ export default function CartPage() {
             <div className="space-y-2 mb-4">
               <div className="flex justify-between">
                 <span>Subtotal</span>
-                <span>{state.items[0]?.book.currency || 'NPR'} {state.total}</span>
+                <span>{getItemCurrency(state.items[0])} {state.total}</span>
               </div>
               <div className="flex justify-between">
                 <span>Shipping</span>
@@ -110,11 +129,11 @@ export default function CartPage() {
               </div>
               <div className="flex justify-between">
                 <span>Tax</span>
-                <span>{state.items[0]?.book.currency || 'NPR'} 0</span>
+                <span>{getItemCurrency(state.items[0])} 0</span>
               </div>
               <div className="border-t pt-2 flex justify-between font-bold text-lg">
                 <span>Total</span>
-                <span>{state.items[0]?.book.currency || 'NPR'} {state.total}</span>
+                <span>{getItemCurrency(state.items[0])} {state.total}</span>
               </div>
             </div>
 
