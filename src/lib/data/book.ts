@@ -171,10 +171,8 @@ export const relatedBooks: Book[] = [
   }
 ];
 
-// Export all books for easy access
 export const allBooks: Book[] = [mainBook, ...relatedBooks];
 
-// Helper function to find book by ID
 export function getBookById(id: string): Book | undefined {
   return allBooks.find(book => book.id === id);
 }
