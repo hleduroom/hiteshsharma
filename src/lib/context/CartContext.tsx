@@ -24,6 +24,12 @@ const CartContext = createContext<{
   dispatch: React.Dispatch<CartAction>;
 } | undefined>(undefined);
 
+// Helper function to get price based on format
+const getBookPrice = (book: Book & { bookFormat?: string }) => {
+  const format = book.bookFormat || 'ebook';
+  return book.formats[format]?.price || book.formats.ebook.price;
+};
+
 const cartReducer = (state: CartState, action: CartAction): CartState => {
   switch (action.type) {
     case 'ADD_TO_CART':
@@ -31,6 +37,8 @@ const cartReducer = (state: CartState, action: CartAction): CartState => {
         item.book.id === action.payload.id && 
         item.book.bookFormat === action.payload.bookFormat
       );
+      
+      const itemPrice = getBookPrice(action.payload);
       
       if (existingItem) {
         return {
@@ -41,25 +49,26 @@ const cartReducer = (state: CartState, action: CartAction): CartState => {
               ? { ...item, quantity: item.quantity + 1 }
               : item
           ),
-          total: state.total + action.payload.price
+          total: state.total + itemPrice
         };
       }
       return {
         ...state,
         items: [...state.items, { book: action.payload, quantity: 1 }],
-        total: state.total + action.payload.price
+        total: state.total + itemPrice
       };
 
     case 'REMOVE_FROM_CART':
       const itemToRemove = state.items.find(item => 
         `${item.book.id}-${item.book.bookFormat}` === action.payload
       );
+      const removePrice = itemToRemove ? getBookPrice(itemToRemove.book) * itemToRemove.quantity : 0;
       return {
         ...state,
         items: state.items.filter(item => 
           `${item.book.id}-${item.book.bookFormat}` !== action.payload
         ),
-        total: state.total - (itemToRemove ? itemToRemove.book.price * itemToRemove.quantity : 0)
+        total: state.total - removePrice
       };
 
     case 'UPDATE_QUANTITY':
@@ -68,6 +77,7 @@ const cartReducer = (state: CartState, action: CartAction): CartState => {
       );
       if (!itemToUpdate) return state;
       
+      const updatePrice = getBookPrice(itemToUpdate.book);
       const quantityDiff = action.payload.quantity - itemToUpdate.quantity;
       return {
         ...state,
@@ -76,7 +86,7 @@ const cartReducer = (state: CartState, action: CartAction): CartState => {
             ? { ...item, quantity: action.payload.quantity }
             : item
         ),
-        total: state.total + (itemToUpdate.book.price * quantityDiff)
+        total: state.total + (updatePrice * quantityDiff)
       };
 
     case 'CLEAR_CART':
