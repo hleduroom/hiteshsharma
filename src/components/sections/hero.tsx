@@ -108,7 +108,7 @@ const structuredData = {
 function TypingAnimation() {
   const [text, setText] = useState('');
   const [currentIndex, setCurrentIndex] = useState(0);
-  const fullText = "यः परिश्रमतः किञ्चित्, न तस्य दुर्लभं जगत्। Normal Human try to Experiencing Every Moments of Life 🍃";
+  const fullText = "यः परिश्रमतः किञ्चित्, न तस्य दुर्लभं जगत्।";
 
   useEffect(() => {
     if (currentIndex < fullText.length) {
@@ -132,7 +132,7 @@ function TypingAnimation() {
 export function Hero() {
   const { theme, systemTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
-  
+
   // Determine current theme for background overlays
   const currentTheme = theme === 'system' ? systemTheme : theme;
   const isDark = currentTheme === 'dark';
@@ -230,6 +230,9 @@ export function Hero() {
     ? "ring-white/10" 
     : "ring-white/30";
 
+  // Background image URL
+  const backgroundImageUrl = "https://res.cloudinary.com/dgxoe15jd/image/upload/v1761015446/retouch_2025102108414547_ghmbru.jpg";
+
   if (!mounted) {
     return (
       <section className="w-full min-h-screen flex items-center justify-center relative">
@@ -249,14 +252,14 @@ export function Hero() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
       />
-      
+
       <Analytics />
-      
+
       <section className="w-full min-h-screen flex items-center justify-center relative overflow-hidden">
         {/* Dynamic Background based on theme */}
         <div className="absolute inset-0 z-0">
           <Image
-            src=https://res.cloudinary.com/dgxoe15jd/image/upload/v1761015446/retouch_2025102108414547_ghmbru.jpg
+            src={backgroundImageUrl}
             alt="Professional Background"
             fill
             className="object-cover scale-110"
@@ -264,7 +267,7 @@ export function Hero() {
           />
           {/* Theme-aware gradient overlay */}
           <div className={`absolute inset-0 bg-gradient-to-b ${backgroundOverlay}`} />
-          
+
           {/* Subtle pattern overlay */}
           <div className="absolute inset-0 opacity-10">
             <div className={`absolute inset-0 bg-[radial-gradient(${isDark ? '#ffffff' : '#64748b'}_1px,transparent_1px)] [background-size:20px_20px]`} />
@@ -432,7 +435,7 @@ export function Hero() {
                       </Button>
                     </div>
                   </div>
-                  
+
                   {/* Book Badge */}
                   <div className="absolute -top-3 -right-3 z-10">
                     <Badge 
