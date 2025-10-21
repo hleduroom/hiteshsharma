@@ -9,6 +9,7 @@ import { Badge } from "../ui/badge";
 import { useState, useEffect } from "react";
 import { Analytics } from "@vercel/analytics/next";
 
+// Whatsapp Icon Component
 function WhatsappIcon(props: React.SVGProps<SVGSVGElement>) {
   return (
     <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -20,6 +21,7 @@ function WhatsappIcon(props: React.SVGProps<SVGSVGElement>) {
   );
 }
 
+// User Details
 const userDetails = {
   name: "Hitesh Sharma",
   role: "Educator & Founder",
@@ -40,7 +42,7 @@ const structuredData = {
     {
       "@type": "Person",
       "@id": "https://thehiteshsir.com/#person",
-      name: "Hitesh Sharma",
+      name: userDetails.name,
       url: "https://thehiteshsir.com",
       image: userDetails.image,
       jobTitle: "Founder & Educator",
@@ -84,7 +86,7 @@ const structuredData = {
   ],
 };
 
-// Typing animation
+// Typing Animation
 function TypingAnimation() {
   const [text, setText] = useState("");
   const [index, setIndex] = useState(0);
@@ -109,19 +111,28 @@ Normal Human try to Experiencing Every Moments of Life 🍃`;
   );
 }
 
+// Hero Component
 export function Hero() {
   const containerVariants = { hidden: { opacity: 0 }, visible: { opacity: 1, transition: { staggerChildren: 0.15, delayChildren: 0.3 } } };
   const itemVariants = { hidden: { y: 25, opacity: 0 }, visible: { y: 0, opacity: 1, transition: { type: "spring", stiffness: 100, damping: 12 } } };
   const imageVariants = { hidden: { scale: 0.8, opacity: 0 }, visible: { scale: 1, opacity: 1, transition: { type: "spring", stiffness: 100, damping: 10, delay: 0.2 } } };
   const bookVariants = { hidden: { scale: 0.9, opacity: 0, y: 20 }, visible: { scale: 1, opacity: 1, y: 0, transition: { type: "spring", stiffness: 80, delay: 0.5 } }, hover: { scale: 1.05, y: -5, transition: { type: "spring", stiffness: 400 } } };
 
+  // Mapping icons safely
+  const socialIcons: Record<string, React.ComponentType<React.SVGProps<SVGSVGElement>>> = {
+    facebook: Facebook,
+    linkedin: Linkedin,
+    email: Mail,
+  };
+
   return (
     <>
+      {/* Structured Data */}
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />
       <Analytics />
 
       <section className="w-full min-h-screen flex items-center justify-center relative overflow-hidden bg-background dark:bg-black transition-colors duration-500">
-        {/* Background */}
+        {/* Background Images */}
         <div className="absolute inset-0 z-0">
           <Image src={userDetails.image} alt="Background" fill className="object-cover scale-110 blur-sm brightness-50 dark:brightness-75" priority />
           <div className="absolute inset-0 bg-black/40 dark:bg-black/50" />
@@ -133,10 +144,12 @@ export function Hero() {
             <div className="grid lg:grid-cols-2 gap-12 items-center w-full">
               {/* Left Column */}
               <motion.div className="space-y-8 text-center lg:text-left">
+                {/* Profile Image Mobile */}
                 <motion.div className="lg:hidden relative h-24 w-24 mx-auto overflow-hidden rounded-full shadow-2xl border-4 border-white/30 backdrop-blur-sm" variants={imageVariants}>
                   <Image src={userDetails.image} alt={userDetails.name} fill className="object-cover" priority />
                 </motion.div>
 
+                {/* Name & Role */}
                 <motion.div className="space-y-4" variants={itemVariants}>
                   <div className="space-y-3">
                     <Badge variant="secondary" className="bg-white/20 text-white border-white/30 px-3 py-1 text-xs font-medium backdrop-blur-sm font-shooting-star dark:bg-white/10 dark:text-white/80">
@@ -149,11 +162,12 @@ export function Hero() {
                   </div>
                 </motion.div>
 
+                {/* Bio */}
                 <motion.p className="text-sm text-white/80 dark:text-white/70 leading-relaxed max-w-2xl mx-auto lg:mx-0 font-shooting-star" variants={itemVariants}>
                   {userDetails.bio}
                 </motion.p>
 
-                {/* Buttons */}
+                {/* CTA Buttons */}
                 <motion.div className="flex flex-col sm:flex-row gap-3 justify-center lg:justify-start" variants={itemVariants}>
                   <Button size="lg" className="bg-white/20 hover:bg-white/30 text-white border border-white/30 px-6 py-5 text-sm font-medium rounded-full backdrop-blur-sm hover:shadow-lg transition-all duration-300 group font-shooting-star" onClick={() => window.open('/book', '_blank')}>
                     <BookOpen className="w-4 h-4 mr-2" />
@@ -170,12 +184,18 @@ export function Hero() {
 
                 {/* Social Links */}
                 <motion.div className="flex items-center gap-2 justify-center lg:justify-start" variants={itemVariants}>
-                  {["facebook", "linkedin", "email"].map((key) => {
-                    const Icon = { facebook: Facebook, linkedin: Linkedin, email: Mail }[key];
+                  {Object.keys(socialIcons).map(key => {
+                    const Icon = socialIcons[key];
                     return (
-                      <Button key={key} variant="ghost" size="icon" className="h-10 w-10 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-sm border border-white/20 text-white dark:bg-white/5 dark:text-white/80" asChild>
+                      <Button
+                        key={key}
+                        variant="ghost"
+                        size="icon"
+                        className="h-10 w-10 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-sm border border-white/20 text-white dark:bg-white/5 dark:text-white/80"
+                        asChild
+                      >
                         <Link href={userDetails.socials[key as keyof typeof userDetails.socials]} target="_blank" aria-label={key}>
-                          <Icon className="h-4 w-4" />
+                          <Icon className="w-4 h-4" />
                         </Link>
                       </Button>
                     );
@@ -185,15 +205,16 @@ export function Hero() {
 
               {/* Right Column */}
               <motion.div className="space-y-8">
+                {/* Desktop Profile Image */}
                 <motion.div className="hidden lg:block relative h-72 w-72 mx-auto overflow-hidden rounded-2xl shadow-2xl border-4 border-white/30 backdrop-blur-sm" variants={imageVariants}>
-                  <Image src={userDetails.image} alt={userDetails.name} fill className="object-cover" />
+                  <Image src={userDetails.image} alt={userDetails.name} fill className="object-cover" priority />
                   <div className="absolute inset-0 ring-4 ring-white/10 rounded-2xl" />
                 </motion.div>
 
                 {/* Book Showcase */}
                 <motion.div className="relative group cursor-pointer" variants={bookVariants} whileHover="hover" onClick={() => window.open('/3AM-Confessions-Preview.pdf', '_blank')}>
-                  <div className="relative w-48 h-60 mx-auto shadow-2xl rounded-lg overflow-hidden border-2 border-white/30 backdrop-blur-sm bg-white/5 dark:bg-black/20">
-                    <Image src="/book_cover_img.png" alt="Book Cover" fill className="object-cover transition-transform duration-500 group-hover:scale-110" />
+                  <div className="relative w-48 h-60 mx-auto shadow-2xl rounded-lg overflow-hidden border-2 border-white/30 backdrop-blur-sm bg-white/5">
+                    <Image src="/book_cover_img.png" alt="3 AM Confessions - Book Cover" fill className="object-cover transition-transform duration-500 group-hover:scale-110" />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-end justify-center pb-3">
                       <Button className="bg-white/95 hover:bg-white text-slate-900 font-medium text-xs px-3 py-2 rounded-full shadow-lg font-shooting-star">
                         <ExternalLink className="w-3 h-3 mr-1" />
