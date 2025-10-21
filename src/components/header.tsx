@@ -16,6 +16,7 @@ import {
   Facebook,
   Instagram,
   Globe,
+  Video,
   ArrowRight, // Used for external link indicator
 } from "lucide-react";
 import { ThemeToggle } from "./theme-toggle";
@@ -29,8 +30,9 @@ export function Header() {
   const navLinks = [
     { href: "/", label: "Home", icon: Home, external: false },
     { href: "#about", label: "About", icon: User, external: false },
-    { href: "https://www.hleduroom.com/instructor/hitesh", label: "My Lectures & Notes ", icon: BookOpen, external: true },
+    { href: "https://www.hleduroom.com/instructor/hitesh", label: "My Lectures & Notes ", icon: Video, external: true },
     { href: "https://thehiteshsir.com", label: "Website", icon: Globe, external: true },
+    { href: "/book", label: "My Books", icon: BookOpen, external: false },
     { href: "/cart", label: "Cart", icon: ShoppingCart, external: false },
     { href: "https://hleduroom.com/contact", label: "Contact", icon: Mail, external: true },
   ];
