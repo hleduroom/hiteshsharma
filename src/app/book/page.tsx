@@ -1,7 +1,7 @@
 import { bookData, relatedBooks } from '@/lib/data/book';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Star, BookOpen, ShoppingCart, ArrowRight, Share2 } from 'lucide-react';
+import { Star, BookOpen, ArrowRight, Share2 } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { AddToCartButton } from '@/components/ui/add-to-cart-button';
@@ -99,14 +99,8 @@ export default function BookPage() {
             <div className="space-y-4">
               <div className="flex items-baseline space-x-2">
                 <span className="text-3xl font-bold text-foreground">
-                  {bookData.currency} {bookData.price}
+                  Starting at {bookData.currency} {bookData.formats.ebook.price}
                 </span>
-                <span className="text-sm text-muted-foreground line-through">
-                  {bookData.currency} 499
-                </span>
-                <Badge variant="secondary" className="bg-green-100 text-green-800">
-                  20% OFF
-                </Badge>
               </div>
 
               <div className="flex flex-col sm:flex-row gap-4">
@@ -175,7 +169,7 @@ export default function BookPage() {
                   <p className="text-sm text-muted-foreground mb-2">by {book.author}</p>
                   <div className="flex items-center justify-between">
                     <span className="font-bold text-foreground">
-                      {book.currency} {book.price}
+                      {book.currency} {book.formats.ebook.price}
                     </span>
                     <Button size="sm" asChild>
                       <Link href={`/book/${book.id}`}>
