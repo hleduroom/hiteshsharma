@@ -1,28 +1,27 @@
 "use client";
 
 import React, { createContext, useContext, useReducer, ReactNode } from 'react';
-import { Book } from '../data/book';
+import { Book } from '../data/book'; 
 
-// ⚠️ FIX 1: Define the strict CartItem payload structure
-// This is the clean object that should be passed for cart operations.
+// --- UPDATED INTERFACES ---
+
+// FIX 1: Define the core data needed for a cart item (what is passed in the ADD_TO_CART payload)
 interface CartItemPayload {
   id: string;
   title: string;
-  price: number; // Required for calculation
+  author: string; // Needed for display
+  price: number; 
   currency: string;
-  quantity: number;
   format: 'ebook' | 'paperback' | 'hardcover';
   coverImage: string;
 }
 
-// ⚠️ FIX 2: Simplify CartItem to hold the necessary book details, not the entire Book type.
-// This is what the ADD_TO_CART payload will become.
-interface CartItem extends CartItemPayload {
-    // Note: We use the simplified payload here. 
-    // The previous structure 'book: Book & { bookFormat?: string }' was problematic.
-    // The quantity property is already included in CartItemPayload, but we redefine it
-    // here to match the reducer's item structure.
-    book: Omit<CartItemPayload, 'quantity'>; // The book details without quantity
+// FIX 2: Define the strict structure of an item as stored in the CartState
+// This MUST NOT extend CartItemPayload.
+interface CartItem {
+    // We store the static book details under 'book'
+    book: CartItemPayload; 
+    // We store the dynamic quantity at the top level
     quantity: number;
 }
 
@@ -32,11 +31,11 @@ interface CartState {
   total: number;
 }
 
-// ⚠️ FIX 3: Update ADD_TO_CART action to expect the clean CartItemPayload
+// FIX 3: The action uses the CartItemPayload plus the quantity being added.
 type CartAction =
-  | { type: 'ADD_TO_CART'; payload: CartItemPayload } // Expect a clean payload object
+  | { type: 'ADD_TO_CART'; payload: CartItemPayload & { quantity: number } }
   | { type: 'REMOVE_FROM_CART'; payload: string }
-  | { type: 'UPDATE_QUANTITY'; payload: { id: string; quantity: number } }
+  | { type: 'UPDATE_QUANTITY'; payload: { id: string; quantity: number } } // ID is the unique 'bookId-format' string
   | { type: 'CLEAR_CART' };
 
 const CartContext = createContext<{
@@ -44,57 +43,57 @@ const CartContext = createContext<{
   dispatch: React.Dispatch<CartAction>;
 } | undefined>(undefined);
 
-// ⚠️ Remove the redundant getBookPrice helper function as the ADD_TO_CART
-// action now provides the exact price in its payload.
+// --- REDUCER LOGIC ---
 
 const cartReducer = (state: CartState, action: CartAction): CartState => {
   switch (action.type) {
     case 'ADD_TO_CART':
-      // Create a unique ID for the item based on book ID and format
       const uniqueId = `${action.payload.id}-${action.payload.format}`;
       
       const existingItem = state.items.find(item => 
         `${item.book.id}-${item.book.format}` === uniqueId
       );
 
-      const itemPrice = action.payload.price; // Price is now directly in the payload
+      const itemPrice = action.payload.price; 
+      const newQuantity = action.payload.quantity || 1; 
 
       if (existingItem) {
         return {
           ...state,
           items: state.items.map(item =>
             `${item.book.id}-${item.book.format}` === uniqueId
-              ? { ...item, quantity: item.quantity + 1 }
+              ? { ...item, quantity: item.quantity + newQuantity }
               : item
           ),
-          total: state.total + itemPrice
+          total: state.total + (itemPrice * newQuantity)
         };
       }
       
-      // Construct the item for the state
+      // FIX 4: Construct the newItem object to strictly match the CartItem interface
       const newItem: CartItem = {
           book: {
               id: action.payload.id,
               title: action.payload.title,
+              author: action.payload.author, 
               price: action.payload.price,
               currency: action.payload.currency,
               format: action.payload.format,
               coverImage: action.payload.coverImage,
           },
-          quantity: 1, // Always start with 1 on ADD_TO_CART
+          quantity: newQuantity,
       };
       
       return {
         ...state,
         items: [...state.items, newItem],
-        total: state.total + itemPrice
+        total: state.total + (itemPrice * newQuantity)
       };
 
     case 'REMOVE_FROM_CART':
       const itemToRemove = state.items.find(item => 
         `${item.book.id}-${item.book.format}` === action.payload
       );
-      // The price is now on the cart item object
+      
       const removePrice = itemToRemove ? itemToRemove.book.price * itemToRemove.quantity : 0; 
       
       return {
@@ -106,13 +105,12 @@ const cartReducer = (state: CartState, action: CartAction): CartState => {
       };
 
     case 'UPDATE_QUANTITY':
-      // The payload.id here must be the unique ID (bookId-format)
       const itemToUpdate = state.items.find(item => 
         `${item.book.id}-${item.book.format}` === action.payload.id
       );
       if (!itemToUpdate) return state;
 
-      const updatePrice = itemToUpdate.book.price; // Price is on the item
+      const updatePrice = itemToUpdate.book.price; 
       const quantityDiff = action.payload.quantity - itemToUpdate.quantity;
       
       return {
@@ -135,6 +133,8 @@ const cartReducer = (state: CartState, action: CartAction): CartState => {
       return state;
   }
 };
+
+// --- PROVIDER AND HOOK ---
 
 export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [state, dispatch] = useReducer(cartReducer, {
