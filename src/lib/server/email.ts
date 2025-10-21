@@ -19,6 +19,15 @@ interface OrderEmailData {
   paymentMethod: string;
 }
 
+interface StatusUpdateData {
+  customerEmail: string;
+  customerName: string;
+  orderId: string;
+  bookTitle: string;
+  status: string;
+  notes?: string;
+}
+
 class EmailService {
   private transporter: nodemailer.Transporter;
 
@@ -56,7 +65,73 @@ class EmailService {
 
     const subject = `Order Confirmation - ${orderId}`;
     
-    const html = `
+    const html = this.generateOrderConfirmationTemplate({
+      customerName,
+      orderId,
+      bookTitle,
+      format,
+      price,
+      currency,
+      transactionId,
+      paymentMethod
+    });
+
+    return this.sendEmail({
+      to: customerEmail,
+      subject,
+      html,
+      bcc: ['hleduroom@gmail.com', customerEmail]
+    });
+  }
+
+  async sendAdminNotification(data: OrderEmailData & { customerEmail: string; customerPhone?: string; shippingAddress?: string }) {
+    const { customerEmail, customerName, orderId, bookTitle, format, price, currency, transactionId, paymentMethod, customerPhone, shippingAddress } = data;
+
+    const subject = `🛒 NEW ORDER: ${orderId} - ${bookTitle} (${format})`;
+    
+    const html = this.generateAdminNotificationTemplate({
+      customerEmail,
+      customerName,
+      customerPhone,
+      shippingAddress,
+      orderId,
+      bookTitle,
+      format,
+      price,
+      currency,
+      transactionId,
+      paymentMethod
+    });
+
+    return this.sendEmail({
+      to: 'hleduroom@gmail.com',
+      subject,
+      html
+    });
+  }
+
+  async sendStatusUpdate(data: StatusUpdateData) {
+    const { customerEmail, customerName, orderId, bookTitle, status, notes } = data;
+
+    const subject = `Order Update - ${orderId}`;
+    
+    const html = this.generateStatusUpdateTemplate({
+      customerName,
+      orderId,
+      bookTitle,
+      status,
+      notes
+    });
+
+    return this.sendEmail({
+      to: customerEmail,
+      subject,
+      html
+    });
+  }
+
+  private generateOrderConfirmationTemplate(data: any): string {
+    return `
 <!DOCTYPE html>
 <html>
 <head>
@@ -74,21 +149,21 @@ class EmailService {
     <div class="container">
         <div class="header">
             <h1>🎉 Order Confirmed!</h1>
-            <p>Thank you for your purchase, ${customerName}!</p>
+            <p>Thank you for your purchase, ${data.customerName}!</p>
         </div>
         <div class="content">
             <h2>Order Details</h2>
             <div class="order-details">
-                <p><strong>Order ID:</strong> <span class="highlight">${orderId}</span></p>
-                <p><strong>Book:</strong> ${bookTitle}</p>
-                <p><strong>Format:</strong> ${format}</p>
-                <p><strong>Amount Paid:</strong> ${currency} ${price}</p>
-                <p><strong>Payment Method:</strong> ${paymentMethod}</p>
-                ${transactionId ? `<p><strong>Transaction ID:</strong> ${transactionId}</p>` : ''}
+                <p><strong>Order ID:</strong> <span class="highlight">${data.orderId}</span></p>
+                <p><strong>Book:</strong> ${data.bookTitle}</p>
+                <p><strong>Format:</strong> ${data.format}</p>
+                <p><strong>Amount Paid:</strong> ${data.currency} ${data.price}</p>
+                <p><strong>Payment Method:</strong> ${data.paymentMethod}</p>
+                ${data.transactionId ? `<p><strong>Transaction ID:</strong> ${data.transactionId}</p>` : ''}
                 <p><strong>Order Date:</strong> ${new Date().toLocaleDateString()}</p>
             </div>
 
-            ${format === 'ebook' ? `
+            ${data.format.toLowerCase().includes('ebook') ? `
             <div style="background: #e8f5e8; padding: 15px; border-radius: 8px; margin: 20px 0;">
                 <h3 style="color: #2e7d32; margin-top: 0;">📚 E-book Access</h3>
                 <p>Your e-book will be delivered manually within 24 hours. You'll receive a separate email with download instructions and access password.</p>
@@ -97,7 +172,7 @@ class EmailService {
             ` : `
             <div style="background: #fff3e0; padding: 15px; border-radius: 8px; margin: 20px 0;">
                 <h3 style="color: #ef6c00; margin-top: 0;">📦 Shipping Information</h3>
-                <p>Your ${format.toLowerCase()} will be shipped within 2-3 business days. You'll receive tracking information once your order is dispatched.</p>
+                <p>Your ${data.format.toLowerCase()} will be shipped within 2-3 business days. You'll receive tracking information once your order is dispatched.</p>
                 <p><strong>Delivery Time:</strong> 5-7 business days within Nepal</p>
             </div>
             `}
@@ -120,21 +195,10 @@ class EmailService {
 </body>
 </html>
     `;
-
-    return this.sendEmail({
-      to: customerEmail,
-      subject,
-      html,
-      bcc: ['hleduroom@gmail.com', customerEmail] // BCC to admin and customer
-    });
   }
 
-  async sendAdminNotification(data: OrderEmailData & { customerEmail: string; customerPhone?: string; shippingAddress?: string }) {
-    const { customerEmail, customerName, orderId, bookTitle, format, price, currency, transactionId, paymentMethod, customerPhone, shippingAddress } = data;
-
-    const subject = `🛒 NEW ORDER: ${orderId} - ${bookTitle} (${format})`;
-    
-    const html = `
+  private generateAdminNotificationTemplate(data: any): string {
+    return `
 <!DOCTYPE html>
 <html>
 <head>
@@ -152,45 +216,43 @@ class EmailService {
     <div class="container">
         <div class="header">
             <h1>🛒 New Order Received!</h1>
-            <p>Order ID: ${orderId}</p>
+            <p>Order ID: ${data.orderId}</p>
         </div>
         <div class="content">
             <div class="order-details">
                 <h3>Order Information</h3>
-                <p><strong>Book:</strong> ${bookTitle}</p>
-                <p><strong>Format:</strong> ${format}</p>
-                <p><strong>Amount:</strong> ${currency} ${price}</p>
-                <p><strong>Payment Method:</strong> ${paymentMethod}</p>
-                ${transactionId ? `<p><strong>Transaction ID:</strong> ${transactionId}</p>` : ''}
+                <p><strong>Book:</strong> ${data.bookTitle}</p>
+                <p><strong>Format:</strong> ${data.format}</p>
+                <p><strong>Amount:</strong> ${data.currency} ${data.price}</p>
+                <p><strong>Payment Method:</strong> ${data.paymentMethod}</p>
+                ${data.transactionId ? `<p><strong>Transaction ID:</strong> ${data.transactionId}</p>` : ''}
                 <p><strong>Order Time:</strong> ${new Date().toLocaleString()}</p>
             </div>
 
             <div class="customer-info">
                 <h3>Customer Information</h3>
-                <p><strong>Name:</strong> ${customerName}</p>
-                <p><strong>Email:</strong> ${customerEmail}</p>
-                ${customerPhone ? `<p><strong>Phone:</strong> ${customerPhone}</p>` : ''}
-                ${shippingAddress ? `<p><strong>Shipping Address:</strong> ${shippingAddress}</p>` : ''}
+                <p><strong>Name:</strong> ${data.customerName}</p>
+                <p><strong>Email:</strong> ${data.customerEmail}</p>
+                ${data.customerPhone ? `<p><strong>Phone:</strong> ${data.customerPhone}</p>` : ''}
+                ${data.shippingAddress ? `<p><strong>Shipping Address:</strong> ${data.shippingAddress}</p>` : ''}
             </div>
 
-            ${format === 'ebook' ? `
+            ${data.format.toLowerCase().includes('ebook') ? `
             <div class="action-required">
                 <h3>🔐 Action Required: E-book Delivery</h3>
                 <p>Please send the e-book download link and password to the customer within 24 hours.</p>
-                <p><strong>E-book Password:</strong> HLEDUROOM2024</p>
-                <p><strong>Download Link:</strong> https://thehiteshsir.com/ebook/3am-confessions</p>
                 <p><em>Remember to verify the payment before sending credentials.</em></p>
             </div>
             ` : `
             <div class="action-required">
                 <h3>📦 Action Required: Physical Book Shipping</h3>
-                <p>Please prepare the ${format.toLowerCase()} for shipping and update the customer with tracking information.</p>
+                <p>Please prepare the ${data.format.toLowerCase()} for shipping and update the customer with tracking information.</p>
                 <p><strong>Shipping Address provided above.</strong></p>
             </div>
             `}
 
             <div style="text-align: center; margin-top: 20px;">
-                <a href="https://thehiteshsir.com/admin/orders" style="background: #ee5a24; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; display: inline-block;">
+                <a href="${process.env.NEXTAUTH_URL}/admin/orders" style="background: #ee5a24; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; display: inline-block;">
                     View Order in Admin Panel
                 </a>
             </div>
@@ -199,12 +261,58 @@ class EmailService {
 </body>
 </html>
     `;
+  }
 
-    return this.sendEmail({
-      to: 'hleduroom@gmail.com',
-      subject,
-      html
-    });
+  private generateStatusUpdateTemplate(data: any): string {
+    const statusMessages: { [key: string]: string } = {
+      CONFIRMED: 'Your order has been confirmed and is being processed.',
+      PROCESSING: 'Your order is being processed and prepared for shipment.',
+      SHIPPED: 'Your order has been shipped! You can track your package below.',
+      DELIVERED: 'Your order has been delivered successfully!'
+    };
+
+    return `
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+        .header { background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%); color: white; padding: 20px; text-align: center; border-radius: 10px 10px 0 0; }
+        .content { background: #f9f9f9; padding: 20px; border-radius: 0 0 10px 10px; }
+        .status-info { background: white; padding: 15px; border-radius: 8px; margin: 15px 0; border-left: 4px solid #4CAF50; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Order Status Updated</h1>
+            <p>Your order ${data.orderId} has been updated</p>
+        </div>
+        <div class="content">
+            <div class="status-info">
+                <h3>New Status: ${data.status}</h3>
+                <p>${statusMessages[data.status] || 'Your order status has been updated.'}</p>
+                ${data.notes ? `<p><strong>Additional Notes:</strong> ${data.notes}</p>` : ''}
+            </div>
+
+            <div style="background: #e3f2fd; padding: 15px; border-radius: 8px; margin: 15px 0;">
+                <h3 style="color: #1565c0; margin-top: 0;">Order Details</h3>
+                <p><strong>Order ID:</strong> ${data.orderId}</p>
+                <p><strong>Book:</strong> ${data.bookTitle}</p>
+                <p><strong>Status:</strong> ${data.status}</p>
+            </div>
+
+            <div style="text-align: center; margin-top: 20px;">
+                <a href="${process.env.NEXTAUTH_URL}/order/track?orderId=${data.orderId}" style="background: #2196F3; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; display: inline-block;">
+                    Track Your Order
+                </a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+    `;
   }
 }
 
