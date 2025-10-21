@@ -1,20 +1,39 @@
-import React from "react";
+"use client";
+
+import { Button } from './button';
+import { ShoppingCart } from 'lucide-react';
+import { useCart } from '@/lib/context/CartContext';
+import { Book } from '@/lib/data/book';
+import { useState } from 'react';
 
 interface AddToCartButtonProps {
-  onClick?: () => void;
-  disabled?: boolean;
+  book: Book;
 }
 
-const AddToCartButton: React.FC<AddToCartButtonProps> = ({ onClick, disabled }) => {
-  return (
-    <button
-      onClick={onClick}
-      disabled={disabled}
-      className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-    >
-      Add to Cart
-    </button>
-  );
-};
+export function AddToCartButton({ book }: AddToCartButtonProps) {
+  const { dispatch } = useCart();
+  const [isAdding, setIsAdding] = useState(false);
 
-export default AddToCartButton;
+  const handleAddToCart = () => {
+    setIsAdding(true);
+    dispatch({ type: 'ADD_TO_CART', payload: book });
+    
+    // Reset animation
+    setTimeout(() => setIsAdding(false), 1000);
+  };
+
+  return (
+    <Button
+      size="lg"
+      className={`flex-1 transition-all duration-300 ${
+        isAdding ? 'scale-110 bg-green-600' : ''
+      }`}
+      onClick={handleAddToCart}
+    >
+      <ShoppingCart className={`w-4 h-4 mr-2 transition-all ${
+        isAdding ? 'scale-125' : ''
+      }`} />
+      {isAdding ? 'Added!' : 'Add to Cart'}
+    </Button>
+  );
+}
