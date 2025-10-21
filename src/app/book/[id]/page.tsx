@@ -2,7 +2,7 @@ import { bookData, relatedBooks, type Book } from '@/lib/data/book';
 import { notFound } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Star, BookOpen, ShoppingCart, Download, Eye } from 'lucide-react';
+import { Star, BookOpen, Download, Eye } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { AddToCartButton } from '@/components/ui/add-to-cart-button';
@@ -15,8 +15,15 @@ interface BookDetailsPageProps {
 
 export default async function BookDetailsPage({ params }: BookDetailsPageProps) {
   const { id } = await params;
-  const book = id === bookData.id ? bookData : 
-    relatedBooks.find(b => b.id === id);
+  
+  // Find the book - check main book first, then related books
+  let book: Book | undefined;
+  
+  if (id === bookData.id) {
+    book = bookData;
+  } else {
+    book = relatedBooks.find(b => b.id === id);
+  }
 
   if (!book) {
     notFound();
@@ -117,7 +124,7 @@ export default async function BookDetailsPage({ params }: BookDetailsPageProps) 
             <div className="space-y-4">
               <div className="flex items-baseline space-x-2">
                 <span className="text-3xl font-bold text-foreground">
-                  {book.currency} {book.price}
+                  Starting at {book.currency} {book.formats.ebook.price}
                 </span>
               </div>
 
@@ -151,6 +158,47 @@ export default async function BookDetailsPage({ params }: BookDetailsPageProps) 
             </div>
           </div>
         </div>
+
+        {/* Related Books Section */}
+        {id === bookData.id && relatedBooks.length > 0 && (
+          <section className="mt-16">
+            <div className="flex items-center justify-between mb-8">
+              <h2 className="text-2xl font-bold">You Might Also Like</h2>
+              <Button variant="ghost" asChild>
+                <Link href="/books">
+                  View All
+                </Link>
+              </Button>
+            </div>
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {relatedBooks.map((relatedBook) => (
+                <div key={relatedBook.id} className="bg-card rounded-lg border shadow-sm hover:shadow-md transition-shadow">
+                  <div className="p-4">
+                    <Image
+                      src={relatedBook.coverImage}
+                      alt={relatedBook.title}
+                      width={200}
+                      height={300}
+                      className="w-full h-48 object-cover rounded-lg mb-4"
+                    />
+                    <h3 className="font-semibold mb-2">{relatedBook.title}</h3>
+                    <p className="text-sm text-muted-foreground mb-2">by {relatedBook.author}</p>
+                    <div className="flex items-center justify-between">
+                      <span className="font-bold text-foreground">
+                        {relatedBook.currency} {relatedBook.formats.ebook.price}
+                      </span>
+                      <Button size="sm" asChild>
+                        <Link href={`/book/${relatedBook.id}`}>
+                          View Details
+                        </Link>
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
       </div>
     </div>
   );
