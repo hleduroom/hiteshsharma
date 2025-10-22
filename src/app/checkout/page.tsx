@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useCart } from '@/lib/context/CartContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -42,7 +42,7 @@ const nepalLocations: NepalLocation[] = [
   { id: 'm5', name: 'Madhyapur Thimi Municipality', type: 'municipality', parentId: 'd3' },
 ];
 
-export default function CheckoutPage() {
+function CheckoutContent() {
   const { state, dispatch } = useCart();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -370,13 +370,9 @@ export default function CheckoutPage() {
 
                       <div className="flex justify-center">
                         <div className="bg-white p-4 rounded-lg border-2 border-gray-300">
-                          <Image
-                            src={`/${paymentMethod}-qr.png`}
-                            alt={`${paymentMethod} QR Code`}
-                            width={192}
-                            height={192}
-                            className="w-48 h-48"
-                          />
+                          <div className="w-48 h-48 bg-gray-100 flex items-center justify-center">
+                            <QrCode className="w-16 h-16 text-gray-400" />
+                          </div>
                           <p className="text-center text-sm text-gray-600 mt-2 font-handwriting">
                             Scan with {paymentMethod === 'esewa' ? 'eSewa' : 'Khalti'} app
                           </p>
@@ -513,5 +509,19 @@ export default function CheckoutPage() {
         </form>
       </div>
     </div>
+  );
+}
+
+export default function CheckoutPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white dark:from-slate-950 dark:to-slate-900 flex items-center justify-center">
+        <div className="text-center">
+          <p className="font-handwriting">Loading checkout...</p>
+        </div>
+      </div>
+    }>
+      <CheckoutContent />
+    </Suspense>
   );
 }
