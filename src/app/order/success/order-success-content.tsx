@@ -6,7 +6,6 @@ import { Card, CardContent } from '@/components/ui/card';
 import { CheckCircle, Download, Mail, BookOpen, Clock, MapPin } from 'lucide-react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
-import { Header } from '@/components/header';
 
 interface ReceiptData {
   receiptId: string;
@@ -20,7 +19,7 @@ interface ReceiptData {
   subtotal: number;
 }
 
-export default function OrderSuccessPage() {
+export function OrderSuccessContent() {
   const [orderId, setOrderId] = useState('');
   const [orderDate, setOrderDate] = useState('');
   const [receiptData, setReceiptData] = useState<ReceiptData | null>(null);
@@ -127,7 +126,7 @@ Thank you for supporting H.L.-Eduroom Publications!
 
   const sendEmailReceipt = () => {
     alert('Receipt has been sent to your email! You should receive it within minutes.');
-
+    
     // Store email receipt in localStorage
     const emailReceipts = JSON.parse(localStorage.getItem('emailReceipts') || '[]');
     emailReceipts.push({
@@ -142,7 +141,7 @@ Thank you for supporting H.L.-Eduroom Publications!
     const hasPhysicalBook = receiptData?.items.some((item: any) => 
       item.book.format === 'paperback' || item.book.format === 'hardcover'
     );
-
+    
     return hasPhysicalBook ? [
       { status: 'Order Confirmed', description: 'Payment verified and order processed', completed: true },
       { status: 'Processing', description: 'Book packaging and quality check', completed: false },
@@ -158,7 +157,6 @@ Thank you for supporting H.L.-Eduroom Publications!
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-green-50 to-white dark:from-green-950 dark:to-slate-900">
-      <Header />
       <div className="container mx-auto px-4 py-16">
         <div className="max-w-2xl mx-auto text-center">
           <div className="flex justify-center mb-6">
