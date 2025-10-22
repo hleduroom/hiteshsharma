@@ -2,7 +2,7 @@
 
 import { useCart } from '@/lib/context/CartContext';
 import { Button } from '@/components/ui/button';
-import { Trash2, Plus, Minus, ShoppingCart, Truck } from 'lucide-react';
+import { Trash2, Plus, Minus, ShoppingCart } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 
@@ -10,7 +10,7 @@ export default function CartPage() {
   const { state, dispatch } = useCart();
 
   const getItemUniqueId = (item: any) => {
-    return `${item.book.id}-${item.book.format}`;
+    return `${item.book.id}-${item.book.format}`; 
   };
 
   const updateQuantity = (id: string, quantity: number) => {
@@ -25,18 +25,21 @@ export default function CartPage() {
     dispatch({ type: 'REMOVE_FROM_CART', payload: id });
   };
 
+  const totalCurrency = state.items[0]?.book.currency || 'NPR';
+
   if (state.items.length === 0) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white dark:from-slate-950 dark:to-slate-900">
+      // 🎨 Apply handwriting font
+      <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white dark:from-slate-950 dark:to-slate-900 font-handwriting">
         <div className="container mx-auto px-4 py-16">
           <div className="text-center">
             <ShoppingCart className="w-24 h-24 text-muted-foreground mx-auto mb-6" />
-            <h1 className="text-2xl font-bold mb-4 font-handwriting">Your cart is empty</h1>
-            <p className="text-muted-foreground mb-8 font-handwriting">
+            <h1 className="text-2xl font-bold mb-4">Your Cart is Empty</h1>
+            <p className="text-muted-foreground mb-8">
               Looks like you haven't added any books to your cart yet.
             </p>
             <Button asChild>
-              <Link href="/book" className="font-handwriting">
+              <Link href="/book">
                 Continue Shopping
               </Link>
             </Button>
@@ -46,22 +49,19 @@ export default function CartPage() {
     );
   }
 
-  const totalCurrency = state.items[0]?.book.currency || 'NPR';
-  const grandTotal = state.total + state.deliveryFee;
-
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white dark:from-slate-950 dark:to-slate-900">
+    // 🎨 Apply handwriting font
+    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white dark:from-slate-950 dark:to-slate-900 font-handwriting">
       <div className="container mx-auto px-4 py-8">
-        <h1 className="text-3xl font-bold mb-8 font-handwriting">Shopping Cart</h1>
+        <h1 className="text-3xl font-bold mb-8">Shopping Cart</h1>
 
         <div className="grid lg:grid-cols-3 gap-8">
+          {/* Cart Items */}
           <div className="lg:col-span-2 space-y-4">
             {state.items.map((item) => {
-              const itemPrice = item.book.price;
+              const itemPrice = item.book.price; 
               const itemCurrency = item.book.currency;
               const format = item.book.format;
-              const deliveryCost = item.book.deliveryCost || 0;
-
               const uniqueId = getItemUniqueId(item);
               const formatName = format.charAt(0).toUpperCase() + format.slice(1);
               const itemTotal = (itemPrice * item.quantity).toFixed(2);
@@ -77,16 +77,10 @@ export default function CartPage() {
                   />
 
                   <div className="flex-1">
-                    <h3 className="font-semibold font-handwriting">{item.book.title}</h3>
-                    <p className="text-sm text-muted-foreground font-handwriting">by {item.book.author}</p>
+                    <h3 className="font-semibold">{item.book.title}</h3>
+                    <p className="text-sm text-muted-foreground">by {item.book.author}</p> 
                     <p className="text-sm text-muted-foreground">Format: {formatName}</p>
-                    {deliveryCost > 0 && (
-                      <p className="text-sm text-green-600 flex items-center gap-1">
-                        <Truck className="w-3 h-3" />
-                        Delivery: {itemCurrency} {deliveryCost}
-                      </p>
-                    )}
-                    <p className="font-bold text-lg">{itemCurrency} {itemTotal}</p>
+                    <p className="font-bold text-lg">{itemCurrency} {itemTotal}</p> 
                   </div>
 
                   <div className="flex items-center space-x-2">
@@ -97,7 +91,7 @@ export default function CartPage() {
                     >
                       <Minus className="w-4 h-4" />
                     </Button>
-                    <span className="w-8 text-center font-handwriting">{item.quantity}</span>
+                    <span className="w-8 text-center">{item.quantity}</span>
                     <Button
                       variant="outline"
                       size="icon"
@@ -119,33 +113,38 @@ export default function CartPage() {
             })}
           </div>
 
+          {/* Order Summary: Using new total state structure */}
           <div className="bg-card border rounded-lg p-6 h-fit">
-            <h2 className="text-xl font-bold mb-4 font-handwriting">Order Summary</h2>
+            <h2 className="text-xl font-bold mb-4">Order Summary</h2>
 
             <div className="space-y-2 mb-4">
               <div className="flex justify-between">
-                <span className="font-handwriting">Subtotal</span>
-                <span className="font-handwriting">{totalCurrency} {state.total.toFixed(2)}</span>
+                <span>Subtotal</span>
+                <span>{totalCurrency} {state.subtotal.toFixed(2)}</span> 
               </div>
               <div className="flex justify-between">
-                <span className="font-handwriting">Delivery Fee</span>
-                <span className="font-handwriting">
-                  {state.deliveryFee > 0 ? `${totalCurrency} ${state.deliveryFee.toFixed(2)}` : 'Free'}
+                <span>Delivery Charge</span>
+                <span className={state.shipping > 0 ? 'text-red-600 font-bold' : ''}>
+                    {state.shipping > 0 ? `${totalCurrency} ${state.shipping.toFixed(2)}` : 'FREE'}
                 </span>
               </div>
+              <div className="flex justify-between">
+                <span>Tax (0%)</span>
+                <span>{totalCurrency} 0.00</span> 
+              </div>
               <div className="border-t pt-2 flex justify-between font-bold text-lg">
-                <span className="font-handwriting">Total</span>
-                <span className="font-handwriting">{totalCurrency} {grandTotal.toFixed(2)}</span>
+                <span>Grand Total</span>
+                <span>{totalCurrency} {state.total.toFixed(2)}</span> 
               </div>
             </div>
 
-            <Button className="w-full font-handwriting" size="lg" asChild>
+            <Button className="w-full" size="lg" asChild>
               <Link href="/checkout">
                 Proceed to Checkout
               </Link>
             </Button>
 
-            <Button variant="outline" className="w-full mt-2 font-handwriting" asChild>
+            <Button variant="outline" className="w-full mt-2" asChild>
               <Link href="/book">
                 Continue Shopping
               </Link>
