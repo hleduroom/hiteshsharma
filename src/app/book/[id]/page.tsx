@@ -1,30 +1,30 @@
-'use client';
+"use client";
 
-import { allBooks, type Book } from '@/lib/data/book';
-import { notFound } from 'next/navigation';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { AddToCartButton } from '@/components/ui/add-to-cart-button';
-import { Star, Eye, ShoppingCart, Share2 } from 'lucide-react';
-import Image from 'next/image';
-import Link from 'next/link';
-import { motion } from 'framer-motion';
-import { useState, useEffect } from 'react';
+import { allBooks, type Book } from "@/lib/data/book";
+import { notFound } from "next/navigation";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { AddToCartButton } from "@/components/ui/add-to-cart-button";
+import { Star, Eye, ShoppingCart, Share2, Loader2, CheckCircle2 } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
+import { motion } from "framer-motion";
+import { useState, useEffect } from "react";
 import { Header } from "@/components/header";
-import { useCart } from '@/lib/context/CartContext';
+import { useCart } from "@/lib/context/CartContext";
 
 interface BookDetailsPageProps {
   params: Promise<{ id: string }>;
 }
 
-type FormatType = 'ebook' | 'paperback' | 'hardcover';
+type FormatType = "ebook" | "paperback" | "hardcover";
 
 export default function BookDetailsPage({ params }: BookDetailsPageProps) {
   const [book, setBook] = useState<Book | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-
+  const [isProcessing, setIsProcessing] = useState(false);
   const { dispatch } = useCart();
-  const [selectedFormat, setSelectedFormat] = useState<FormatType>('ebook');
+  const [selectedFormat, setSelectedFormat] = useState<FormatType>("ebook");
 
   useEffect(() => {
     const loadBook = async () => {
@@ -33,7 +33,7 @@ export default function BookDetailsPage({ params }: BookDetailsPageProps) {
         const foundBook = allBooks.find((b) => b.id === id);
         setBook(foundBook || null);
       } catch (error) {
-        console.error('Error loading book:', error);
+        console.error("Error loading book:", error);
         setBook(null);
       } finally {
         setIsLoading(false);
@@ -43,10 +43,11 @@ export default function BookDetailsPage({ params }: BookDetailsPageProps) {
     loadBook();
   }, [params]);
 
-  const handleBuyNow = () => {
+  const handleBuyNow = async () => {
     if (!book) return;
+    setIsProcessing(true);
 
-    const deliveryCost = selectedFormat === 'ebook' ? 0 : 150;
+    const deliveryCost = selectedFormat === "ebook" ? 0 : 150;
     const payload = {
       id: book.id,
       title: book.title,
@@ -56,14 +57,13 @@ export default function BookDetailsPage({ params }: BookDetailsPageProps) {
       quantity: 1,
       format: selectedFormat,
       coverImage: book.coverImage,
-      deliveryCost
+      deliveryCost,
     };
 
-    dispatch({
-      type: 'ADD_TO_CART',
-      payload: payload,
-    });
-    window.location.href = '/checkout';
+    dispatch({ type: "ADD_TO_CART", payload });
+
+    await new Promise((res) => setTimeout(res, 1000)); // smooth UX
+    window.location.assign("/checkout");
   };
 
   if (isLoading) {
@@ -71,17 +71,13 @@ export default function BookDetailsPage({ params }: BookDetailsPageProps) {
       <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white dark:from-slate-950 dark:to-slate-900">
         <Header />
         <div className="container mx-auto px-4 py-16 flex justify-center items-center">
-          <div className="text-center">
-            <p>Loading book details...</p>
-          </div>
+          <p>Loading book details...</p>
         </div>
       </div>
     );
   }
 
-  if (!book) {
-    notFound();
-  }
+  if (!book) notFound();
 
   const relatedBooks = allBooks.filter(
     (b) => b.id !== book.id && b.genre.some((g) => book.genre.includes(g))
@@ -89,6 +85,7 @@ export default function BookDetailsPage({ params }: BookDetailsPageProps) {
 
   return (
     <div className="relative min-h-screen overflow-hidden" style={{ fontFamily: "'Dancing Script', cursive" }}>
+      {/* Background */}
       <div className="absolute inset-0 -z-10">
         <Image
           src={book.coverImage}
@@ -109,6 +106,7 @@ export default function BookDetailsPage({ params }: BookDetailsPageProps) {
           transition={{ duration: 0.7 }}
           className="flex flex-col lg:flex-row items-center gap-12"
         >
+          {/* Book Image */}
           <div className="relative w-full lg:w-1/2 flex justify-center">
             <div className="relative w-full max-w-2xl rounded-3xl overflow-hidden shadow-2xl border border-white/20 backdrop-blur-md group">
               <Image
@@ -121,6 +119,7 @@ export default function BookDetailsPage({ params }: BookDetailsPageProps) {
             </div>
           </div>
 
+          {/* Book Details */}
           <motion.div
             initial={{ opacity: 0, x: 40 }}
             animate={{ opacity: 1, x: 0 }}
@@ -129,16 +128,17 @@ export default function BookDetailsPage({ params }: BookDetailsPageProps) {
           >
             <HeaderSection book={book} />
 
+            {/* Format Section */}
             <div className="space-y-3">
               <h3 className="text-base font-semibold">Choose Format</h3>
               <div className="flex gap-2 flex-wrap">
-                {(['ebook', 'paperback', 'hardcover'] as const).map((format) => (
+                {(["ebook", "paperback", "hardcover"] as const).map((format) => (
                   <Button
                     key={format}
                     onClick={() => setSelectedFormat(format)}
-                    variant={selectedFormat === format ? 'default' : 'outline'}
+                    variant={selectedFormat === format ? "default" : "outline"}
                     className={`capitalize text-xs sm:text-sm rounded-xl ${
-                      selectedFormat === format ? 'bg-blue-500 text-white' : ''
+                      selectedFormat === format ? "bg-blue-500 text-white" : ""
                     }`}
                   >
                     {format}
@@ -149,7 +149,7 @@ export default function BookDetailsPage({ params }: BookDetailsPageProps) {
                 <h4 className="font-semibold capitalize text-sm mb-1">{selectedFormat}</h4>
                 <p className="text-lg font-bold mb-2">
                   {book.currency} {book.formats[selectedFormat].price.toFixed(2)}
-                  {selectedFormat !== 'ebook' && (
+                  {selectedFormat !== "ebook" && (
                     <span className="text-sm text-muted-foreground ml-2">
                       + {book.currency} 150 delivery
                     </span>
@@ -163,19 +163,35 @@ export default function BookDetailsPage({ params }: BookDetailsPageProps) {
               </div>
             </div>
 
+            {/* Buttons Section */}
             <div className="flex flex-col sm:flex-row gap-3 mt-4">
               <Button
                 size="lg"
-                className="flex items-center gap-2 bg-gradient-to-r from-blue-500 to-purple-500 text-white font-semibold shadow-md hover:shadow-xl transition-all rounded-xl px-6 py-3"
+                disabled={isProcessing}
                 onClick={handleBuyNow}
+                className="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold shadow-md hover:shadow-xl transition-all rounded-xl px-6 py-3"
               >
-                <ShoppingCart className="w-4 h-4" />
-                Buy Now
+                {isProcessing ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    Processing...
+                  </>
+                ) : (
+                  <>
+                    <ShoppingCart className="w-4 h-4" />
+                    Buy Now
+                  </>
+                )}
               </Button>
 
               <AddToCartButton book={book} format={selectedFormat} />
 
-              <Button asChild variant="outline" size="lg" className="flex-1 border-sky-300/60 hover:bg-sky-100/30 rounded-xl text-xs sm:text-sm">
+              <Button
+                asChild
+                variant="outline"
+                size="lg"
+                className="flex-1 border-sky-300/60 hover:bg-sky-100/30 rounded-xl text-xs sm:text-sm"
+              >
                 <Link href={`/preview/${book.id}`}>
                   <Eye className="w-4 h-4 mr-2" />
                   Read Preview
@@ -207,8 +223,8 @@ function HeaderSection({ book }: { book: Book }) {
               key={i}
               className={`w-4 h-4 ${
                 i < Math.floor(book.rating)
-                  ? 'fill-yellow-400 text-yellow-400'
-                  : 'text-gray-300'
+                  ? "fill-yellow-400 text-yellow-400"
+                  : "text-gray-300"
               }`}
             />
           ))}
@@ -231,7 +247,7 @@ function HeaderSection({ book }: { book: Book }) {
         <div><strong>Publisher:</strong> {book.publisher}</div>
         <div><strong>ISBN:</strong> {book.isbn}</div>
         <div><strong>Published:</strong> {new Date(book.publishedDate).toLocaleDateString()}</div>
-        <div><strong>Genre:</strong> {book.genre.join(', ')}</div>
+        <div><strong>Genre:</strong> {book.genre.join(", ")}</div>
       </div>
     </>
   );
@@ -239,7 +255,8 @@ function HeaderSection({ book }: { book: Book }) {
 
 function ShareButton({ title, id }: { title: string; id: string }) {
   const [copied, setCopied] = useState(false);
-  const link = typeof window !== '' ? `${window.location.origin}/book/${id}` : '';
+  const link =
+    typeof window !== "undefined" ? `${window.location.origin}/book/${id}` : "";
 
   const handleShare = async () => {
     const text = `📚 Check out "${title}" – an amazing read! → ${link}`;
@@ -253,15 +270,24 @@ function ShareButton({ title, id }: { title: string; id: string }) {
   };
 
   return (
-    <motion.div whileHover={{ scale: 1.05 }} className="pt-2 flex justify-start">
+    <motion.div whileHover={{ scale: 1.05 }} className="pt-3 flex justify-start">
       <Button
         variant="secondary"
         size="sm"
         onClick={handleShare}
         className="flex items-center gap-2 rounded-xl shadow-sm hover:shadow-md transition"
       >
-        <Share2 className="w-4 h-4" />
-        {copied ? 'Link Copied!' : 'Share Book'}
+        {copied ? (
+          <>
+            <CheckCircle2 className="w-4 h-4 text-green-500" />
+            Link Copied!
+          </>
+        ) : (
+          <>
+            <Share2 className="w-4 h-4" />
+            Share Book
+          </>
+        )}
       </Button>
     </motion.div>
   );
@@ -298,7 +324,9 @@ function RelatedBooksSection({ relatedBooks }: { relatedBooks: Book[] }) {
                 className="w-full h-48 object-cover rounded-lg mb-4"
               />
               <h3 className="font-semibold text-sm mb-1">{relatedBook.title}</h3>
-              <p className="text-xs text-muted-foreground mb-2">by {relatedBook.author}</p>
+              <p className="text-xs text-muted-foreground mb-2">
+                by {relatedBook.author}
+              </p>
               <div className="flex items-center justify-between">
                 <span className="font-bold text-foreground text-sm">
                   {relatedBook.currency} {relatedBook.formats.ebook.price}
