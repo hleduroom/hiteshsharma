@@ -1,6 +1,6 @@
 'use client';
 
-import { allBooks, type Book } from '@/lib/data/books';
+import { allBooks, type Book } from '@/lib/data/book';
 import { notFound } from 'next/navigation';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
