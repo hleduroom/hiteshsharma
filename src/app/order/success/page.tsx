@@ -158,7 +158,7 @@ H.L.-Eduroom Publications
                 </div>
                 <div className="flex justify-between">
                   <span className="font-semibold font-handwriting">Format:</span>
-                  <span className="font-handwriting">E-book</span>
+                  <span className="font-handwriting">E-Book</span>
                 </div>
                 <div className="flex justify-between text-lg font-bold border-t pt-3">
                   <span className="font-handwriting">Total Paid:</span>
