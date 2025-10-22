@@ -11,6 +11,7 @@ export interface CartItemPayload {
   format: 'ebook' | 'paperback' | 'hardcover';
   coverImage: string;
   deliveryCost: number;
+  quantity?: number;
 }
 
 interface CartItem {
@@ -25,7 +26,7 @@ interface CartState {
 }
 
 type CartAction =
-  | { type: 'ADD_TO_CART'; payload: CartItemPayload & { quantity: number } }
+  | { type: 'ADD_TO_CART'; payload: CartItemPayload }
   | { type: 'REMOVE_FROM_CART'; payload: string }
   | { type: 'UPDATE_QUANTITY'; payload: { id: string; quantity: number } }
   | { type: 'CLEAR_CART' };
@@ -53,11 +54,11 @@ const cartReducer = (state: CartState, action: CartAction): CartState => {
             ? { ...item, quantity: item.quantity + newQuantity }
             : item
         );
-        
+
         const newTotal = updatedItems.reduce((total, item) => 
           total + (item.book.price * item.quantity), 0
         );
-        
+
         const newDeliveryFee = updatedItems.reduce((fee, item) => 
           fee + (item.book.deliveryCost * item.quantity), 0
         );
@@ -95,7 +96,7 @@ const cartReducer = (state: CartState, action: CartAction): CartState => {
       const itemToRemove = state.items.find(item => 
         `${item.book.id}-${item.book.format}` === action.payload
       );
-      
+
       if (!itemToRemove) return state;
 
       const removePrice = itemToRemove.book.price * itemToRemove.quantity;
@@ -116,10 +117,6 @@ const cartReducer = (state: CartState, action: CartAction): CartState => {
       );
       if (!itemToUpdate) return state;
 
-      const updatePrice = itemToUpdate.book.price;
-      const updateDelivery = itemToUpdate.book.deliveryCost;
-      const quantityDiff = action.payload.quantity - itemToUpdate.quantity;
-
       const updatedItems = state.items.map(item =>
         `${item.book.id}-${item.book.format}` === action.payload.id
           ? { ...item, quantity: action.payload.quantity }
@@ -129,7 +126,7 @@ const cartReducer = (state: CartState, action: CartAction): CartState => {
       const newTotal = updatedItems.reduce((total, item) => 
         total + (item.book.price * item.quantity), 0
       );
-      
+
       const newDeliveryFee = updatedItems.reduce((fee, item) => 
         fee + (item.book.deliveryCost * item.quantity), 0
       );
