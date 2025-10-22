@@ -1,6 +1,6 @@
 'use client';
 
-import { allBooks, type Book } from '@/lib/data/book';
+import { allBooks, type Book } from '@/lib/data/books';
 import { notFound } from 'next/navigation';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -22,7 +22,7 @@ type FormatType = 'ebook' | 'paperback' | 'hardcover';
 export default function BookDetailsPage({ params }: BookDetailsPageProps) {
   const [book, setBook] = useState<Book | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  
+
   const { dispatch } = useCart();
   const [selectedFormat, setSelectedFormat] = useState<FormatType>('ebook');
 
@@ -88,7 +88,7 @@ export default function BookDetailsPage({ params }: BookDetailsPageProps) {
   );
 
   return (
-    <div className="relative min-h-screen overflow-hidden">
+    <div className="relative min-h-screen overflow-hidden" style={{ fontFamily: "'Dancing Script', cursive" }}>
       <div className="absolute inset-0 -z-10">
         <Image
           src={book.coverImage}
@@ -239,7 +239,7 @@ function HeaderSection({ book }: { book: Book }) {
 
 function ShareButton({ title, id }: { title: string; id: string }) {
   const [copied, setCopied] = useState(false);
-  const link = typeof window !== 'undefined' ? `${window.location.origin}/book/${id}` : '';
+  const link = typeof window !== '' ? `${window.location.origin}/book/${id}` : '';
 
   const handleShare = async () => {
     const text = `📚 Check out "${title}" – an amazing read! → ${link}`;
