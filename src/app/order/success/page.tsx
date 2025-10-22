@@ -3,10 +3,9 @@
 import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { CheckCircle, Download, Mail, BookOpen, ArrowLeft, Clock, Truck, MapPin } from 'lucide-react';
+import { CheckCircle, Download, Mail, ArrowLeft, Clock } from 'lucide-react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
-import jsPDF from 'jspdf';
 
 interface OrderDetails {
   orderId: string;
@@ -62,116 +61,57 @@ export default function OrderSuccessContent() {
     setOrderDetails(orderData);
   }, [urlOrderId, amount, currency]);
 
-  const generatePDFReceipt = () => {
+  const downloadReceipt = () => {
     if (!orderDetails) return;
 
-    const doc = new jsPDF();
-    
-    // Add professional styling
-    doc.setFillColor(59, 130, 246);
-    doc.rect(0, 0, 210, 30, 'F');
-    
-    // Header
-    doc.setTextColor(255, 255, 255);
-    doc.setFontSize(20);
-    doc.setFont('helvetica', 'bold');
-    doc.text('H.L.-Eduroom Publications', 105, 15, { align: 'center' });
-    
-    doc.setFontSize(12);
-    doc.text('OFFICIAL ORDER RECEIPT', 105, 22, { align: 'center' });
-    
-    // Reset text color
-    doc.setTextColor(0, 0, 0);
-    
-    // Order Details
-    doc.setFontSize(10);
-    let yPosition = 45;
-    
-    doc.setFont('helvetica', 'bold');
-    doc.text('ORDER INFORMATION:', 15, yPosition);
-    yPosition += 8;
-    
-    doc.setFont('helvetica', 'normal');
-    doc.text(`Order ID: ${orderDetails.orderId}`, 20, yPosition);
-    yPosition += 6;
-    doc.text(`Order Date: ${orderDetails.orderDate}`, 20, yPosition);
-    yPosition += 6;
-    doc.text(`Status: COMPLETED`, 20, yPosition);
-    yPosition += 12;
-    
-    // Order Items
-    doc.setFont('helvetica', 'bold');
-    doc.text('ORDER DETAILS:', 15, yPosition);
-    yPosition += 8;
-    
-    orderDetails.items.forEach(item => {
-      doc.setFont('helvetica', 'normal');
-      doc.text(`• ${item.title}`, 20, yPosition);
-      yPosition += 5;
-      doc.text(`  Format: ${item.format} | Qty: ${item.quantity}`, 20, yPosition);
-      yPosition += 5;
-      doc.text(`  Unit Price: ${orderDetails.currency} ${item.price}`, 20, yPosition);
-      yPosition += 5;
-      if (item.deliveryCost > 0) {
-        doc.text(`  Delivery: ${orderDetails.currency} ${item.deliveryCost}`, 20, yPosition);
-        yPosition += 5;
-      }
-      yPosition += 3;
-    });
-    
-    // Payment Summary
-    doc.setFont('helvetica', 'bold');
-    doc.text('PAYMENT SUMMARY:', 15, yPosition);
-    yPosition += 8;
-    
-    doc.setFont('helvetica', 'normal');
-    doc.text(`Subtotal: ${orderDetails.currency} ${(parseFloat(amount) - 150).toFixed(2)}`, 20, yPosition);
-    yPosition += 5;
-    doc.text(`Delivery Fee: ${orderDetails.currency} 150.00`, 20, yPosition);
-    yPosition += 5;
-    doc.setFont('helvetica', 'bold');
-    doc.text(`Total Paid: ${orderDetails.currency} ${orderDetails.amount}`, 20, yPosition);
-    yPosition += 12;
-    
-    // Customer Info
-    doc.setFont('helvetica', 'bold');
-    doc.text('CUSTOMER INFORMATION:', 15, yPosition);
-    yPosition += 8;
-    
-    doc.setFont('helvetica', 'normal');
-    doc.text(`Email: ${orderDetails.customer.email}`, 20, yPosition);
-    yPosition += 5;
-    doc.text(`Phone: ${orderDetails.customer.phone}`, 20, yPosition);
-    yPosition += 12;
-    
-    // Footer
-    doc.setFont('helvetica', 'bold');
-    doc.text('IMPORTANT NOTES:', 15, yPosition);
-    yPosition += 8;
-    
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(8);
-    const notes = [
-      '• E-book will be delivered within 24 hours',
-      '• Check your email for download instructions',
-      '• Keep this receipt for future reference',
-      '• For queries: thehiteshsir.com/contact',
-      '• Support: hleduroom@gmail.com | +977-9827728726'
-    ];
-    
-    notes.forEach(note => {
-      doc.text(note, 20, yPosition);
-      yPosition += 4;
-    });
-    
-    // Final thank you
-    doc.setFontSize(10);
-    doc.setFont('helvetica', 'bold');
-    doc.text('Thank you for your purchase!', 105, yPosition + 10, { align: 'center' });
-    doc.setFont('helvetica', 'normal');
-    doc.text('H.L.-Eduroom Publications', 105, yPosition + 16, { align: 'center' });
-    
-    doc.save(`receipt-${orderDetails.orderId}.pdf`);
+    const receiptContent = `
+H.L.-Eduroom Publications
+OFFICIAL ORDER RECEIPT
+========================================
+Order ID: ${orderDetails.orderId}
+Date: ${orderDetails.orderDate}
+Status: COMPLETED
+
+ORDER DETAILS:
+----------------------------------------
+Item: 3 AM Confessions: My Life as an Overthinker
+Format: E-book
+Quantity: 1
+Unit Price: ${orderDetails.currency} ${orderDetails.amount}
+Total Amount: ${orderDetails.currency} ${orderDetails.amount}
+
+PAYMENT INFORMATION:
+----------------------------------------
+Payment Method: Online Payment
+Amount Paid: ${orderDetails.currency} ${orderDetails.amount}
+Payment Status: Verified
+
+CONTACT INFORMATION:
+----------------------------------------
+Email: [Customer Email]
+Support: hleduroom@gmail.com
+Phone: +977-9827728726
+
+IMPORTANT NOTES:
+----------------------------------------
+• E-book will be delivered within 24 hours
+• Check your email for download instructions
+• Keep this receipt for future reference
+• For queries: thehiteshsir.com/contact
+
+Thank you for your purchase!
+H.L.-Eduroom Publications
+    `.trim();
+
+    const blob = new Blob([receiptContent], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `receipt-${orderDetails.orderId}.txt`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
   };
 
   const sendEmailReceipt = () => {
@@ -269,9 +209,9 @@ export default function OrderSuccessContent() {
           </Card>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8">
-            <Button onClick={generatePDFReceipt} className="flex items-center font-handwriting">
+            <Button onClick={downloadReceipt} className="flex items-center font-handwriting">
               <Download className="w-4 h-4 mr-2" />
-              Download PDF Receipt
+              Download Receipt
             </Button>
             <Button variant="outline" onClick={sendEmailReceipt} className="flex items-center font-handwriting">
               <Mail className="w-4 h-4 mr-2" />
