@@ -1,6 +1,6 @@
 // order/success/page.tsx
 
-import OrderSuccessContext from './context';
+import OrderSuccessContext from './order-success-content';
 
 // This is the server component page wrapper
 export default function OrderSuccessPage() {
