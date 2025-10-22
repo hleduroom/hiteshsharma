@@ -9,7 +9,7 @@ import { Star, Eye, ShoppingCart, Share2 } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Header } from "@/components/header";
 import { useCart } from '@/lib/context/CartContext';
 
@@ -19,37 +19,44 @@ interface BookDetailsPageProps {
 
 type FormatType = 'ebook' | 'paperback' | 'hardcover';
 
-// Must match CartContext.tsx definition
-interface CartItemPayload {
-  id: string;
-  title: string;
-  author: string; 
-  price: number;
-  currency: string;
-  format: FormatType;
-  coverImage: string;
-}
-
-type AddToCartActionPayload = CartItemPayload & { quantity: number };
-
-export default async function BookDetailsPage({ params }: BookDetailsPageProps) {
-  const { id } = await params;
-  const book = allBooks.find((b) => b.id === id);
-  if (!book) notFound();
-
-  const { dispatch } = useCart(); 
+export default function BookDetailsPage({ params }: BookDetailsPageProps) {
+  const [book, setBook] = useState<Book | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  
+  const { dispatch } = useCart();
   const [selectedFormat, setSelectedFormat] = useState<FormatType>('ebook');
 
+  useEffect(() => {
+    const loadBook = async () => {
+      try {
+        const { id } = await params;
+        const foundBook = allBooks.find((b) => b.id === id);
+        setBook(foundBook || null);
+      } catch (error) {
+        console.error('Error loading book:', error);
+        setBook(null);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadBook();
+  }, [params]);
+
   const handleBuyNow = () => {
-    const payload: AddToCartActionPayload = {
+    if (!book) return;
+
+    const deliveryCost = selectedFormat === 'ebook' ? 0 : 150;
+    const payload = {
       id: book.id,
       title: book.title,
       author: book.author,
-      price: book.formats[selectedFormat].price, 
+      price: book.formats[selectedFormat].price,
       currency: book.currency,
       quantity: 1,
       format: selectedFormat,
       coverImage: book.coverImage,
+      deliveryCost
     };
 
     dispatch({
@@ -59,14 +66,29 @@ export default async function BookDetailsPage({ params }: BookDetailsPageProps) 
     window.location.href = '/checkout';
   };
 
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white dark:from-slate-950 dark:to-slate-900">
+        <Header />
+        <div className="container mx-auto px-4 py-16 flex justify-center items-center">
+          <div className="text-center">
+            <p>Loading book details...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!book) {
+    notFound();
+  }
+
   const relatedBooks = allBooks.filter(
-    (b) => b.id !== id && b.genre.some((g) => book.genre.includes(g))
+    (b) => b.id !== book.id && b.genre.some((g) => book.genre.includes(g))
   );
 
   return (
-    // 🎨 Apply handwriting font to the root
-    <div className="relative min-h-screen overflow-hidden font-handwriting"> 
-      {/* Background and Header remain the same */}
+    <div className="relative min-h-screen overflow-hidden">
       <div className="absolute inset-0 -z-10">
         <Image
           src={book.coverImage}
@@ -87,7 +109,6 @@ export default async function BookDetailsPage({ params }: BookDetailsPageProps) 
           transition={{ duration: 0.7 }}
           className="flex flex-col lg:flex-row items-center gap-12"
         >
-          {/* Cover Image */}
           <div className="relative w-full lg:w-1/2 flex justify-center">
             <div className="relative w-full max-w-2xl rounded-3xl overflow-hidden shadow-2xl border border-white/20 backdrop-blur-md group">
               <Image
@@ -100,7 +121,6 @@ export default async function BookDetailsPage({ params }: BookDetailsPageProps) 
             </div>
           </div>
 
-          {/* Info Section */}
           <motion.div
             initial={{ opacity: 0, x: 40 }}
             animate={{ opacity: 1, x: 0 }}
@@ -109,7 +129,6 @@ export default async function BookDetailsPage({ params }: BookDetailsPageProps) 
           >
             <HeaderSection book={book} />
 
-            {/* Format Selector */}
             <div className="space-y-3">
               <h3 className="text-base font-semibold">Choose Format</h3>
               <div className="flex gap-2 flex-wrap">
@@ -130,26 +149,20 @@ export default async function BookDetailsPage({ params }: BookDetailsPageProps) 
                 <h4 className="font-semibold capitalize text-sm mb-1">{selectedFormat}</h4>
                 <p className="text-lg font-bold mb-2">
                   {book.currency} {book.formats[selectedFormat].price.toFixed(2)}
+                  {selectedFormat !== 'ebook' && (
+                    <span className="text-sm text-muted-foreground ml-2">
+                      + {book.currency} 150 delivery
+                    </span>
+                  )}
                 </p>
                 <ul className="text-xs text-muted-foreground list-disc pl-5 space-y-1">
                   {book.formats[selectedFormat].features.map((feature, i) => (
                     <li key={i}>{feature}</li>
                   ))}
                 </ul>
-                {/* 🚚 Delivery Cost Logic Display */}
-                {selectedFormat !== 'ebook' ? (
-                   <p className="text-xs text-red-600 mt-2 font-bold">
-                      + NPR 150 Delivery Charge (Nepal-wide)
-                   </p>
-                ) : (
-                   <p className="text-xs text-green-600 mt-2 font-bold">
-                      Instant Digital Delivery (FREE)
-                   </p>
-                )}
               </div>
             </div>
 
-            {/* Action Buttons */}
             <div className="flex flex-col sm:flex-row gap-3 mt-4">
               <Button
                 size="lg"
@@ -174,14 +187,12 @@ export default async function BookDetailsPage({ params }: BookDetailsPageProps) 
           </motion.div>
         </motion.div>
 
-        {/* Related Books */}
         {relatedBooks.length > 0 && <RelatedBooksSection relatedBooks={relatedBooks} />}
       </div>
     </div>
   );
 }
 
-/* ---------------- SUPPORTING COMPONENTS (Unchanged logic) ---------------- */
 function HeaderSection({ book }: { book: Book }) {
   return (
     <>
@@ -209,7 +220,7 @@ function HeaderSection({ book }: { book: Book }) {
 
       <div>
         <h3 className="text-base font-semibold mb-1">About the Book</h3>
-        <p className="text-sm text-muted-foreground leading-relaxed line-clamp-5">
+        <p className="text-sm text-muted-foreground leading-relaxed">
           {book.description}
         </p>
       </div>
