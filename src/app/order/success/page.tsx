@@ -53,8 +53,8 @@ export default function OrderSuccessContent() {
         deliveryCost: 0
       }],
       customer: {
-        email: "customer@example.com",
-        phone: "+977-98XXXXXXXX"
+        email: "customer@hleduroom.com",
+        phone: "+977-9827728726"
       }
     };
     
