@@ -84,7 +84,7 @@ export default function BookDetailsPage({ params }: BookDetailsPageProps) {
     if (!book) return;
     
     const link = typeof window !== 'undefined' ? `${window.location.origin}/book/${book.id}` : '';
-    const text = `📚 Check out "${book.title}" – an amazing read! → ${link}`;
+    const text = ` Check out "${book.title}" – an amazing read! → ${link}`;
     
     if (navigator.share) {
       await navigator.share({ title: book.title, text, url: link });
