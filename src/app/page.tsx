@@ -47,6 +47,43 @@ export default function Home() {
           <Header />
           <main className="flex-1">
             <Hero />
+            
+            {/* Canva Presentation - Hidden from source but embedded */}
+            <div className="w-full px-4 md:px-8">
+              <div style={{ 
+                position: 'relative', 
+                width: '100%', 
+                height: '0', 
+                paddingTop: '56.2500%',
+                paddingBottom: '0', 
+                boxShadow: '0 2px 8px 0 rgba(63,69,81,0.16)', 
+                marginTop: '1.6em', 
+                marginBottom: '0.9em', 
+                overflow: 'hidden',
+                borderRadius: '8px', 
+                willChange: 'transform'
+              }}>
+                <iframe 
+                  loading="lazy" 
+                  style={{
+                    position: 'absolute', 
+                    width: '100%', 
+                    height: '100%', 
+                    top: '0', 
+                    left: '0', 
+                    border: 'none', 
+                    padding: '0',
+                    margin: '0'
+                  }}
+                  src="https://www.canva.com/design/DAG2mmKhlQc/po_pdJN5-4vUE_BdX8xvHg/view?embed" 
+                  allowFullScreen="allowfullscreen" 
+                  allow="fullscreen"
+                  title="Cream and Green Aesthetic Scrapbook Self Introduction Presentation"
+                >
+                </iframe>
+              </div>
+            </div>
+
             <div className="space-y-16 py-12">
               <About />
               <Projects />
