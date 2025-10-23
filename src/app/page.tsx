@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { AnimatePresence } from "framer-motion";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
@@ -18,86 +18,18 @@ const userDetails = {
 
 export default function Home() {
   const [isLoading, setIsLoading] = useState(true);
-  const iframeRef = useRef<HTMLIFrameElement>(null);
-  const autoSlideTimerRef = useRef<NodeJS.Timeout | null>(null);
-
-  // Auto-slide functionality
-  const startAutoSlide = () => {
-    if (autoSlideTimerRef.current) {
-      clearInterval(autoSlideTimerRef.current);
-    }
-
-    autoSlideTimerRef.current = setInterval(() => {
-      // Simulate right arrow key press for next slide
-      if (iframeRef.current) {
-        // This is a workaround since we can't directly control Canva embed
-        // The iframe will receive the keyboard event
-        const iframe = iframeRef.current;
-        iframe.focus();
-        
-        // Dispatch right arrow key event
-        const rightArrowEvent = new KeyboardEvent('keydown', {
-          key: 'ArrowRight',
-          code: 'ArrowRight',
-          keyCode: 39,
-          which: 39,
-          bubbles: true
-        });
-        
-        iframe.dispatchEvent(rightArrowEvent);
-      }
-    }, 7000); // 7 seconds
-  };
-
-  const stopAutoSlide = () => {
-    if (autoSlideTimerRef.current) {
-      clearInterval(autoSlideTimerRef.current);
-      autoSlideTimerRef.current = null;
-    }
-  };
-
-  const handleManualNavigation = (direction: 'left' | 'right') => {
-    stopAutoSlide();
-    
-    if (iframeRef.current) {
-      const iframe = iframeRef.current;
-      iframe.focus();
-      
-      const key = direction === 'right' ? 'ArrowRight' : 'ArrowLeft';
-      const keyCode = direction === 'right' ? 39 : 37;
-      
-      const keyEvent = new KeyboardEvent('keydown', {
-        key,
-        code: key,
-        keyCode,
-        which: keyCode,
-        bubbles: true
-      });
-      
-      iframe.dispatchEvent(keyEvent);
-    }
-    
-    // Restart auto-slide after manual navigation
-    setTimeout(startAutoSlide, 7000);
-  };
 
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsLoading(false);
       document.body.style.overflow = "auto";
-    }, 3000);
+    }, 3000); // Preloader duration
 
     return () => {
       clearTimeout(timer);
-      stopAutoSlide();
       document.body.style.overflow = "auto";
     };
   }, []);
-
-  // Start auto-slide when iframe loads
-  const handleIframeLoad = () => {
-    setTimeout(startAutoSlide, 2000); // Start auto-slide 2 seconds after load
-  };
 
   return (
     <>
@@ -116,46 +48,22 @@ export default function Home() {
           <main className="flex-1">
             <Hero />
             
-            {/* Canva Presentation with Controls */}
+            {/* Canva Presentation - Hidden from source but embedded */}
             <div className="w-full px-4 md:px-8">
-              {/* Navigation Controls */}
-              <div className="flex justify-center items-center gap-4 mb-4">
-                <button
-                  onClick={() => handleManualNavigation('left')}
-                  className="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded-full transition-colors duration-200"
-                  aria-label="Previous slide"
-                >
-                  ←
-                </button>
-                <span className="text-sm text-gray-600">Auto-slides every 7 seconds</span>
-                <button
-                  onClick={() => handleManualNavigation('right')}
-                  className="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded-full transition-colors duration-200"
-                  aria-label="Next slide"
-                >
-                  →
-                </button>
-              </div>
-
-              <div 
-                style={{ 
-                  position: 'relative', 
-                  width: '100%', 
-                  height: '0', 
-                  paddingTop: '56.2500%',
-                  paddingBottom: '0', 
-                  boxShadow: '0 2px 8px 0 rgba(63,69,81,0.16)', 
-                  marginTop: '1.6em', 
-                  marginBottom: '0.9em', 
-                  overflow: 'hidden',
-                  borderRadius: '8px', 
-                  willChange: 'transform'
-                }}
-                onMouseEnter={stopAutoSlide}
-                onMouseLeave={startAutoSlide}
-              >
+              <div style={{ 
+                position: 'relative', 
+                width: '100%', 
+                height: '0', 
+                paddingTop: '56.2500%',
+                paddingBottom: '0', 
+                boxShadow: '0 2px 8px 0 rgba(63,69,81,0.16)', 
+                marginTop: '1.6em', 
+                marginBottom: '0.9em', 
+                overflow: 'hidden',
+                borderRadius: '8px', 
+                willChange: 'transform'
+              }}>
                 <iframe 
-                  ref={iframeRef}
                   loading="lazy" 
                   style={{
                     position: 'absolute', 
@@ -171,16 +79,8 @@ export default function Home() {
                   allowFullScreen={true}
                   allow="fullscreen"
                   title="Cream and Green Aesthetic Scrapbook Self Introduction Presentation"
-                  onLoad={handleIframeLoad}
-                />
-              </div>
-
-              {/* Auto-slide indicator */}
-              <div className="flex justify-center items-center mt-2">
-                <div className="flex items-center gap-2 text-sm text-gray-600">
-                  <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                  Auto-slide enabled
-                </div>
+                >
+                </iframe>
               </div>
             </div>
 
