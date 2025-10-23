@@ -76,7 +76,7 @@ export default function Home() {
                     margin: '0'
                   }}
                   src="https://www.canva.com/design/DAG2mmKhlQc/po_pdJN5-4vUE_BdX8xvHg/view?embed" 
-                  allowFullScreen="allowfullscreen" 
+                  allowFullScreen={true}
                   allow="fullscreen"
                   title="Cream and Green Aesthetic Scrapbook Self Introduction Presentation"
                 >
