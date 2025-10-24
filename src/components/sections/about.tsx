@@ -15,32 +15,37 @@ const skills = [
   {
     icon: <Code className="h-8 w-8 text-primary" />,
     name: "Web Development",
-    description: "I turn caffeine into code and dreams into deploys. Sometimes bugs too—free of charge.",
+    description:
+      "I turn caffeine into code and dreams into deploys. Sometimes bugs too—free of charge.",
   },
   {
     icon: <BrainCircuit className="h-8 w-8 text-primary" />,
     name: "3D & Graphics",
-    description: "Making pixels dance and 3D worlds come alive like a Pixar intern on Red Bull.",
+    description:
+      "Making pixels dance and 3D worlds come alive like a Pixar intern on Red Bull.",
   },
   {
     icon: <BookOpen className="h-8 w-8 text-primary" />,
     name: "Book Writing",
-    description: "Turning late-night overthinking into poetic masterpieces and tragic typos.",
+    description:
+      "Pouring late-night thoughts into poetic chaos. #3AMConfessions",
   },
   {
     icon: <Award className="h-8 w-8 text-primary" />,
     name: "UI/UX Design",
-    description: "Designing experiences smoother than your crush’s replies (which never come).",
+    description: "Designing experiences smoother than your crush’s smile.",
   },
   {
     icon: <MessageCircle className="h-8 w-8 text-primary" />,
     name: "BakBak & Talks",
-    description: "Certified chatterbox. Can debate from JavaScript to Jalebi with equal passion.",
+    description:
+      "Certified chatterbox. Can discuss from JavaScript to Jalebi with equal passion.",
   },
   {
     icon: <Heart className="h-8 w-8 text-primary" />,
     name: "Romantic Coding",
-    description: "Writing code and love letters — both full of syntax errors but pure intent.",
+    description:
+      "Writing code and love letters—both full of syntax errors but pure intent.",
   },
 ];
 
@@ -48,32 +53,24 @@ export function About() {
   return (
     <Section
       id="about"
-      className="relative bg-cover bg-center bg-no-repeat py-20"
-      style={{
-        backgroundImage: "url('/background.jpg')",
-      }}
+      className="relative py-20 bg-cover bg-center bg-no-repeat bg-[url('/background.jpg')] rounded-2xl"
     >
-      {/* Glow Overlay */}
+      {/* Glow Overlay for Light & Dark Mode */}
       <div className="absolute inset-0 rounded-2xl">
-        {/* Light glow for light mode */}
         <div className="absolute inset-0 bg-white/30 backdrop-blur-lg dark:hidden" />
-        {/* Dark glow for dark mode */}
         <div className="absolute inset-0 bg-black/40 backdrop-blur-md hidden dark:block" />
       </div>
 
       {/* Content */}
-      <div className="relative container z-10 mx-auto px-4 md:px-6 text-center">
+      <div className="relative container mx-auto z-10 px-4 md:px-6 text-center">
         {/* Heading */}
         <div className="space-y-4">
-          <h2
-            className="text-4xl md:text-5xl font-bold tracking-tight text-gray-900 dark:text-gray-100 font-[Pacifico]"
-            style={{ textShadow: "0 2px 10px rgba(0,0,0,0.2)" }}
-          >
+          <h2 className="text-4xl md:text-5xl font-bold tracking-tight text-gray-900 dark:text-gray-100 font-[Pacifico] shadow-sm">
             About Me 💫
           </h2>
-          <p className="mx-auto max-w-[700px] text-gray-700 dark:text-gray-300 md:text-xl/relaxed font-[Poppins]">
-            A developer, writer, and dreamer who loves building digital worlds, 
-            penning midnight poetry, and cracking jokes that only half the dev 
+          <p className="mx-auto max-w-[700px] text-gray-700 dark:text-gray-300 md:text-xl leading-relaxed font-[Poppins]">
+            A developer, writer, and dreamer who loves building digital worlds,
+            penning midnight poetry, and cracking jokes that only half the dev
             team understands. If art meets logic — that’s where you’ll find me.
           </p>
         </div>
@@ -83,10 +80,10 @@ export function About() {
           {skills.map((skill) => (
             <Card
               key={skill.name}
-              className="bg-white/40 dark:bg-black/30 backdrop-blur-md border border-white/30 dark:border-black/40 shadow-md hover:shadow-xl transition-transform duration-300 hover:-translate-y-2 rounded-2xl"
+              className="bg-white/40 dark:bg-black/30 backdrop-blur-md border border-white/30 dark:border-black/40 shadow-md hover:shadow-xl text-left text-gray-900 dark:text-gray-100 transition-transform duration-300 hover:-translate-y-2 rounded-2xl"
             >
               <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <CardTitle className="text-lg font-[Pacifico] text-gray-900 dark:text-gray-100">
+                <CardTitle className="text-lg font-[Pacifico]">
                   {skill.name}
                 </CardTitle>
                 {skill.icon}
