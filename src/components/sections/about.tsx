@@ -53,14 +53,16 @@ export function About() {
   return (
     <Section
       id="about"
-      className="relative py-20 bg-cover bg-center bg-no-repeat bg-[url('/background.jpg')] rounded-2xl"
+      className="
+        relative py-20 bg-cover bg-center bg-no-repeat rounded-2xl
+        bg-[url('/background.jpg')]
+        dark:bg-[url('/background.jpg')]
+        before:absolute before:inset-0 before:rounded-2xl
+        before:bg-gradient-to-b before:from-white/20 before:to-white/10 dark:before:from-black/40 dark:before:to-black/30
+        before:pointer-events-none
+        before:mix-blend-overlay
+      "
     >
-      {/* Glow Overlay for Light & Dark Mode */}
-      <div className="absolute inset-0 rounded-2xl">
-        <div className="absolute inset-0 bg-white/30 backdrop-blur-lg dark:hidden" />
-        <div className="absolute inset-0 bg-black/40 backdrop-blur-md hidden dark:block" />
-      </div>
-
       {/* Content */}
       <div className="relative container mx-auto z-10 px-4 md:px-6 text-center">
         {/* Heading */}
@@ -80,7 +82,7 @@ export function About() {
           {skills.map((skill) => (
             <Card
               key={skill.name}
-              className="bg-white/40 dark:bg-black/30 backdrop-blur-md border border-white/30 dark:border-black/40 shadow-md hover:shadow-xl text-left text-gray-900 dark:text-gray-100 transition-transform duration-300 hover:-translate-y-2 rounded-2xl"
+              className="bg-white/20 dark:bg-black/20 border border-white/30 dark:border-black/40 shadow-md hover:shadow-xl text-left text-gray-900 dark:text-gray-100 transition-transform duration-300 hover:-translate-y-2 rounded-2xl"
             >
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-lg font-[Pacifico]">
