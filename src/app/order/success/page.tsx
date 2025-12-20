@@ -1,19 +1,46 @@
-// src/app/order/success/page.tsx
 "use client";
-import { useEffect, useState } from 'react';
-import { CheckCircle, Download, Printer, Home } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import Link from 'next/link';
+
+import { useEffect, useState } from "react";
+import { CheckCircle, Printer, Home } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 export default function SuccessPage() {
   const [order, setOrder] = useState<any>(null);
 
   useEffect(() => {
-    const data = localStorage.getItem('lastOrder');
-    if (data) setOrder(JSON.parse(data));
+    const data = localStorage.getItem("lastOrder");
+    if (data) {
+      try {
+        const parsed = JSON.parse(data);
+        // Support both normalized payload (customer nested) and older flattened shape
+        if (parsed.customer) {
+          const payload = {
+            orderId: parsed.orderId,
+            firstName: parsed.customer.firstName,
+            email: parsed.customer.email,
+            phone: parsed.customer.phone,
+            address: parsed.customer.address,
+            city: parsed.customer.city,
+            district: parsed.customer.district,
+            transactionId: parsed.transactionId,
+            items: parsed.items,
+            total: parsed.total,
+          };
+          setOrder(payload);
+        } else {
+          setOrder(parsed);
+        }
+      } catch (err) {
+        console.error("Failed to parse lastOrder:", err);
+      }
+    }
   }, []);
 
   if (!order) return <p className="text-center py-20">Loading Receipt...</p>;
+
+  const itemsTotal = order.items?.reduce((acc: number, curr: any) => acc + (curr.book?.price || curr.book?.price || 0), 0) || 0;
+  const deliveryFee = (order.total || 0) - itemsTotal;
 
   return (
     <div className="min-h-screen bg-slate-50 py-12 px-4">
@@ -33,7 +60,7 @@ export default function SuccessPage() {
           </div>
           <div className="md:text-right">
             <h3 className="font-bold text-slate-400 uppercase text-xs mb-2">Delivery Details</h3>
-            <p>{order.address || 'Digital Delivery (E-book)'}</p>
+            <p>{order.address || "Digital Delivery (E-book)"}</p>
             <p>{order.city} {order.district}</p>
             <p className="text-blue-600 font-bold">Transaction ID: {order.transactionId}</p>
           </div>
@@ -47,10 +74,10 @@ export default function SuccessPage() {
             </tr>
           </thead>
           <tbody>
-            {order.items.map((item: any) => (
-              <tr key={item.id} className="border-b">
-                <td className="py-4">{item.book.title} <span className="text-xs text-slate-400">({item.book.format})</span></td>
-                <td className="py-4 text-right font-bold">NPR {item.book.price}</td>
+            {order.items?.map((item: any, idx: number) => (
+              <tr key={idx} className="border-b">
+                <td className="py-4">{item.book?.title || "Untitled"} <span className="text-xs text-slate-400">({item.book?.format || item.bookFormat || "ebook"})</span></td>
+                <td className="py-4 text-right font-bold">NPR {item.book?.price || 0}</td>
               </tr>
             ))}
           </tbody>
@@ -59,7 +86,7 @@ export default function SuccessPage() {
         <div className="flex flex-col items-end space-y-2 mb-10">
           <div className="w-full md:w-64 flex justify-between">
             <span>Delivery Fee:</span>
-            <span>NPR {order.total - order.items.reduce((acc:any, curr:any) => acc + curr.book.price, 0)}</span>
+            <span>NPR {deliveryFee}</span>
           </div>
           <div className="w-full md:w-64 flex justify-between text-2xl font-bold text-green-600">
             <span>Total Paid:</span>
@@ -72,7 +99,7 @@ export default function SuccessPage() {
           <Button asChild><Link href="/"><Home className="mr-2 h-4 w-4" /> Back to Store</Link></Button>
         </div>
       </div>
-      
+
       <style jsx global>{`
         @media print {
           .no-print { display: none !important; }
